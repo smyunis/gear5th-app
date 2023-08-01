@@ -1,7 +1,9 @@
 package user_test
 
-import "testing"
+import (
+	"testing"
 
-func Tes(t *testing.T) {
-	
+)
+
+func TestCanCreateNewUser(t *testing.T) {
 }
