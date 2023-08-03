@@ -67,3 +67,29 @@ func TestSignUpUserAsPublisher(t *testing.T) {
 	}
 
 }
+
+
+func TestPasswordForManagedUser(t *testing.T) {
+	userEmail, _ := shared.NewEmail("smyunis@outlook.com")
+	userPhone, _ := shared.NewPhoneNumber("0929186232")
+	u := user.NewUser(userEmail)
+	m := u.AsManagedUser("Salman Mohammed", userPhone)
+
+	m.SetPassword("gokuisking")
+
+	if !m.IsPasswordCorrect("gokuisking") {
+		t.FailNow()
+	}
+}
+
+func TestWrongPasswordForManagedUser(t *testing.T) {
+	userEmail, _ := shared.NewEmail("smyunis@outlook.com")
+	userPhone, _ := shared.NewPhoneNumber("0929186232")
+	u := user.NewUser(userEmail)
+	m := u.AsManagedUser("Salman Mohammed", userPhone)
+
+	if m.IsPasswordCorrect("gokuisking") {
+		t.FailNow()
+	}
+}
+
