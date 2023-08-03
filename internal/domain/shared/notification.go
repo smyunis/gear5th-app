@@ -1,10 +1,17 @@
 package shared
 
-import "time"
+import (
+	"time"
+)
 
 type Notification struct {
-	id Id
 	message string
-	time time.Time
+	time    time.Time
 }
 
+func NewNotification(message string) Notification {
+	return Notification{
+		time:    time.Now(),
+		message: message,
+	}
+}

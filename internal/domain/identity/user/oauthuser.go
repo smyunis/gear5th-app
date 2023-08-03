@@ -1,7 +1,7 @@
 package user
 
 type OAuthUser struct {
-	User
+	*User
 	userIdentifier any
 	oauthProvider OAuthProvider
 }

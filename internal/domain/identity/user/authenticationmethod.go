@@ -3,7 +3,8 @@ package user
 type AuthenticationMethod int
 
 const (
-	Managed AuthenticationMethod = iota
+	_ AuthenticationMethod = iota
+	Managed 
 	OAuth
 )
 

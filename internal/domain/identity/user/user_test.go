@@ -10,7 +10,7 @@ func TestCreateManagedUser(t *testing.T) {
 	userEmail, _ := shared.NewEmail("smyunis@outlook.com")
 	userPhone, _ := shared.NewPhoneNumber("0929186232")
 
-	u := user.NewUser(userEmail, user.Managed)
+	u := user.NewUser(userEmail)
 	m := u.AsManagedUser("Salman Mohammed", userPhone)
 
 	if u.AuthenticationMethod() != user.Managed {
@@ -26,7 +26,7 @@ func TestCreateManagedUser(t *testing.T) {
 func TestVerifyManagedUsersEmail(t *testing.T) {
 	userEmail, _ := shared.NewEmail("smyunis@outlook.com")
 	userPhone, _ := shared.NewPhoneNumber("0929186232")
-	u := user.NewUser(userEmail, user.Managed)
+	u := user.NewUser(userEmail)
 	m := u.AsManagedUser("Salman Mohammed", userPhone)
 
 	m.VerifyEmail()
@@ -38,7 +38,7 @@ func TestVerifyManagedUsersEmail(t *testing.T) {
 
 func TestCreateOAuthUser(t *testing.T) {
 	userEmail, _ := shared.NewEmail("smyunis@outlook.com")
-	u := user.NewUser(userEmail, user.Managed)
+	u := user.NewUser(userEmail)
 
 	o := u.AsOAuthUser("idxxxx-yyyy", user.GoogleOAuth)
 
@@ -49,4 +49,21 @@ func TestCreateOAuthUser(t *testing.T) {
 	if o.AuthenticationMethod() != user.OAuth {
 		t.FailNow()
 	}
+}
+
+func TestSignUpUserAsPublisher(t *testing.T) {
+	userEmail, _ := shared.NewEmail("smyunis@outlook.com")
+	u := user.NewUser(userEmail)
+	o := u.AsOAuthUser("idxxxx-yyyy", user.GoogleOAuth)
+
+	_ = o.SignUpPublisher()
+
+	if !u.HasRole(user.Publisher) {
+		t.FailNow()
+	}
+
+	if !o.HasRole(user.Publisher) {
+		t.FailNow()
+	}
+
 }

@@ -3,7 +3,7 @@ package user
 import "gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 
 type ManagedUser struct {
-	User
+	*User
 	fullName        string
 	phoneNumber     shared.PhoneNumber
 	isEmailVerified bool

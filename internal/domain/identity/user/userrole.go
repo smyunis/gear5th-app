@@ -3,7 +3,8 @@ package user
 type UserRole int
 
 const (
-	Administrator UserRole = iota
+	_ UserRole = iota
+	Administrator
 	Publisher
 	Advertiser
 )
