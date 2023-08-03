@@ -20,13 +20,15 @@ func NewUser(email shared.Email) User {
 	}
 }
 
-func (u *User) AsManagedUser(fullName string, phoneNumber shared.PhoneNumber) ManagedUser {
+func (u *User) AsManagedUser(fullName string, password string, phoneNumber shared.PhoneNumber) ManagedUser {
 	u.authenticationMethod = Managed
-	return ManagedUser{
+	managedUser := ManagedUser{
 		User:        u,
 		fullName:    fullName,
 		phoneNumber: phoneNumber,
 	}
+	managedUser.SetPassword(password)
+	return managedUser
 }
 
 func (u *User) AsOAuthUser(userIdentifier any, provider OAuthProvider) OAuthUser {

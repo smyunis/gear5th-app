@@ -3,13 +3,13 @@ package publisher
 import "gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 
 type Publisher struct {
-	userId                      shared.Id
+	publisherUserId             shared.Id
 	unacknowledgedNotifications []shared.Notification
 }
 
 func NewPublisher(userId shared.Id) Publisher {
 	return Publisher{
-		userId: userId,
+		publisherUserId: userId,
 	}
 }
 

@@ -3,12 +3,14 @@ package user
 type OAuthUser struct {
 	*User
 	userIdentifier any
-	oauthProvider OAuthProvider
+	oauthProvider  OAuthProvider
 }
 
 type OAuthProvider int
+
 const (
-	GoogleOAuth OAuthProvider = iota
+	_ OAuthProvider = iota
+	GoogleOAuth
 	GithubOAuth
 )
 
