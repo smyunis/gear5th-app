@@ -3,7 +3,7 @@ package user
 type AuthenticationMethod int
 
 const (
-	Email AuthenticationMethod = iota
-	GoogleOAuth
+	Managed AuthenticationMethod = iota
+	OAuth
 )
 
