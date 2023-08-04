@@ -10,26 +10,20 @@ import (
 	"strings"
 
 	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/site"
+	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
 )
 
-type AdsTxtRecord struct {
-	AdExchangeDomain string
-	PublisherId      string
-	Relation         string
-	CertAuthTag      string
-}
-
 type AdsTxtVerificationService struct {
-	httpClient http.Client
+	httpClient infrastructure.HTTPClient
 }
 
-func NewAdsTxtVerificationService(httpClient http.Client) AdsTxtVerificationService {
+func NewAdsTxtVerificationService(httpClient infrastructure.HTTPClient) AdsTxtVerificationService {
 	return AdsTxtVerificationService{
 		httpClient: httpClient,
 	}
 }
 
-func (a *AdsTxtVerificationService) VerifyAdsTxt(s *site.Site, desiredRecord AdsTxtRecord) error {
+func (a *AdsTxtVerificationService) VerifyAdsTxt(s *site.Site, desiredRecord site.AdsTxtRecord) error {
 
 	adstxtBody, err := a.fetchAdsTxtContent(s)
 	if err != nil {
@@ -50,7 +44,12 @@ func (a *AdsTxtVerificationService) fetchAdsTxtContent(s *site.Site) (string, er
 		return "", fmt.Errorf("unable to form ads.txt url: %w", err)
 	}
 
-	response, err := a.httpClient.Get(adstxturl)
+	request, err := http.NewRequest(http.MethodGet, adstxturl, nil)
+	if err != nil {
+		return "", fmt.Errorf("unable to fetch ads.txt from network: %w", err)
+	}
+
+	response, err := a.httpClient.Do(request)
 	if err != nil {
 		return "", fmt.Errorf("unable to fetch ads.txt from network: %w", err)
 	}
@@ -70,7 +69,7 @@ func (*AdsTxtVerificationService) adsTxtUrl(s *site.Site) (string, error) {
 	return adsTxturl, err
 }
 
-func hasAdsTxtRecord(body string, record AdsTxtRecord) bool {
+func hasAdsTxtRecord(body string, record site.AdsTxtRecord) bool {
 
 	// Regex to match an ads.txt record
 	pattern := `^(?i)\s*(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)+([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])\s*,(\s*.*\s*),(\s*(DIRECT|RESELLER)\s*),?(\s*[^,\n]*\s*)$`
@@ -89,10 +88,10 @@ func hasAdsTxtRecord(body string, record AdsTxtRecord) bool {
 		}
 	}
 
-	records := make([]AdsTxtRecord, 0)
+	records := make([]site.AdsTxtRecord, 0)
 	for _, rec := range matches {
 		fields := strings.Split(string(rec), ",")
-		adsTxtRecord := AdsTxtRecord{}
+		adsTxtRecord := site.AdsTxtRecord{}
 		if len(fields) == 3 || len(fields) == 4 {
 			adsTxtRecord.AdExchangeDomain = strings.TrimSpace(fields[0])
 			adsTxtRecord.PublisherId = strings.TrimSpace(fields[1])

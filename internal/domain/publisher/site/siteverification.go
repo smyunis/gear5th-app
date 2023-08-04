@@ -4,14 +4,6 @@ import (
 	"net/url"
 )
 
-type SiteVerificationMethod int
-
-const (
-	_ SiteVerificationMethod = iota
-	AdsTxt
-	SiteScript
-)
-
 type SiteVerificationError struct {
 	message string
 	inner   error
@@ -32,8 +24,15 @@ func (e SiteVerificationError) Unwrap() error {
 	return e.inner
 }
 
+type AdsTxtRecord struct {
+	AdExchangeDomain string
+	PublisherId      string
+	Relation         string
+	CertAuthTag      string
+}
+
 type AdsTxtVerificationService interface {
-	VerifyAdsTxt(site *Site) error
+	VerifyAdsTxt(site *Site, record AdsTxtRecord) error
 }
 
 func VerifySiteHostname(site *Site, source url.URL) error {
