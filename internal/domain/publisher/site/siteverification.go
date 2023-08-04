@@ -1,7 +1,6 @@
 package site
 
 import (
-	"fmt"
 	"net/url"
 )
 
@@ -14,12 +13,23 @@ const (
 )
 
 type SiteVerificationError struct {
-	Reason string
-	Inner error
+	message string
+	inner   error
+}
+
+func NewSiteVerificationError(message string, inner error) error {
+	return SiteVerificationError{
+		message: message,
+		inner:   inner,
+	}
 }
 
 func (e SiteVerificationError) Error() string {
-	return fmt.Sprintf("%s,%s", e.Reason,e.Inner.Error())
+	return e.message
+}
+
+func (e SiteVerificationError) Unwrap() error {
+	return e.inner
 }
 
 type AdsTxtVerificationService interface {
@@ -31,11 +41,9 @@ func VerifySiteHostname(site *Site, source url.URL) error {
 	sourceFqdn := source.Hostname()
 
 	if siteFqdn != sourceFqdn {
-		return SiteVerificationError{Reason: "site hostname mismatch"}
+		return NewSiteVerificationError("site hostname mismatch", nil)
 	}
 
 	site.Verify()
 	return nil
 }
-
-
