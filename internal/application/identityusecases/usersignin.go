@@ -2,26 +2,32 @@ package identityusecases
 
 import (
 	"errors"
-	"time"
-
-	"github.com/golang-jwt/jwt/v5"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 )
+
+type AccessTokenGenerator interface {
+	Generate(subject shared.Id) (string, error)
+}
 
 type ManagedUserInteractor struct {
 	userRepository        user.UserRepository
 	managedUserRepository user.ManagedUserRepository
+	tokenGenerator        AccessTokenGenerator
 }
 
-func NewManagedUserInteractor(userRepository user.UserRepository,
-	managedUserRepository user.ManagedUserRepository) ManagedUserInteractor {
+func NewManagedUserInteractor(
+	userRepository user.UserRepository,
+	managedUserRepository user.ManagedUserRepository,
+	tokenGenerator AccessTokenGenerator) ManagedUserInteractor {
 	return ManagedUserInteractor{
 		userRepository:        userRepository,
 		managedUserRepository: managedUserRepository,
+		tokenGenerator: tokenGenerator,
 	}
 }
 
-var ErrAuthorization = errors.New("authentication error")
+var ErrAuthorization = errors.New("authorization error")
 
 func (m *ManagedUserInteractor) SignIn(email user.Email, password string) (string, error) {
 
@@ -43,21 +49,5 @@ func (m *ManagedUserInteractor) SignIn(email user.Email, password string) (strin
 		return "", ErrAuthorization
 	}
 
-	tokenClaims := jwt.RegisteredClaims{
-		Subject:   "stub-id-xxx",
-		Issuer:    "api.gear5th.com",
-		Audience:  jwt.ClaimStrings{"api.gear5th.com"},
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 720)),
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenClaims)
-	key := []byte("secretkey")
-	accessToken, err := token.SignedString(key)
-
-	if err != nil {
-		return "", err
-	}
-
-	return accessToken, nil
+	return m.tokenGenerator.Generate(u.UserID())
 }

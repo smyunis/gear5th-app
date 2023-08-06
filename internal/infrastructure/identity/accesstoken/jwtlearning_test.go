@@ -1,4 +1,4 @@
-package identityusecases_test
+package accesstoken_test
 
 import (
 	"testing"

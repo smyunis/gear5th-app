@@ -17,7 +17,7 @@ func (UserRepositoryStub) Get(id shared.Id) (user.User, error) {
 
 	idField := uVal.FieldByName("id")
 	idField = reflect.NewAt(idField.Type(), unsafe.Pointer(idField.UnsafeAddr())).Elem()
-	idField.Set(reflect.ValueOf(shared.NewId()))
+	idField.Set(reflect.ValueOf(id))
 
 	emailField := uVal.FieldByName("email")
 	emailField = reflect.NewAt(emailField.Type(), unsafe.Pointer(emailField.UnsafeAddr())).Elem()

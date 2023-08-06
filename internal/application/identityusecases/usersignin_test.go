@@ -18,13 +18,16 @@ func TestMain(m *testing.M) {
 
 var userRepositoryStub user.UserRepository
 var managedUserRepositoryStub user.ManagedUserRepository
+var tokenGenerator identityusecases.AccessTokenGenerator
 
 var interactor identityusecases.ManagedUserInteractor
 
 func setup() {
 	userRepositoryStub = testdoubles.UserRepositoryStub{}
 	managedUserRepositoryStub = testdoubles.ManagedUserRepositoryStub{}
-	interactor = identityusecases.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub)
+	tokenGenerator = testdoubles.JwtAccessTokenGeneratorStub{}
+
+	interactor = identityusecases.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, tokenGenerator)
 }
 
 func teardown() {
