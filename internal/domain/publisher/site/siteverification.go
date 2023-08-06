@@ -1,6 +1,7 @@
 package site
 
 import (
+	"fmt"
 	"net/url"
 )
 
@@ -31,6 +32,15 @@ type AdsTxtRecord struct {
 	CertAuthTag      string
 }
 
+func (a AdsTxtRecord) String() string {
+	record := fmt.Sprintf("%s, %s, %s", a.AdExchangeDomain, a.PublisherId, a.Relation)
+
+	if a.CertAuthTag != "" {
+		record = fmt.Sprintf("%s, %s", record, a.CertAuthTag)
+	}
+	return record
+}
+
 type AdsTxtVerificationService interface {
 	VerifyAdsTxt(site *Site, record AdsTxtRecord) error
 }
@@ -45,4 +55,13 @@ func VerifySiteHostname(site *Site, source url.URL) error {
 
 	site.Verify()
 	return nil
+}
+
+func GetAdsTxtRecord(s Site) string {
+	record := AdsTxtRecord{
+		AdExchangeDomain: "gear5th.com",
+		PublisherId:      s.publisherId.String(),
+		Relation:         "DIRECT",
+	}
+	return record.String()
 }

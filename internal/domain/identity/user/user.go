@@ -6,35 +6,40 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+type UserRepository interface {
+	shared.EntityRepository[User]
+	UserWithEmail(email Email) (User, error)
+}
+
 type User struct {
 	id                   shared.Id
-	email                shared.Email
+	email                Email
+	phoneNumber          PhoneNumber
 	roles                []UserRole
 	authenticationMethod AuthenticationMethod
 }
 
-func NewUser(email shared.Email) User {
+func NewUser(email Email) User {
 	return User{
 		id:    shared.NewId(),
 		email: email,
 	}
 }
 
-func (u *User) AsManagedUser(fullName string, password string, phoneNumber shared.PhoneNumber) ManagedUser {
+func (u *User) AsManagedUser(name PersonName, password string) ManagedUser {
 	u.authenticationMethod = Managed
 	managedUser := ManagedUser{
-		User:        u,
-		fullName:    fullName,
-		phoneNumber: phoneNumber,
+		userId: u.id,
+		name:   name,
 	}
 	managedUser.SetPassword(password)
 	return managedUser
 }
 
-func (u *User) AsOAuthUser(userIdentifier any, provider OAuthProvider) OAuthUser {
+func (u *User) AsOAuthUser(userIdentifier string, provider OAuthProvider) OAuthUser {
 	u.authenticationMethod = OAuth
 	return OAuthUser{
-		User:           u,
+		userId:         u.id,
 		userIdentifier: userIdentifier,
 		oauthProvider:  provider,
 	}
@@ -45,8 +50,20 @@ func (u *User) SignUpPublisher() publisher.Publisher {
 	return publisher.NewPublisher(u.id)
 }
 
+func (u *User) UserID() shared.Id {
+	return u.id
+}
+
 func (u *User) AuthenticationMethod() AuthenticationMethod {
 	return u.authenticationMethod
+}
+
+func (u *User) Email() Email {
+	return u.email
+}
+
+func (u *User) SetPhoneNumber(phoneNumber PhoneNumber) {
+	u.phoneNumber = phoneNumber
 }
 
 func (u *User) HasRole(role UserRole) bool {

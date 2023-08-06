@@ -1,15 +1,15 @@
-package shared_test
+package user_test
 
 import (
 	"testing"
 
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
+	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 )
 
 func TestInvalidPhonenumber(t *testing.T) {
 	invalidPhoneNumber := "hsdjfh"
 
-	_, err := shared.NewPhoneNumber(invalidPhoneNumber)
+	_, err := user.NewPhoneNumber(invalidPhoneNumber)
 
 	if err == nil {
 		t.Fatal(err.Error())
@@ -22,7 +22,7 @@ func TestValidPhoneNumber(t *testing.T) {
 
 	for _, phonenum := range validPhones {
 		t.Run(phonenum, func(t *testing.T) {
-			phnum, err := shared.NewPhoneNumber(phonenum)
+			phnum, err := user.NewPhoneNumber(phonenum)
 			if err != nil {
 				t.Fatal(err.Error())
 			}

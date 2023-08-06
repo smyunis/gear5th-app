@@ -18,13 +18,13 @@ func TestMain(m *testing.M) {
 	teardown()
 }
 
-type mockHttpClientFunc func(*http.Request) (*http.Response, error)
+type stubHttpClientFunc func(*http.Request) (*http.Response, error)
 
-func (m mockHttpClientFunc) Do(req *http.Request) (*http.Response, error) {
+func (m stubHttpClientFunc) Do(req *http.Request) (*http.Response, error) {
 	return m(req)
 }
 
-var httpClient mockHttpClientFunc
+var httpClient stubHttpClientFunc
 
 func setup() {
 	httpClient = func(req *http.Request) (*http.Response, error) {
@@ -78,5 +78,9 @@ func TestCanCheckIfRecordIsInAdsTxt(t *testing.T) {
 
 	if err != nil {
 		t.Fatalf(err.Error())
+	}
+
+	if !s.IsVerified() {
+		t.FailNow()
 	}
 }

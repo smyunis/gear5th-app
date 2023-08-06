@@ -1,15 +1,15 @@
-package shared_test
+package user_test
 
 import (
 	"testing"
 
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
+	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 )
 
 func TestInvalid_email(t *testing.T) {
 	invalidEmail := `23doni793doni793gmail.comnet`
 
-	_, err := shared.NewEmail(invalidEmail)
+	_, err := user.NewEmail(invalidEmail)
 
 	if err == nil {
 		t.Fatal(err.Error())
@@ -19,7 +19,7 @@ func TestInvalid_email(t *testing.T) {
 func TestValidEmail(t *testing.T) {
 	validEmail := `doni793doni793@gmail.com`
 
-	mail, err := shared.NewEmail(validEmail)
+	mail, err := user.NewEmail(validEmail)
 
 	if err != nil {
 		t.Fatal(err.Error())

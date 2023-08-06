@@ -5,10 +5,13 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type ManagedUserRepository interface {
+	shared.EntityRepository[ManagedUser]
+}
+
 type ManagedUser struct {
-	*User
-	fullName        string
-	phoneNumber     shared.PhoneNumber
+	userId          shared.Id
+	name            PersonName
 	isEmailVerified bool
 	hashedPassword  string
 }

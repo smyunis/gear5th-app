@@ -1,7 +1,7 @@
 package shared
 
 type EntityRepository[T any] interface {
-	get(id Id) (T, error)
-	save(e T) error
+	Get(id Id) (T, error)
+	Save(e T) error
 }
 

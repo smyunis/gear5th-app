@@ -1,8 +1,21 @@
 package user
 
+import "gitlab.com/gear5th/gear5th-api/internal/domain/shared"
+
+type GoogleOAuthUserDetails struct {
+}
+
+type GoogleOAuthService interface {
+	UserDetails(u OAuthUser) GoogleOAuthUserDetails
+	ValidateUser(u *User, identityToken string) error
+}
+
+type OAuthUserRepository interface {
+	shared.EntityRepository[OAuthUser]
+}
 type OAuthUser struct {
-	*User
-	userIdentifier any
+	userId         shared.Id
+	userIdentifier string
 	oauthProvider  OAuthProvider
 }
 
@@ -14,7 +27,7 @@ const (
 	GithubOAuth
 )
 
-func (o *OAuthUser) UserIdentifier() any {
+func (o *OAuthUser) UserIdentifier() string {
 	return o.userIdentifier
 }
 

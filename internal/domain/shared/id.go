@@ -8,3 +8,7 @@ func NewId() Id {
 	newUlid := ulid.Make().String()
 	return Id(newUlid)
 }
+
+func (i Id) String() string {
+	return string(i)
+}

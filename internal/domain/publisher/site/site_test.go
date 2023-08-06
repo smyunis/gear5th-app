@@ -1,6 +1,7 @@
 package site_test
 
 import (
+	"fmt"
 	"net/url"
 	"testing"
 
@@ -20,4 +21,15 @@ func TestSiteHostnameVerification(t *testing.T) {
 	}
 }
 
+func TestGetAdsTxtRecord(t *testing.T) {
+	siteUrl, _ := url.Parse("https://dev.to/tooljet/build-an-aws-s3-browser-with-tooljet-56d4")
+	publisherId := shared.NewId()
+	s := site.NewSite(publisherId, *siteUrl)
+	expectedRecord := fmt.Sprintf("gear5th.com, %s, DIRECT", publisherId.String())
 
+	record := site.GetAdsTxtRecord(s)
+
+	if expectedRecord != record {
+		t.Fatalf("expected: %s, given: %s", expectedRecord, record)
+	}
+}

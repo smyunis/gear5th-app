@@ -35,6 +35,8 @@ func (a *AdsTxtVerificationService) VerifyAdsTxt(s *site.Site, desiredRecord sit
 		return site.NewSiteVerificationError("unable to find record in ads.txt", nil)
 	}
 
+	s.Verify()
+
 	return nil
 }
 
