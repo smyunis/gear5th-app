@@ -1,11 +1,11 @@
-package identityusecases_test
+package usersignin_test
 
 import (
 	"os"
 	"testing"
 
 	"github.com/golang-jwt/jwt/v5"
-	"gitlab.com/gear5th/gear5th-api/internal/application/identityusecases"
+	"gitlab.com/gear5th/gear5th-api/internal/application/identity/usersignin"
 	"gitlab.com/gear5th/gear5th-api/internal/application/testdoubles"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 )
@@ -18,16 +18,16 @@ func TestMain(m *testing.M) {
 
 var userRepositoryStub user.UserRepository
 var managedUserRepositoryStub user.ManagedUserRepository
-var tokenGenerator identityusecases.AccessTokenGenerator
+var tokenGenerator usersignin.AccessTokenGenerator
 
-var interactor identityusecases.ManagedUserInteractor
+var interactor usersignin.ManagedUserInteractor
 
 func setup() {
 	userRepositoryStub = testdoubles.UserRepositoryStub{}
 	managedUserRepositoryStub = testdoubles.ManagedUserRepositoryStub{}
 	tokenGenerator = testdoubles.JwtAccessTokenGeneratorStub{}
 
-	interactor = identityusecases.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, tokenGenerator)
+	interactor = usersignin.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, tokenGenerator)
 }
 
 func teardown() {

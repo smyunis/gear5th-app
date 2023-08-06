@@ -9,6 +9,10 @@ import (
 
 type JwtAccessTokenGenenrator struct{}
 
+func NewJwtAccessTokenGenenrator() JwtAccessTokenGenenrator {
+	return JwtAccessTokenGenenrator{}
+}
+
 func (j JwtAccessTokenGenenrator) Generate(subject shared.Id) (string, error) {
 	tokenClaims := jwt.RegisteredClaims{
 		Subject:   subject.String(),

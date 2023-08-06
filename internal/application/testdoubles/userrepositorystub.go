@@ -10,6 +10,10 @@ import (
 
 type UserRepositoryStub struct{}
 
+func NewUserRepositoryStub() UserRepositoryStub{
+	return UserRepositoryStub{}
+}
+
 func (UserRepositoryStub) Get(id shared.Id) (user.User, error) {
 
 	u := &user.User{}

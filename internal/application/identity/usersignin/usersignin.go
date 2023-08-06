@@ -1,4 +1,4 @@
-package identityusecases
+package usersignin
 
 import (
 	"errors"
