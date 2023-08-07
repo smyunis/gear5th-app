@@ -1,17 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofor-little/env"
 	"gitlab.com/gear5th/gear5th-api/cmd/api/ioc"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
 func main() {
-
-	fmt.Println(os.Getwd())
 
 	err := env.Load("config/.env.dev")
 	if err != nil {
@@ -19,6 +15,7 @@ func main() {
 	}
 
 	app := fiber.New()
+	app.Use(recover.New())
 	addIdentityRoutes(app)
 
 	app.Listen(":5071")

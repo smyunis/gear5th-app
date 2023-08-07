@@ -17,5 +17,7 @@ func NewManagedUserSignIn(interactor usersignin.ManagedUserInteractor) ManagedUs
 
 func (c ManagedUserSignInController) SignIn(ctx *fiber.Ctx) error {
 
-	return ctx.SendString("Alhamduli Allah")
+	// panic("panic in controller")
+
+	return ctx.SendString("Alhamduli Allah Rab-Al Alamin")
 }
