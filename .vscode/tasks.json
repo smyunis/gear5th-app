@@ -1,0 +1,31 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "go",
+			"label": "go: build api",
+			"command": "build",
+			"args": [
+				"-o",
+				"${workspaceFolder}/build/gear5th-api",
+				"./cmd/api/main.go"
+			],
+			"problemMatcher": [
+				"$go"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"dependsOn": [
+				"copy .env conifg"
+			]
+		},
+		{
+			"label": "copy .env conifg",
+			"hide": true,
+			"type": "shell",
+			"command": "mkdir -p ${workspaceFolder}/build && cp -r ${workspaceFolder}/config/ ${workspaceFolder}/build/",
+		},
+	]
+}

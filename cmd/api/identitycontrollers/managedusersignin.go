@@ -16,7 +16,6 @@ func NewManagedUserSignIn(interactor usersignin.ManagedUserInteractor) ManagedUs
 }
 
 func (c ManagedUserSignInController) SignIn(ctx *fiber.Ctx) error {
-	return nil
+
+	return ctx.SendString("Alhamduli Allah")
 }
-
-

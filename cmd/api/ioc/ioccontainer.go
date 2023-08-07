@@ -1,6 +1,7 @@
 //go:build wireinject
 
-package dependencies
+
+package ioc
 
 import (
 	"github.com/google/wire"
@@ -22,8 +23,3 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(usersignin.AccessTokenGenerator), new(accesstoken.JwtAccessTokenGenenrator)),
 	usersignin.NewManagedUserInteractor,
 	identitycontrollers.NewManagedUserSignIn)
-
-func InitManagedUserSignInController() identitycontrollers.ManagedUserSignInController {
-	wire.Build(Container)
-	return identitycontrollers.ManagedUserSignInController{}
-}

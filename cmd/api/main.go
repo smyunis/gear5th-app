@@ -1,13 +1,24 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/gofiber/fiber/v2"
-	"gitlab.com/gear5th/gear5th-api/cmd/api/dependencies"
+	"github.com/gofor-little/env"
+	"gitlab.com/gear5th/gear5th-api/cmd/api/ioc"
 )
 
 func main() {
-	app := fiber.New()
 
+	fmt.Println(os.Getwd())
+
+	err := env.Load("config/.env.dev")
+	if err != nil {
+		panic("could not load config file ./config/.env.dev")
+	}
+
+	app := fiber.New()
 	addIdentityRoutes(app)
 
 	app.Listen(":5071")
@@ -15,5 +26,5 @@ func main() {
 
 func addIdentityRoutes(app *fiber.App) {
 	identityRouter := app.Group("/identity")
-	identityRouter.Post("/managed/signin", dependencies.InitManagedUserSignInController().SignIn)
+	identityRouter.Post("/managed/signin", ioc.InitManagedUserSignInController().SignIn)
 }
