@@ -5,18 +5,18 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"gitlab.com/gear5th/gear5th-api/cmd/api/problemdetails"
-	"gitlab.com/gear5th/gear5th-api/internal/application/identity/usersignin"
+	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-api/pkg/problemdetails"
 )
 
 type ManagedUserController struct {
 	Method     string
 	Path       string
-	interactor usersignin.ManagedUserInteractor
+	interactor manageduserinteractors.ManagedUserInteractor
 }
 
-func NewManagedUserController(interactor usersignin.ManagedUserInteractor) ManagedUserController {
+func NewManagedUserController(interactor manageduserinteractors.ManagedUserInteractor) ManagedUserController {
 	return ManagedUserController{
 		fiber.MethodPost,
 		"/identity/managed/signin",

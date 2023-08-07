@@ -1,11 +1,12 @@
-package usersignin_test
+package manageduserinteractors_test
 
 import (
 	"os"
 	"testing"
 
 	"github.com/golang-jwt/jwt/v5"
-	"gitlab.com/gear5th/gear5th-api/internal/application/identity/usersignin"
+	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
+	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/testdoubles"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 )
@@ -18,16 +19,16 @@ func TestMain(m *testing.M) {
 
 var userRepositoryStub user.UserRepository
 var managedUserRepositoryStub user.ManagedUserRepository
-var tokenGenerator usersignin.AccessTokenGenerator
+var tokenGenerator identityinteractors.AccessTokenGenerator
 
-var interactor usersignin.ManagedUserInteractor
+var interactor manageduserinteractors.ManagedUserInteractor
 
 func setup() {
 	userRepositoryStub = testdoubles.UserRepositoryStub{}
 	managedUserRepositoryStub = testdoubles.ManagedUserRepositoryStub{}
 	tokenGenerator = testdoubles.JwtAccessTokenGeneratorStub{}
 
-	interactor = usersignin.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, tokenGenerator)
+	interactor = manageduserinteractors.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, tokenGenerator)
 }
 
 func teardown() {
@@ -106,3 +107,7 @@ func TestManagedUserSignInReturnsValidToken(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+
+
+

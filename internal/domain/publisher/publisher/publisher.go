@@ -2,6 +2,10 @@ package publisher
 
 import "gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 
+type PublisherRepository interface {
+	shared.EntityRepository[Publisher]
+}
+
 type Publisher struct {
 	publisherUserId             shared.Id
 	unacknowledgedNotifications []shared.Notification

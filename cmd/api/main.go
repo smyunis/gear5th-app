@@ -24,6 +24,10 @@ func main() {
 func addIdentityRoutes(app *fiber.App) {
 	identityRouter := app.Group("/")
 
-	controller := ioc.InitManagedUserController()
-	identityRouter.Add(controller.Method, controller.Path, controller.SignIn)
+	managedUserController := ioc.InitManagedUserController()
+	identityRouter.Add(managedUserController.Method, managedUserController.Path, managedUserController.SignIn)
+
+	publisherSignUpController := ioc.InitPublisherSignUpController()
+	identityRouter.Add(publisherSignUpController.Method, publisherSignUpController.Path, publisherSignUpController.ManagedUserSignUp)
+
 }

@@ -1,25 +1,22 @@
-package usersignin
+package manageduserinteractors
 
 import (
 	"errors"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
-)
 
-type AccessTokenGenerator interface {
-	Generate(subject shared.Id) (string, error)
-}
+	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
+	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
+)
 
 type ManagedUserInteractor struct {
 	userRepository        user.UserRepository
 	managedUserRepository user.ManagedUserRepository
-	tokenGenerator        AccessTokenGenerator
+	tokenGenerator        identityinteractors.AccessTokenGenerator
 }
 
 func NewManagedUserInteractor(
 	userRepository user.UserRepository,
 	managedUserRepository user.ManagedUserRepository,
-	tokenGenerator AccessTokenGenerator) ManagedUserInteractor {
+	tokenGenerator identityinteractors.AccessTokenGenerator) ManagedUserInteractor {
 	return ManagedUserInteractor{
 		userRepository:        userRepository,
 		managedUserRepository: managedUserRepository,
@@ -30,17 +27,16 @@ func NewManagedUserInteractor(
 var ErrAuthorization = errors.New("authorization error")
 
 func (m *ManagedUserInteractor) SignIn(email user.Email, password string) (string, error) {
-
-	u, err := m.CredentialsValid(email, password)
-
+	u, err := m.credentialsValid(email, password)
 	if err != nil {
 		return "", ErrAuthorization
 	}
-
 	return m.tokenGenerator.Generate(u.UserID())
 }
 
-func (m *ManagedUserInteractor) CredentialsValid(email user.Email, password string) (user.User, error) {
+
+
+func (m *ManagedUserInteractor) credentialsValid(email user.Email, password string) (user.User, error) {
 
 	u, err := m.userRepository.UserWithEmail(email)
 	if err != nil {

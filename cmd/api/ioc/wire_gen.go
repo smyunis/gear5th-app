@@ -8,7 +8,9 @@ package ioc
 
 import (
 	"gitlab.com/gear5th/gear5th-api/cmd/api/identitycontrollers"
-	"gitlab.com/gear5th/gear5th-api/internal/application/identity/usersignin"
+	"gitlab.com/gear5th/gear5th-api/cmd/api/publishercontrollers"
+	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
+	"gitlab.com/gear5th/gear5th-api/internal/application/publisherinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/testdoubles"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/identity/accesstoken"
 )
@@ -19,7 +21,16 @@ func InitManagedUserController() identitycontrollers.ManagedUserController {
 	userRepositoryStub := testdoubles.UserRepositoryStub{}
 	managedUserRepositoryStub := testdoubles.ManagedUserRepositoryStub{}
 	jwtAccessTokenGenenrator := accesstoken.NewJwtAccessTokenGenenrator()
-	managedUserInteractor := usersignin.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, jwtAccessTokenGenenrator)
+	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, jwtAccessTokenGenenrator)
 	managedUserController := identitycontrollers.NewManagedUserController(managedUserInteractor)
 	return managedUserController
+}
+
+func InitPublisherSignUpController() publishercontrollers.PublisherSignUpController {
+	userRepositoryStub := testdoubles.UserRepositoryStub{}
+	managedUserRepositoryStub := testdoubles.ManagedUserRepositoryStub{}
+	publisherRepositoryStub := testdoubles.PublisherRepositoryStub{}
+	publisherSignUpInteractor := publisherinteractors.NewPublisherSignUpInteractor(userRepositoryStub, managedUserRepositoryStub, publisherRepositoryStub)
+	publisherSignUpController := publishercontrollers.NewPublisherSignUpController(publisherSignUpInteractor)
+	return publisherSignUpController
 }

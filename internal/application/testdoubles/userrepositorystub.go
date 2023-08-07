@@ -16,6 +16,10 @@ func NewUserRepositoryStub() UserRepositoryStub{
 
 func (UserRepositoryStub) Get(id shared.Id) (user.User, error) {
 
+	if id != shared.Id("stub-id-xxx") {
+		return user.User{}, shared.NewEntityNotFoundError(id.String(), "user")
+	}
+
 	u := &user.User{}
 	uVal := reflect.ValueOf(u).Elem()
 
@@ -47,6 +51,10 @@ func (usr UserRepositoryStub) UserWithEmail(email user.Email) (user.User, error)
 type ManagedUserRepositoryStub struct{}
 
 func (ManagedUserRepositoryStub) Get(id shared.Id) (user.ManagedUser, error) {
+
+	if id != shared.Id("stub-id-xxx") {
+		return user.ManagedUser{}, shared.NewEntityNotFoundError(id.String(), "user")
+	}
 
 	u := &user.ManagedUser{}
 	uVal := reflect.ValueOf(u).Elem()
