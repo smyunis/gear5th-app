@@ -9,7 +9,7 @@ import (
 
 
 
-func InitManagedUserSignInController() identitycontrollers.ManagedUserSignInController {
+func InitManagedUserController() identitycontrollers.ManagedUserController {
 	wire.Build(Container)
-	return identitycontrollers.ManagedUserSignInController{}
+	return identitycontrollers.ManagedUserController{}
 }

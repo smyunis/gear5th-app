@@ -15,11 +15,11 @@ import (
 
 // Injectors from dependecyproviders.go:
 
-func InitManagedUserSignInController() identitycontrollers.ManagedUserSignInController {
+func InitManagedUserController() identitycontrollers.ManagedUserController {
 	userRepositoryStub := testdoubles.UserRepositoryStub{}
 	managedUserRepositoryStub := testdoubles.ManagedUserRepositoryStub{}
 	jwtAccessTokenGenenrator := accesstoken.NewJwtAccessTokenGenenrator()
 	managedUserInteractor := usersignin.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, jwtAccessTokenGenenrator)
-	managedUserSignInController := identitycontrollers.NewManagedUserSignIn(managedUserInteractor)
-	return managedUserSignInController
+	managedUserController := identitycontrollers.NewManagedUserController(managedUserInteractor)
+	return managedUserController
 }

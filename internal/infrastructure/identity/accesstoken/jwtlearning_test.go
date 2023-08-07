@@ -17,9 +17,8 @@ type JwtClaims struct {
 func TestLearningJwtCreateEmptyToken(t *testing.T) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	key := []byte("secretkey")
-	s, _ := token.SignedString(key)
+	token.SignedString(key)
 
-	t.Log(s)
 }
 
 func TestLearningJwtCreateTokenWithClaims(t *testing.T) {
@@ -36,8 +35,8 @@ func TestLearningJwtCreateTokenWithClaims(t *testing.T) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	key := []byte("secretkey")
-	s, _ := token.SignedString(key)
-	t.Log(s)
+	token.SignedString(key)
+
 }
 
 func TestLearningJwtVerifyToken(t *testing.T) {

@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofor-little/env"
 	"gitlab.com/gear5th/gear5th-api/cmd/api/ioc"
-	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
 func main() {
@@ -22,6 +22,8 @@ func main() {
 }
 
 func addIdentityRoutes(app *fiber.App) {
-	identityRouter := app.Group("/identity")
-	identityRouter.Post("/managed/signin", ioc.InitManagedUserSignInController().SignIn)
+	identityRouter := app.Group("/")
+
+	controller := ioc.InitManagedUserController()
+	identityRouter.Add(controller.Method, controller.Path, controller.SignIn)
 }

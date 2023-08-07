@@ -22,4 +22,4 @@ var Container wire.ProviderSet = wire.NewSet(
 	accesstoken.NewJwtAccessTokenGenenrator,
 	wire.Bind(new(usersignin.AccessTokenGenerator), new(accesstoken.JwtAccessTokenGenenrator)),
 	usersignin.NewManagedUserInteractor,
-	identitycontrollers.NewManagedUserSignIn)
+	identitycontrollers.NewManagedUserController)
