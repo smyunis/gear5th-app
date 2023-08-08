@@ -7,20 +7,27 @@ import (
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 )
 
+type RequestPasswordResetEmailService interface {
+	SendMail(u user.User) error
+}
+
 type ManagedUserInteractor struct {
 	userRepository        user.UserRepository
 	managedUserRepository user.ManagedUserRepository
 	tokenGenerator        identityinteractors.AccessTokenGenerator
+	emailService          RequestPasswordResetEmailService
 }
 
 func NewManagedUserInteractor(
 	userRepository user.UserRepository,
 	managedUserRepository user.ManagedUserRepository,
-	tokenGenerator identityinteractors.AccessTokenGenerator) ManagedUserInteractor {
+	tokenGenerator identityinteractors.AccessTokenGenerator,
+	emailService RequestPasswordResetEmailService) ManagedUserInteractor {
 	return ManagedUserInteractor{
-		userRepository:        userRepository,
-		managedUserRepository: managedUserRepository,
-		tokenGenerator:        tokenGenerator,
+		userRepository,
+		managedUserRepository,
+		tokenGenerator,
+		emailService,
 	}
 }
 
@@ -61,4 +68,19 @@ func (m *ManagedUserInteractor) credentialsValid(email user.Email, password stri
 	}
 
 	return u, nil
+}
+
+func (m *ManagedUserInteractor) RequestResetPassword(email user.Email) error {
+
+	usr, err := m.userRepository.UserWithEmail(email)
+	if err != nil {
+		return err
+	}
+
+	if !usr.IsEmailVerified() {
+		return identityinteractors.ErrEmailNotVerified
+	}
+
+	m.emailService.SendMail(usr)
+	return nil
 }

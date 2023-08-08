@@ -21,7 +21,8 @@ func InitManagedUserController() identitycontrollers.ManagedUserController {
 	userRepositoryStub := testdoubles.UserRepositoryStub{}
 	managedUserRepositoryStub := testdoubles.ManagedUserRepositoryStub{}
 	jwtAccessTokenGenenrator := accesstoken.NewJwtAccessTokenGenenrator()
-	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, jwtAccessTokenGenenrator)
+	requestResetPasswordEmailStub := testdoubles.RequestResetPasswordEmailStub{}
+	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, jwtAccessTokenGenenrator, requestResetPasswordEmailStub)
 	managedUserController := identitycontrollers.NewManagedUserController(managedUserInteractor)
 	return managedUserController
 }

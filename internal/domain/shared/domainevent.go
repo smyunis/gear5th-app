@@ -1,8 +1,8 @@
 package shared
 
-type DomainEvents map[string][]any
+type Events map[string][]any
 
-func (d *DomainEvents) Emit(eventname string, event any) {
+func (d *Events) Emit(eventname string, event any) {
 	eventEntries, ok := (*d)[eventname]
 	if !ok {
 		(*d)[eventname] = []any{event}

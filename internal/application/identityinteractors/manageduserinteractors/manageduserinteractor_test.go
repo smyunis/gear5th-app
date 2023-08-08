@@ -1,6 +1,7 @@
 package manageduserinteractors_test
 
 import (
+	"errors"
 	"os"
 	"testing"
 
@@ -27,8 +28,12 @@ func setup() {
 	userRepositoryStub = testdoubles.UserRepositoryStub{}
 	managedUserRepositoryStub = testdoubles.ManagedUserRepositoryStub{}
 	tokenGenerator = testdoubles.JwtAccessTokenGeneratorStub{}
+	emailServiceStub := testdoubles.RequestResetPasswordEmailStub{}
 
-	interactor = manageduserinteractors.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, tokenGenerator)
+	interactor = manageduserinteractors.NewManagedUserInteractor(
+		userRepositoryStub,
+		managedUserRepositoryStub,
+		tokenGenerator, emailServiceStub)
 }
 
 func teardown() {
@@ -113,5 +118,90 @@ func TestOnlyUsersWithVerifiedEmailsCanSignIn(t *testing.T) {
 	_, err := interactor.SignIn(mymail, "gokuisking")
 	if err != nil {
 		t.Fatal(err.Error())
+	}
+}
+
+func TestResetPasswordRequest(t *testing.T) {
+	mymail, _ := user.NewEmail("mymail@gmail.com")
+	_ = interactor.RequestResetPassword(mymail)
+}
+
+func TestResetPasswordRequestForExistingEmail(t *testing.T) {
+	mymail, _ := user.NewEmail("mymail@gmail.com")
+	err := interactor.RequestResetPassword(mymail)
+
+	if err != nil {
+		t.FailNow()
+	}
+}
+
+func TestResetPasswordRequestForNonExistingEmail(t *testing.T) {
+	mymail, _ := user.NewEmail("yourmail@gmail.com")
+	err := interactor.RequestResetPassword(mymail)
+
+	if err == nil {
+		t.FailNow()
+	}
+}
+
+func TestResetPasswordRequestFailsForUnverifiedEmail(t *testing.T) {
+	mymail, _ := user.NewEmail("somemail@gmail.com")
+	err := interactor.RequestResetPassword(mymail)
+
+	if !errors.Is(err, identityinteractors.ErrEmailNotVerified) {
+		t.FailNow()
+	}
+}
+
+func TestResetPasswordRequestFailsForInvalidEmail(t *testing.T) {
+	mymail, _ := user.NewEmail("invalidemailaddress.com")
+	err := interactor.RequestResetPassword(mymail)
+
+	if err == nil {
+		t.FailNow()
+	}
+}
+
+func TestResetPasswordRequestEmailIsSent(t *testing.T) {
+
+	var emailServiceSpy = testdoubles.RequestResetPasswordEmailSpy{}
+	testdoubles.RequestResetPasswordEmailSpyReset()
+
+	interactor := manageduserinteractors.NewManagedUserInteractor(
+		userRepositoryStub,
+		managedUserRepositoryStub,
+		tokenGenerator, emailServiceSpy)
+
+	mymail, _ := user.NewEmail("mymail@gmail.com")
+
+	err := interactor.RequestResetPassword(mymail)
+
+	if err != nil {
+		t.FailNow()
+	}
+	if _, called := testdoubles.RequestResetPasswordEmailSpyGet(); !called {
+		t.FailNow()
+	}
+}
+
+func TestResetPasswordRequestEmailIsNotSentForUnknownEmail(t *testing.T) {
+
+	var emailServiceSpy = testdoubles.RequestResetPasswordEmailSpy{}
+	testdoubles.RequestResetPasswordEmailSpyReset()
+
+	interactor := manageduserinteractors.NewManagedUserInteractor(
+		userRepositoryStub,
+		managedUserRepositoryStub,
+		tokenGenerator, emailServiceSpy)
+
+	mymail, _ := user.NewEmail("yourmail@gmail.com")
+
+	err := interactor.RequestResetPassword(mymail)
+
+	if err == nil {
+		t.FailNow()
+	}
+	if _, called := testdoubles.RequestResetPasswordEmailSpyGet(); called {
+		t.FailNow()
 	}
 }

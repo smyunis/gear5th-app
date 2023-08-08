@@ -24,14 +24,14 @@ type User struct {
 	isEmailVerified      bool
 	roles                []UserRole
 	authenticationMethod AuthenticationMethod
-	domainEvents         shared.DomainEvents
+	domainEvents         shared.Events
 }
 
 func NewUser(email Email) User {
 	u := User{
 		id:           shared.NewId(),
 		email:        email,
-		domainEvents: make(shared.DomainEvents),
+		domainEvents: make(shared.Events),
 	}
 	u.domainEvents.Emit("user.signedup", UserCreatedEvent{
 		UserId:          u.UserID(),
@@ -77,7 +77,7 @@ func (u *User) IsEmailVerified() bool {
 	return u.isEmailVerified
 }
 
-func (u *User) DomainEvents() shared.DomainEvents {
+func (u *User) DomainEvents() shared.Events {
 	return u.domainEvents
 }
 

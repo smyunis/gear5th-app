@@ -7,7 +7,7 @@ import (
 	"gitlab.com/gear5th/gear5th-api/cmd/api/ioc"
 
 	// Added to register domain event handlers in their init functions
-	_ "gitlab.com/gear5th/gear5th-api/internal/infrastructure/mail/emailverification"
+	_ "gitlab.com/gear5th/gear5th-api/internal/infrastructure/mail/identityemail"
 )
 
 func main() {

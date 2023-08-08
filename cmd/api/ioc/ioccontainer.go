@@ -21,6 +21,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Struct(new(testdoubles.ManagedUserRepositoryStub), "*"),
 	wire.Struct(new(testdoubles.PublisherRepositoryStub), "*"),
 	wire.Struct(new(testdoubles.PublisherSignUpUnitOfWorkStub), "*"),
+	wire.Struct(new(testdoubles.RequestResetPasswordEmailStub), "*"),
 
 	
 	// Repositories
@@ -33,6 +34,9 @@ var Container wire.ProviderSet = wire.NewSet(
 	//Infrastructures
 	accesstoken.NewJwtAccessTokenGenenrator,
 	wire.Bind(new(identityinteractors.AccessTokenGenerator), new(accesstoken.JwtAccessTokenGenenrator)),
+	wire.Bind(new(manageduserinteractors.RequestPasswordResetEmailService), new(testdoubles.RequestResetPasswordEmailStub)),
+
+
 
 	//Interactors
 	manageduserinteractors.NewManagedUserInteractor,

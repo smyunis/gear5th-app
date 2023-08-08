@@ -37,7 +37,7 @@ func (i *PublisherSignUpInteractor) ManagedUserSignUp(usr user.User, managedUser
 		return fmt.Errorf("signup publisher failed : %w", err)
 	}
 
-	application.ApplicationDomainEventDispatcher.DispatchAsync(usr.DomainEvents())
+	application.ApplicationEventDispatcher.DispatchAsync(usr.DomainEvents())
 
 	return nil
 

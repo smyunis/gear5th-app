@@ -1,4 +1,4 @@
-package emailverification
+package identityemail
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	application.ApplicationDomainEventDispatcher.AddHandler("user.signedup", sendEmailVerification)
+	application.ApplicationEventDispatcher.AddHandler("user.signedup", sendEmailVerification)
 }
 
 func sendEmailVerification(event any) {

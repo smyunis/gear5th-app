@@ -2,28 +2,28 @@ package application
 
 import "gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 
-var ApplicationDomainEventDispatcher DomainEventDispatcher
+var ApplicationEventDispatcher EventDispatcher
 
 func init() {
-	ApplicationDomainEventDispatcher = make(DomainEventDispatcher)
+	ApplicationEventDispatcher = make(EventDispatcher)
 }
 
-type DomainEventHandler func(any)
+type EventHandler func(any)
 
-type DomainEventDispatcher map[string][]DomainEventHandler
+type EventDispatcher map[string][]EventHandler
 
-func (d DomainEventDispatcher) AddHandler(eventname string, handler DomainEventHandler) {
+func (d EventDispatcher) AddHandler(eventname string, handler EventHandler) {
 	handlerEntries, ok := d[eventname]
 
 	if !ok {
-		d[eventname] = []DomainEventHandler{handler}
+		d[eventname] = []EventHandler{handler}
 	} else {
 		handlerEntries = append(handlerEntries, handler)
 		d[eventname] = handlerEntries
 	}
 }
 
-func (d DomainEventDispatcher) DispatchAsync(events ...shared.DomainEvents) {
+func (d EventDispatcher) DispatchAsync(events ...shared.Events) {
 	for _, eventSet := range events {
 		for eventName, eventPayloads := range eventSet {
 			handlers, ok := d[eventName]

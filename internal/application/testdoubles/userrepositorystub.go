@@ -21,19 +21,10 @@ func (UserRepositoryStub) Get(id shared.Id) (user.User, error) {
 	}
 
 	u := &user.User{}
-	uVal := reflect.ValueOf(u).Elem()
-
-	idField := uVal.FieldByName("id")
-	idField = reflect.NewAt(idField.Type(), unsafe.Pointer(idField.UnsafeAddr())).Elem()
-	idField.Set(reflect.ValueOf(id))
-
-	emailField := uVal.FieldByName("email")
-	emailField = reflect.NewAt(emailField.Type(), unsafe.Pointer(emailField.UnsafeAddr())).Elem()
+	setStructField[user.User, shared.Id](u, "id", id)
 	mymail, _ := user.NewEmail("mymail@gmail.com")
-	emailField.Set(reflect.ValueOf(mymail))
-
+	setStructField[user.User, user.Email](u, "email", mymail)
 	u.VerifyEmail()
-
 	return *u, nil
 }
 
@@ -45,6 +36,15 @@ func (usr UserRepositoryStub) UserWithEmail(email user.Email) (user.User, error)
 	if mymail, _ := user.NewEmail("mymail@gmail.com"); mymail == email {
 		stubId := shared.Id("stub-id-xxx")
 		usr, err := usr.Get(stubId)
+		return usr, err
+	}
+	if somemail, _ := user.NewEmail("somemail@gmail.com"); somemail == email {
+		stubId := shared.Id("stub-id-xxx")
+		usr, err := usr.Get(stubId)
+
+		setStructField[user.User, user.Email](&usr, "email", somemail)
+		setStructField[user.User, bool](&usr, "isEmailVerified", false)
+
 		return usr, err
 	}
 	return user.User{}, shared.NewEntityNotFoundError(email.Email(), "user")
@@ -59,12 +59,7 @@ func (ManagedUserRepositoryStub) Get(id shared.Id) (user.ManagedUser, error) {
 	}
 
 	u := &user.ManagedUser{}
-	uVal := reflect.ValueOf(u).Elem()
-
-	userIdField := uVal.FieldByName("userId")
-	userIdField = reflect.NewAt(userIdField.Type(), unsafe.Pointer(userIdField.UnsafeAddr())).Elem()
-	userIdField.Set(reflect.ValueOf(shared.NewId()))
-
+	setStructField[user.ManagedUser, shared.Id](u, "userId", shared.NewId())
 	u.SetPassword("gokuisking")
 
 	return *u, nil
@@ -72,4 +67,11 @@ func (ManagedUserRepositoryStub) Get(id shared.Id) (user.ManagedUser, error) {
 
 func (ManagedUserRepositoryStub) Save(u user.ManagedUser) error {
 	return nil
+}
+
+func setStructField[T, V any](struc *T, field string, value V) {
+	uVal := reflect.ValueOf(struc).Elem()
+	structField := uVal.FieldByName(field)
+	structField = reflect.NewAt(structField.Type(), unsafe.Pointer(structField.UnsafeAddr())).Elem()
+	structField.Set(reflect.ValueOf(value))
 }
