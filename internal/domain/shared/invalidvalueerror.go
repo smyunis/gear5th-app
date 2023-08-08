@@ -16,5 +16,5 @@ func NewInvalidValueError(valueType, value string) ErrInvalidValue {
 }
 
 func (e ErrInvalidValue) Error() string {
-	return fmt.Sprintf("invalid %s: %s", e.ValueType, e.Value)
+	return fmt.Sprintf("%s is not a valid %s", e.Value, e.ValueType)
 }

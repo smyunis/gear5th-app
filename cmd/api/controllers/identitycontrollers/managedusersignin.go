@@ -37,8 +37,11 @@ func (c ManagedUserController) SignIn(ctx *fiber.Ctx) error {
 
 	email, err := user.NewEmail(username)
 	if err != nil {
-		ctx.SendStatus(fiber.StatusUnauthorized)
-		return ctx.JSON(problemdetails.NewProblemDetails(fiber.StatusUnauthorized))
+		prob := problemdetails.NewProblemDetails(fiber.StatusBadRequest)
+		prob.Title = "Invalid Email"
+		prob.Detail = fmt.Sprintf("%s is not a valid email", email.Email())
+		ctx.SendStatus(fiber.StatusBadRequest)
+		return ctx.JSON(prob)
 	}
 
 	token, err := c.interactor.SignIn(email, password)

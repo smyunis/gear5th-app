@@ -4,8 +4,8 @@ package ioc
 
 import (
 	"github.com/google/wire"
-	"gitlab.com/gear5th/gear5th-api/cmd/api/identitycontrollers"
-	"gitlab.com/gear5th/gear5th-api/cmd/api/publishercontrollers"
+	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers/identitycontrollers"
+	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers/publishercontrollers"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/publisherinteractors"
@@ -20,11 +20,15 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Struct(new(testdoubles.UserRepositoryStub), "*"),
 	wire.Struct(new(testdoubles.ManagedUserRepositoryStub), "*"),
 	wire.Struct(new(testdoubles.PublisherRepositoryStub), "*"),
+	wire.Struct(new(testdoubles.PublisherSignUpUnitOfWorkStub), "*"),
 
+	
 	// Repositories
 	wire.Bind(new(user.UserRepository), new(testdoubles.UserRepositoryStub)),
 	wire.Bind(new(user.ManagedUserRepository), new(testdoubles.ManagedUserRepositoryStub)),
 	wire.Bind(new(publisher.PublisherRepository), new(testdoubles.PublisherRepositoryStub)),
+	wire.Bind(new(publisherinteractors.PublisherSignUpUnitOfWork), new(testdoubles.PublisherSignUpUnitOfWorkStub)),
+
 
 	//Infrastructures
 	accesstoken.NewJwtAccessTokenGenenrator,

@@ -7,8 +7,8 @@
 package ioc
 
 import (
-	"gitlab.com/gear5th/gear5th-api/cmd/api/identitycontrollers"
-	"gitlab.com/gear5th/gear5th-api/cmd/api/publishercontrollers"
+	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers/identitycontrollers"
+	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers/publishercontrollers"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/publisherinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/testdoubles"
@@ -27,10 +27,8 @@ func InitManagedUserController() identitycontrollers.ManagedUserController {
 }
 
 func InitPublisherSignUpController() publishercontrollers.PublisherSignUpController {
-	userRepositoryStub := testdoubles.UserRepositoryStub{}
-	managedUserRepositoryStub := testdoubles.ManagedUserRepositoryStub{}
-	publisherRepositoryStub := testdoubles.PublisherRepositoryStub{}
-	publisherSignUpInteractor := publisherinteractors.NewPublisherSignUpInteractor(userRepositoryStub, managedUserRepositoryStub, publisherRepositoryStub)
+	publisherSignUpUnitOfWorkStub := testdoubles.PublisherSignUpUnitOfWorkStub{}
+	publisherSignUpInteractor := publisherinteractors.NewPublisherSignUpInteractor(publisherSignUpUnitOfWorkStub)
 	publisherSignUpController := publishercontrollers.NewPublisherSignUpController(publisherSignUpInteractor)
 	return publisherSignUpController
 }

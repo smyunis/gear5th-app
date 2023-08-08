@@ -18,14 +18,11 @@ func TestMain(m *testing.M) {
 var interactor publisherinteractors.PublisherSignUpInteractor
 
 func setup() {
-	userRepositoryStub := testdoubles.UserRepositoryStub{}
-	managedUserRepositoryStub := testdoubles.ManagedUserRepositoryStub{}
-	pubRepoStub := testdoubles.PublisherRepositoryStub{}
-	interactor = publisherinteractors.NewPublisherSignUpInteractor(
-		userRepositoryStub,
-		managedUserRepositoryStub,
-		pubRepoStub)
-
+	// userRepositoryStub := testdoubles.UserRepositoryStub{}
+	// managedUserRepositoryStub := testdoubles.ManagedUserRepositoryStub{}
+	// pubRepoStub := testdoubles.PublisherRepositoryStub{}
+	pubSignupUnitOfWork := testdoubles.PublisherSignUpUnitOfWorkStub{}
+	interactor = publisherinteractors.NewPublisherSignUpInteractor(pubSignupUnitOfWork)
 }
 
 func teardown() {

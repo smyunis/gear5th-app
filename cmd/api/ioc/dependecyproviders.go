@@ -4,8 +4,8 @@ package ioc
 
 import (
 	"github.com/google/wire"
-	"gitlab.com/gear5th/gear5th-api/cmd/api/identitycontrollers"
-	"gitlab.com/gear5th/gear5th-api/cmd/api/publishercontrollers"
+	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers/identitycontrollers"
+	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers/publishercontrollers"
 )
 
 func InitManagedUserController() identitycontrollers.ManagedUserController {
