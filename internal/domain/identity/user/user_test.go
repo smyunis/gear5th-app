@@ -20,11 +20,10 @@ func TestCreateManagedUser(t *testing.T) {
 func TestVerifyManagedUsersEmail(t *testing.T) {
 	userEmail, _ := user.NewEmail("smyunis@outlook.com")
 	u := user.NewUser(userEmail)
-	m := u.AsManagedUser(user.NewPersonNameWithFullName("Salman Mohammed"), "pass1234")
 
-	m.VerifyEmail()
+	u.VerifyEmail()
 
-	if !m.IsEmailVerified() {
+	if !u.IsEmailVerified() {
 		t.FailNow()
 	}
 }
@@ -57,9 +56,9 @@ func TestPasswordForManagedUser(t *testing.T) {
 	u := user.NewUser(userEmail)
 	m := u.AsManagedUser(user.NewPersonNameWithFullName("Salman Mohammed"), "gokuisking")
 
-	m.SetPassword("gokuisking")
+	m.SetPassword("vegetaisking")
 
-	if !m.IsPasswordCorrect("gokuisking") {
+	if !m.IsPasswordCorrect("vegetaisking") {
 		t.FailNow()
 	}
 }
@@ -70,6 +69,19 @@ func TestWrongPasswordForManagedUser(t *testing.T) {
 	m := u.AsManagedUser(user.NewPersonNameWithFullName("Salman Mohammed"), "pass123")
 
 	if m.IsPasswordCorrect("gokuisking") {
+		t.FailNow()
+	}
+}
+
+func TestCreateNewUserEmitsDomainEvent(t *testing.T) {
+	userEmail, _ := user.NewEmail("smyunis@outlook.com")
+	u := user.NewUser(userEmail)
+
+	events := u.DomainEvents()
+
+	_, ok := events["user.created"]
+
+	if !ok {
 		t.FailNow()
 	}
 }

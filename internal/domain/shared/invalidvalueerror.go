@@ -2,19 +2,19 @@ package shared
 
 import "fmt"
 
-type InvalidValueError struct {
+type ErrInvalidValue struct {
 	ValueType  string
 	Value      string
 	InnerError error
 }
 
-func NewInvalidValueError(valueType, value string) InvalidValueError {
-	return InvalidValueError{
+func NewInvalidValueError(valueType, value string) ErrInvalidValue {
+	return ErrInvalidValue{
 		ValueType: valueType,
 		Value:     value,
 	}
 }
 
-func (e InvalidValueError) Error() string {
+func (e ErrInvalidValue) Error() string {
 	return fmt.Sprintf("invalid %s: %s", e.ValueType, e.Value)
 }

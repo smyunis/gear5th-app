@@ -11,19 +11,29 @@ type UserRepository interface {
 	UserWithEmail(email Email) (User, error)
 }
 
+type UserCreatedEvent struct {
+	UserId shared.Id
+	Email  Email
+}
+
 type User struct {
 	id                   shared.Id
 	email                Email
 	phoneNumber          PhoneNumber
+	isEmailVerified      bool
 	roles                []UserRole
 	authenticationMethod AuthenticationMethod
+	domainEvents         shared.DomainEvents
 }
 
 func NewUser(email Email) User {
-	return User{
-		id:    shared.NewId(),
-		email: email,
+	u := User{
+		id:           shared.NewId(),
+		email:        email,
+		domainEvents: make(shared.DomainEvents),
 	}
+	u.domainEvents.Emit("user.created", UserCreatedEvent{UserId: u.UserID(), Email: u.Email()})
+	return u
 }
 
 func (u *User) AsManagedUser(name PersonName, password string) ManagedUser {
@@ -52,6 +62,18 @@ func (u *User) SignUpPublisher() publisher.Publisher {
 
 func (u *User) UserID() shared.Id {
 	return u.id
+}
+
+func (u *User) VerifyEmail() {
+	u.isEmailVerified = true
+}
+
+func (u *User) IsEmailVerified() bool {
+	return u.isEmailVerified
+}
+
+func (u *User) DomainEvents() shared.DomainEvents {
+	return u.domainEvents
 }
 
 func (u *User) AuthenticationMethod() AuthenticationMethod {

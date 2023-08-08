@@ -3,6 +3,7 @@ package publisherinteractors
 import (
 	"fmt"
 
+	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
 )
@@ -39,6 +40,8 @@ func (i *PublisherSignUpInteractor) ManagedUserSignUp(usr *user.User, managedUse
 	if err != nil {
 		return fmt.Errorf("save publisher failed : %w", err)
 	}
+
+	application.ApplicationDomainEventDispatcher.DispatchAsync(usr.DomainEvents())
 
 	return nil
 }

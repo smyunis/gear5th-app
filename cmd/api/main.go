@@ -5,6 +5,9 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofor-little/env"
 	"gitlab.com/gear5th/gear5th-api/cmd/api/ioc"
+
+	// Added to register domain event handlers in their init functions
+	_ "gitlab.com/gear5th/gear5th-api/internal/infrastructure/mail/emailverification"
 )
 
 func main() {

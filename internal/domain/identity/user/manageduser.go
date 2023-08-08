@@ -10,24 +10,15 @@ type ManagedUserRepository interface {
 }
 
 type ManagedUser struct {
-	userId          shared.Id
-	name            PersonName
-	isEmailVerified bool
-	hashedPassword  string
-}
-
-func (m *ManagedUser) VerifyEmail() {
-	m.isEmailVerified = true
-}
-
-func (m *ManagedUser) IsEmailVerified() bool {
-	return m.isEmailVerified
+	userId         shared.Id
+	name           PersonName
+	hashedPassword string
 }
 
 func (m *ManagedUser) SetPassword(plainPassword string) error {
 	hashed, err := m.hashPlainPassword(plainPassword)
 	if err != nil {
-		return shared.InvalidValueError{ValueType: "password", Value: plainPassword, InnerError: err}
+		return shared.ErrInvalidValue{ValueType: "password", Value: plainPassword, InnerError: err}
 	}
 	m.hashedPassword = string(hashed)
 	return nil
