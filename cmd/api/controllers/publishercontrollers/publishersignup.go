@@ -63,7 +63,8 @@ func (c *PublisherSignUpController) ManagedUserSignUp(ctx *fiber.Ctx) error {
 		return ctx.JSON(problemdetails.NewProblemDetails(fiber.StatusInternalServerError))
 	}
 
-	return ctx.SendStatus(fiber.StatusCreated)
+	ctx.SendStatus(fiber.StatusCreated)
+	return ctx.Send(nil)
 }
 
 type publisherManaged struct {

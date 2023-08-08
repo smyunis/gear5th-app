@@ -17,3 +17,8 @@ func InitPublisherSignUpController() publishercontrollers.PublisherSignUpControl
 	wire.Build(Container)
 	return publishercontrollers.PublisherSignUpController{}
 }
+
+func InitRequestPasswordResetController() identitycontrollers.RequestPasswordResetController {
+	wire.Build(Container)
+	return identitycontrollers.RequestPasswordResetController{}
+}

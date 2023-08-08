@@ -19,12 +19,12 @@ func main() {
 
 	app := fiber.New()
 	app.Use(recover.New())
-	addIdentityRoutes(app)
+	addRoutes(app)
 
 	app.Listen(":5071")
 }
 
-func addIdentityRoutes(app *fiber.App) {
+func addRoutes(app *fiber.App) {
 	identityRouter := app.Group("/")
 
 	managedUserController := ioc.InitManagedUserController()
@@ -32,5 +32,9 @@ func addIdentityRoutes(app *fiber.App) {
 
 	publisherSignUpController := ioc.InitPublisherSignUpController()
 	identityRouter.Add(publisherSignUpController.Method, publisherSignUpController.Path, publisherSignUpController.ManagedUserSignUp)
+	
+	
+	requestPasswordResetController := ioc.InitRequestPasswordResetController()
+	identityRouter.Add(requestPasswordResetController.Method, requestPasswordResetController.Path, requestPasswordResetController.RequestPasswordReset)
 
 }

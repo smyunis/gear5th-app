@@ -33,3 +33,13 @@ func InitPublisherSignUpController() publishercontrollers.PublisherSignUpControl
 	publisherSignUpController := publishercontrollers.NewPublisherSignUpController(publisherSignUpInteractor)
 	return publisherSignUpController
 }
+
+func InitRequestPasswordResetController() identitycontrollers.RequestPasswordResetController {
+	userRepositoryStub := testdoubles.UserRepositoryStub{}
+	managedUserRepositoryStub := testdoubles.ManagedUserRepositoryStub{}
+	jwtAccessTokenGenenrator := accesstoken.NewJwtAccessTokenGenenrator()
+	requestResetPasswordEmailStub := testdoubles.RequestResetPasswordEmailStub{}
+	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, jwtAccessTokenGenenrator, requestResetPasswordEmailStub)
+	requestPasswordResetController := identitycontrollers.NewRequestPasswordResetController(managedUserInteractor)
+	return requestPasswordResetController
+}
