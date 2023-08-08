@@ -79,7 +79,7 @@ func TestCreateNewUserEmitsDomainEvent(t *testing.T) {
 
 	events := u.DomainEvents()
 
-	_, ok := events["user.created"]
+	_, ok := events["user.signedup"]
 
 	if !ok {
 		t.FailNow()

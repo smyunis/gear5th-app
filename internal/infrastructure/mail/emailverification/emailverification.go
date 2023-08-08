@@ -8,10 +8,14 @@ import (
 )
 
 func init() {
-	application.ApplicationDomainEventDispatcher.AddHandler("user.created", SendEmailVerification)
+	application.ApplicationDomainEventDispatcher.AddHandler("user.signedup", sendEmailVerification)
 }
 
-func SendEmailVerification(event any) {
-	event = event.(user.UserCreatedEvent)
-	fmt.Printf("Sending Verification Email ... for %s\n", event)
+func sendEmailVerification(event any) {
+	signedUpUser := event.(user.UserCreatedEvent)
+	if !signedUpUser.IsEmailVerified {
+		//TODO send email with link to verify email
+		fmt.Printf("Sending Verification Email ... for %s \n", signedUpUser)
+	}
+
 }

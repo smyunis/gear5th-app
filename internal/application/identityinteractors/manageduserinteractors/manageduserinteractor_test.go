@@ -108,6 +108,10 @@ func TestManagedUserSignInReturnsValidToken(t *testing.T) {
 	}
 }
 
-
-
-
+func TestOnlyUsersWithVerifiedEmailsCanSignIn(t *testing.T) {
+	mymail, _ := user.NewEmail("mymail@gmail.com")
+	_, err := interactor.SignIn(mymail, "gokuisking")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+}

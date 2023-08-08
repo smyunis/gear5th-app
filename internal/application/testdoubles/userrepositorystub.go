@@ -10,7 +10,7 @@ import (
 
 type UserRepositoryStub struct{}
 
-func NewUserRepositoryStub() UserRepositoryStub{
+func NewUserRepositoryStub() UserRepositoryStub {
 	return UserRepositoryStub{}
 }
 
@@ -32,6 +32,8 @@ func (UserRepositoryStub) Get(id shared.Id) (user.User, error) {
 	mymail, _ := user.NewEmail("mymail@gmail.com")
 	emailField.Set(reflect.ValueOf(mymail))
 
+	u.VerifyEmail()
+
 	return *u, nil
 }
 
@@ -45,7 +47,7 @@ func (usr UserRepositoryStub) UserWithEmail(email user.Email) (user.User, error)
 		usr, err := usr.Get(stubId)
 		return usr, err
 	}
-	return user.User{}, shared.NewInvalidValueError("email", email.Email())
+	return user.User{}, shared.NewEntityNotFoundError(email.Email(), "user")
 }
 
 type ManagedUserRepositoryStub struct{}

@@ -25,16 +25,20 @@ func NewManagedUserInteractor(
 }
 
 var ErrAuthorization = errors.New("authorization error")
+var ErrEmailUnverified = errors.New("email is not verified")
 
 func (m *ManagedUserInteractor) SignIn(email user.Email, password string) (string, error) {
 	u, err := m.credentialsValid(email, password)
 	if err != nil {
 		return "", ErrAuthorization
 	}
+
+	if !u.IsEmailVerified() {
+		return "", ErrEmailUnverified
+	}
+
 	return m.tokenGenerator.Generate(u.UserID())
 }
-
-
 
 func (m *ManagedUserInteractor) credentialsValid(email user.Email, password string) (user.User, error) {
 

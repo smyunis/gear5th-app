@@ -12,21 +12,21 @@ type DomainEventHandler func(any)
 
 type DomainEventDispatcher map[string][]DomainEventHandler
 
-func (d *DomainEventDispatcher) AddHandler(eventname string, handler DomainEventHandler) {
-	handlerEntries, ok := (*d)[eventname]
+func (d DomainEventDispatcher) AddHandler(eventname string, handler DomainEventHandler) {
+	handlerEntries, ok := d[eventname]
 
 	if !ok {
-		(*d)[eventname] = []DomainEventHandler{handler}
+		d[eventname] = []DomainEventHandler{handler}
 	} else {
 		handlerEntries = append(handlerEntries, handler)
-		(*d)[eventname] = handlerEntries
+		d[eventname] = handlerEntries
 	}
 }
 
-func (d *DomainEventDispatcher) DispatchAsync(events ...shared.DomainEvents) {
+func (d DomainEventDispatcher) DispatchAsync(events ...shared.DomainEvents) {
 	for _, eventSet := range events {
 		for eventName, eventPayloads := range eventSet {
-			handlers, ok := (*d)[eventName]
+			handlers, ok := d[eventName]
 			if !ok {
 				continue
 			}

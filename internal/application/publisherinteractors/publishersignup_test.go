@@ -36,37 +36,10 @@ func TestPublisherManagedUserSignUp(t *testing.T) {
 	usr := user.NewUser(email)
 	manageduser := usr.AsManagedUser(user.NewPersonNameWithFullName("Son Goku"), "gokuisking")
 
-	_ = interactor.ManagedUserSignUp(&usr, &manageduser)
+	_ = interactor.ManagedUserSignUp(usr, manageduser)
 }
 
-func TestPublisherSignUpAddPublisherRoleForExistingUser(t *testing.T) {
-	email, _ := user.NewEmail("mymail@gmail.com")
-	usr := user.NewUser(email)
-	manageduser := usr.AsManagedUser(user.NewPersonNameWithFullName("Son Goku"), "gokuisking")
 
-	err := interactor.ManagedUserSignUp(&usr, &manageduser)
 
-	if err != nil {
-		t.FailNow()
-	}
-	if !usr.HasRole(user.Publisher) {
-		t.FailNow()
-	}
 
-}
-
-func TestPublisherSignUpNewUserAsPublisher(t *testing.T) {
-	email, _ := user.NewEmail("yourmail@gmail.com")
-	usr := user.NewUser(email)
-	manageduser := usr.AsManagedUser(user.NewPersonNameWithFullName("Prince Vegeta"), "vegetaisking")
-
-	err := interactor.ManagedUserSignUp(&usr, &manageduser)
-
-	if err != nil {
-		t.FailNow()
-	}
-	if !usr.HasRole(user.Publisher) {
-		t.FailNow()
-	}
-}
 

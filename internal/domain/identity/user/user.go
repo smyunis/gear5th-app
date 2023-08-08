@@ -12,8 +12,9 @@ type UserRepository interface {
 }
 
 type UserCreatedEvent struct {
-	UserId shared.Id
-	Email  Email
+	UserId          shared.Id
+	Email           Email
+	IsEmailVerified bool
 }
 
 type User struct {
@@ -32,7 +33,11 @@ func NewUser(email Email) User {
 		email:        email,
 		domainEvents: make(shared.DomainEvents),
 	}
-	u.domainEvents.Emit("user.created", UserCreatedEvent{UserId: u.UserID(), Email: u.Email()})
+	u.domainEvents.Emit("user.signedup", UserCreatedEvent{
+		UserId:          u.UserID(),
+		Email:           u.Email(),
+		IsEmailVerified: u.isEmailVerified,
+	})
 	return u
 }
 

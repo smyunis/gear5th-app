@@ -2,6 +2,8 @@ package identitycontrollers
 
 import (
 	"encoding/base64"
+	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -29,16 +31,26 @@ func (c ManagedUserController) SignIn(ctx *fiber.Ctx) error {
 	// email is passed in as username
 	username, password, err := c.basicAuthCredentials(ctx)
 	if err != nil {
+		ctx.SendStatus(fiber.StatusUnauthorized)
 		return ctx.JSON(problemdetails.NewProblemDetails(fiber.StatusUnauthorized))
 	}
 
 	email, err := user.NewEmail(username)
 	if err != nil {
+		ctx.SendStatus(fiber.StatusUnauthorized)
 		return ctx.JSON(problemdetails.NewProblemDetails(fiber.StatusUnauthorized))
 	}
 
 	token, err := c.interactor.SignIn(email, password)
 	if err != nil {
+		if errors.Is(err, manageduserinteractors.ErrEmailUnverified) {
+			prob := problemdetails.NewProblemDetails(fiber.StatusPreconditionRequired)
+			prob.Title = "Unverified Email"
+			prob.Detail = fmt.Sprintf("email %s is not verified", email.Email())
+			ctx.SendStatus(fiber.StatusPreconditionRequired)
+			return ctx.JSON(prob)
+		}
+		ctx.SendStatus(fiber.StatusUnauthorized)
 		return ctx.JSON(problemdetails.NewProblemDetails(fiber.StatusUnauthorized))
 	}
 
