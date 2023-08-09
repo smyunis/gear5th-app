@@ -3,19 +3,23 @@ package accesstoken
 import (
 	"time"
 
-	"github.com/gofor-little/env"
 	"github.com/golang-jwt/jwt/v5"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
+	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
 )
 
-type JwtAccessTokenGenenrator struct{}
-
-func NewJwtAccessTokenGenenrator() JwtAccessTokenGenenrator {
-	return JwtAccessTokenGenenrator{}
+type JwtAccessTokenGenerator struct {
+	config infrastructure.ConfigurationProvider
 }
 
-func (j JwtAccessTokenGenenrator) Generate(subject shared.Id) (string, error) {
-	appDomain := env.Get("APP_DOMAIN", "api.gear5th.com")
+func NewJwtAccessTokenGenenrator(config infrastructure.ConfigurationProvider) JwtAccessTokenGenerator {
+	return JwtAccessTokenGenerator{
+		config,
+	}
+}
+
+func (j JwtAccessTokenGenerator) Generate(subject shared.Id) (string, error) {
+	appDomain := j.config.Get("APP_DOMAIN", "api.gear5th.com")
 	tokenClaims := jwt.RegisteredClaims{
 		Subject:   subject.String(),
 		Issuer:    appDomain,
@@ -26,7 +30,7 @@ func (j JwtAccessTokenGenenrator) Generate(subject shared.Id) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenClaims)
 
-	keyStr := env.Get("ACCESS_TOKEN_SIGNING_KEY", "jlPoFFmLUpLRf44w1vU9mJSXvRJleg2gk1bEzaaJN1cpafWhjyU0K4D1sOek3gDxfHWLRKrJ")
+	keyStr := j.config.Get("ACCESS_TOKEN_SIGNING_KEY", "jlPoFFmLUpLRf44w1vU9mJSXvRJleg2gk1bEzaaJN1cpafWhjyU0K4D1sOek3gDxfHWLRKrJ")
 	key := []byte(keyStr)
 
 	accessToken, err := token.SignedString(key)

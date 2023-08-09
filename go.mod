@@ -8,7 +8,7 @@ require (
 	golang.org/x/exp v0.0.0-20230801115018-d63ba01acd4b
 )
 
-require github.com/gofor-little/env v1.0.14 // indirect
+require github.com/joho/godotenv v1.5.1 // indirect
 
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect

@@ -13,6 +13,8 @@ import (
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/identity/accesstoken"
+	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
+
 )
 
 var Container wire.ProviderSet = wire.NewSet(
@@ -29,12 +31,14 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(user.ManagedUserRepository), new(testdoubles.ManagedUserRepositoryStub)),
 	wire.Bind(new(publisher.PublisherRepository), new(testdoubles.PublisherRepositoryStub)),
 	wire.Bind(new(publisherinteractors.PublisherSignUpUnitOfWork), new(testdoubles.PublisherSignUpUnitOfWorkStub)),
-
-
+	
+	
 	//Infrastructures
 	accesstoken.NewJwtAccessTokenGenenrator,
-	wire.Bind(new(identityinteractors.AccessTokenGenerator), new(accesstoken.JwtAccessTokenGenenrator)),
+	infrastructure.NewEnvConfigurationProvider,
+	wire.Bind(new(identityinteractors.AccessTokenGenerator), new(accesstoken.JwtAccessTokenGenerator)),
 	wire.Bind(new(manageduserinteractors.RequestPasswordResetEmailService), new(testdoubles.RequestResetPasswordEmailStub)),
+	wire.Bind(new(infrastructure.ConfigurationProvider), new(infrastructure.EnvConfigurationProvider)),
 
 
 

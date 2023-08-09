@@ -12,6 +12,7 @@ import (
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/publisherinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/testdoubles"
+	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/identity/accesstoken"
 )
 
@@ -20,9 +21,10 @@ import (
 func InitManagedUserController() identitycontrollers.ManagedUserController {
 	userRepositoryStub := testdoubles.UserRepositoryStub{}
 	managedUserRepositoryStub := testdoubles.ManagedUserRepositoryStub{}
-	jwtAccessTokenGenenrator := accesstoken.NewJwtAccessTokenGenenrator()
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	jwtAccessTokenGenerator := accesstoken.NewJwtAccessTokenGenenrator(envConfigurationProvider)
 	requestResetPasswordEmailStub := testdoubles.RequestResetPasswordEmailStub{}
-	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, jwtAccessTokenGenenrator, requestResetPasswordEmailStub)
+	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, jwtAccessTokenGenerator, requestResetPasswordEmailStub)
 	managedUserController := identitycontrollers.NewManagedUserController(managedUserInteractor)
 	return managedUserController
 }
@@ -37,9 +39,10 @@ func InitPublisherSignUpController() publishercontrollers.PublisherSignUpControl
 func InitRequestPasswordResetController() identitycontrollers.RequestPasswordResetController {
 	userRepositoryStub := testdoubles.UserRepositoryStub{}
 	managedUserRepositoryStub := testdoubles.ManagedUserRepositoryStub{}
-	jwtAccessTokenGenenrator := accesstoken.NewJwtAccessTokenGenenrator()
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	jwtAccessTokenGenerator := accesstoken.NewJwtAccessTokenGenenrator(envConfigurationProvider)
 	requestResetPasswordEmailStub := testdoubles.RequestResetPasswordEmailStub{}
-	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, jwtAccessTokenGenenrator, requestResetPasswordEmailStub)
+	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, jwtAccessTokenGenerator, requestResetPasswordEmailStub)
 	requestPasswordResetController := identitycontrollers.NewRequestPasswordResetController(managedUserInteractor)
 	return requestPasswordResetController
 }
