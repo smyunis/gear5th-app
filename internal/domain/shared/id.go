@@ -2,13 +2,13 @@ package shared
 
 import "github.com/oklog/ulid/v2"
 
-type Id string
+type ID string
 
-func NewId() Id {
+func NewID() ID {
 	newUlid := ulid.Make().String()
-	return Id(newUlid)
+	return ID(newUlid)
 }
 
-func (i Id) String() string {
+func (i ID) String() string {
 	return string(i)
 }

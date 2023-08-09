@@ -8,16 +8,16 @@ import (
 )
 
 type Site struct {
-	id           shared.Id
-	publisherId  shared.Id
+	id           shared.ID
+	publisherId  shared.ID
 	url          url.URL
 	isVerified   bool
 	lastVerified time.Time
 }
 
-func NewSite(publisherId shared.Id, url url.URL) Site {
+func NewSite(publisherId shared.ID, url url.URL) Site {
 	return Site{
-		id:          shared.NewId(),
+		id:          shared.NewID(),
 		publisherId: publisherId,
 		url:         url,
 	}
@@ -32,7 +32,7 @@ func (s *Site) IsVerified() bool {
 	return s.isVerified
 }
 
-func (s *Site) PublisherId() shared.Id {
+func (s *Site) PublisherId() shared.ID {
 	return s.publisherId
 }
 

@@ -7,11 +7,11 @@ type PublisherRepository interface {
 }
 
 type Publisher struct {
-	publisherUserId             shared.Id
+	publisherUserId             shared.ID
 	unacknowledgedNotifications []shared.Notification
 }
 
-func NewPublisher(userId shared.Id) Publisher {
+func NewPublisher(userId shared.ID) Publisher {
 	return Publisher{
 		publisherUserId: userId,
 	}

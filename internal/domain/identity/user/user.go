@@ -1,6 +1,8 @@
 package user
 
 import (
+	"time"
+
 	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 	"golang.org/x/exp/slices"
@@ -12,25 +14,28 @@ type UserRepository interface {
 }
 
 type UserCreatedEvent struct {
-	UserId          shared.Id
+	UserId          shared.ID
 	Email           Email
 	IsEmailVerified bool
 }
 
 type User struct {
-	id                   shared.Id
+	id                   shared.ID
 	email                Email
 	phoneNumber          PhoneNumber
 	isEmailVerified      bool
 	roles                []UserRole
 	authenticationMethod AuthenticationMethod
+	signUpDate           time.Time
 	domainEvents         shared.Events
 }
 
 func NewUser(email Email) User {
 	u := User{
-		id:           shared.NewId(),
+		id:           shared.NewID(),
 		email:        email,
+		roles:        make([]UserRole, 0),
+		signUpDate:   time.Now(),
 		domainEvents: make(shared.Events),
 	}
 	u.domainEvents.Emit("user.signedup", UserCreatedEvent{
@@ -39,6 +44,26 @@ func NewUser(email Email) User {
 		IsEmailVerified: u.isEmailVerified,
 	})
 	return u
+}
+
+func ReconstituteUser(
+	id shared.ID,
+	email Email,
+	phoneNumber PhoneNumber,
+	isEmailVerified bool,
+	roles []UserRole,
+	authenticationMethod AuthenticationMethod,
+	signUpDate time.Time) User {
+	return User{
+		id,
+		email,
+		phoneNumber,
+		isEmailVerified,
+		roles,
+		authenticationMethod,
+		signUpDate,
+		make(shared.Events),
+	}
 }
 
 func (u *User) AsManagedUser(name PersonName, password string) ManagedUser {
@@ -65,7 +90,7 @@ func (u *User) SignUpPublisher() publisher.Publisher {
 	return publisher.NewPublisher(u.id)
 }
 
-func (u *User) UserID() shared.Id {
+func (u *User) UserID() shared.ID {
 	return u.id
 }
 
@@ -89,12 +114,26 @@ func (u *User) Email() Email {
 	return u.email
 }
 
+func (u *User) PhoneNumber() PhoneNumber {
+	return u.phoneNumber
+}
+
 func (u *User) SetPhoneNumber(phoneNumber PhoneNumber) {
 	u.phoneNumber = phoneNumber
 }
 
+func (u *User) SignUpDate() time.Time {
+	return u.signUpDate
+}
+
 func (u *User) HasRole(role UserRole) bool {
 	return slices.Contains(u.roles, role)
+}
+
+func (u *User) Roles() []UserRole {
+	roles := make([]UserRole, len(u.roles))
+	copy(roles, u.roles)
+	return u.roles
 }
 
 func (u *User) addRoleIfNotExists(role UserRole) {

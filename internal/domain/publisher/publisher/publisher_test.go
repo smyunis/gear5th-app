@@ -9,12 +9,12 @@ import (
 )
 
 func TestCreateNewPublisher(t *testing.T) {
-	_ = publisher.NewPublisher(shared.Id("xxxx-yyyy"))
+	_ = publisher.NewPublisher(shared.ID("xxxx-yyyy"))
 
 }
 
 func TestNotifyPublisher(t *testing.T) {
-	p := publisher.NewPublisher(shared.Id("xxxx-yyyy"))
+	p := publisher.NewPublisher(shared.ID("xxxx-yyyy"))
 	n := shared.NewNotification("message")
 
 	p.Notify(n)
@@ -25,7 +25,7 @@ func TestNotifyPublisher(t *testing.T) {
 }
 
 func TestAcknowledgeNotifications(t *testing.T) {
-	p := publisher.NewPublisher(shared.Id("xxxx-yyyy"))
+	p := publisher.NewPublisher(shared.ID("xxxx-yyyy"))
 	n1 := shared.NewNotification("message 1")
 	n2 := shared.NewNotification("message 2")
 
@@ -39,5 +39,3 @@ func TestAcknowledgeNotifications(t *testing.T) {
 	}
 
 }
-
-

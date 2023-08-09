@@ -14,14 +14,14 @@ func NewUserRepositoryStub() UserRepositoryStub {
 	return UserRepositoryStub{}
 }
 
-func (UserRepositoryStub) Get(id shared.Id) (user.User, error) {
+func (UserRepositoryStub) Get(id shared.ID) (user.User, error) {
 
-	if id != shared.Id("stub-id-xxx") {
+	if id != shared.ID("stub-id-xxx") {
 		return user.User{}, shared.NewEntityNotFoundError(id.String(), "user")
 	}
 
 	u := &user.User{}
-	setStructField[user.User, shared.Id](u, "id", id)
+	setStructField[user.User, shared.ID](u, "id", id)
 	mymail, _ := user.NewEmail("mymail@gmail.com")
 	setStructField[user.User, user.Email](u, "email", mymail)
 	u.VerifyEmail()
@@ -34,12 +34,12 @@ func (UserRepositoryStub) Save(u user.User) error {
 
 func (usr UserRepositoryStub) UserWithEmail(email user.Email) (user.User, error) {
 	if mymail, _ := user.NewEmail("mymail@gmail.com"); mymail == email {
-		stubId := shared.Id("stub-id-xxx")
+		stubId := shared.ID("stub-id-xxx")
 		usr, err := usr.Get(stubId)
 		return usr, err
 	}
 	if somemail, _ := user.NewEmail("somemail@gmail.com"); somemail == email {
-		stubId := shared.Id("stub-id-xxx")
+		stubId := shared.ID("stub-id-xxx")
 		usr, err := usr.Get(stubId)
 
 		setStructField[user.User, user.Email](&usr, "email", somemail)
@@ -52,14 +52,14 @@ func (usr UserRepositoryStub) UserWithEmail(email user.Email) (user.User, error)
 
 type ManagedUserRepositoryStub struct{}
 
-func (ManagedUserRepositoryStub) Get(id shared.Id) (user.ManagedUser, error) {
+func (ManagedUserRepositoryStub) Get(id shared.ID) (user.ManagedUser, error) {
 
-	if id != shared.Id("stub-id-xxx") {
+	if id != shared.ID("stub-id-xxx") {
 		return user.ManagedUser{}, shared.NewEntityNotFoundError(id.String(), "user")
 	}
 
 	u := &user.ManagedUser{}
-	setStructField[user.ManagedUser, shared.Id](u, "userId", shared.NewId())
+	setStructField[user.ManagedUser, shared.ID](u, "userId", shared.NewID())
 	u.SetPassword("gokuisking")
 
 	return *u, nil

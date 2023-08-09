@@ -11,7 +11,7 @@ import (
 
 func TestSiteHostnameVerification(t *testing.T) {
 	siteUrl, _ := url.Parse("https://dev.to/tooljet/build-an-aws-s3-browser-with-tooljet-56d4")
-	s := site.NewSite(shared.NewId(), *siteUrl)
+	s := site.NewSite(shared.NewID(), *siteUrl)
 	source, _ := url.Parse("https://dev.to/tooljet/build-an-aws-s3-browser-with-tooljet-56d4")
 
 	err := site.VerifySiteHostname(&s, *source)
@@ -23,7 +23,7 @@ func TestSiteHostnameVerification(t *testing.T) {
 
 func TestGetAdsTxtRecord(t *testing.T) {
 	siteUrl, _ := url.Parse("https://dev.to/tooljet/build-an-aws-s3-browser-with-tooljet-56d4")
-	publisherId := shared.NewId()
+	publisherId := shared.NewID()
 	s := site.NewSite(publisherId, *siteUrl)
 	expectedRecord := fmt.Sprintf("gear5th.com, %s, DIRECT", publisherId.String())
 

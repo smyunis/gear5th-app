@@ -1,8 +1,10 @@
 package user_test
 
 import (
-	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 	"testing"
+	"time"
+
+	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 )
 
 func TestCreateManagedUser(t *testing.T) {
@@ -82,6 +84,22 @@ func TestCreateNewUserEmitsDomainEvent(t *testing.T) {
 	_, ok := events["user.signedup"]
 
 	if !ok {
+		t.FailNow()
+	}
+}
+
+// Assumption is made that this test will not stall for a whole day ;)
+func TestAddsSignUpDateForuser(t *testing.T) {
+	userEmail, _ := user.NewEmail("smyunis@outlook.com")
+	u := user.NewUser(userEmail)
+
+	if u.SignUpDate().Year() != time.Now().Year() {
+		t.FailNow()
+	}
+	if u.SignUpDate().Month() != time.Now().Month() {
+		t.FailNow()
+	}
+	if u.SignUpDate().Day() != time.Now().Day() {
 		t.FailNow()
 	}
 }

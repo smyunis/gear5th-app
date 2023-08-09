@@ -10,7 +10,7 @@ type ManagedUserRepository interface {
 }
 
 type ManagedUser struct {
-	userId         shared.Id
+	userId         shared.ID
 	name           PersonName
 	hashedPassword string
 }

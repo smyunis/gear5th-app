@@ -14,7 +14,7 @@ type OAuthUserRepository interface {
 	shared.EntityRepository[OAuthUser]
 }
 type OAuthUser struct {
-	userId         shared.Id
+	userId         shared.ID
 	userIdentifier string
 	oauthProvider  OAuthProvider
 }

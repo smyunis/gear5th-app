@@ -10,9 +10,9 @@ import (
 
 type PublisherRepositoryStub struct{}
 
-func (p PublisherRepositoryStub) Get(id shared.Id) (publisher.Publisher, error) {
+func (p PublisherRepositoryStub) Get(id shared.ID) (publisher.Publisher, error) {
 
-	if id != shared.Id("stub-id-xxx") {
+	if id != shared.ID("stub-id-xxx") {
 		return publisher.Publisher{}, shared.NewEntityNotFoundError(id.String(), "publisher")
 	}
 
