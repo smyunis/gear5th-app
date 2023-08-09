@@ -27,7 +27,6 @@ func NewMongoDBUserRepository(dbStore mongodbpersistence.MongoDBStore) MongoDBUs
 
 func (r MongoDBUserRepository) Get(id shared.ID) (user.User, error) {
 
-	u := &user.User{}
 	users := r.db.Collection("users")
 	resUser := users.FindOne(context.Background(), bson.M{"_id": id.String()})
 
@@ -35,11 +34,52 @@ func (r MongoDBUserRepository) Get(id shared.ID) (user.User, error) {
 	err := resUser.Decode(&res)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return *u, shared.NewEntityNotFoundError(id.String(), "user")
+			return user.User{}, shared.NewEntityNotFoundError(id.String(), "user")
 		}
-		return *u, err
+		return user.User{}, err
 	}
 
+	u := mapMToUser(res)
+
+	return u, nil
+}
+
+func (r MongoDBUserRepository) Save(u user.User) error {
+	id := u.UserID().String()
+	users := r.db.Collection("users")
+
+	var dbEntry = mapUserToM(u)
+
+	updateOptions := options.Update().SetUpsert(true)
+	_, err := users.UpdateByID(context.Background(), id, bson.D{{"$set", dbEntry}}, updateOptions)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r MongoDBUserRepository) UserWithEmail(email user.Email) (user.User, error) {
+
+	users := r.db.Collection("users")
+	resUser := users.FindOne(context.Background(), bson.M{"email": email.String()})
+
+	var res bson.M
+	err := resUser.Decode(&res)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return user.User{}, shared.NewEntityNotFoundError(email.String(), "user")
+		}
+		return user.User{}, err
+	}
+
+	u := mapMToUser(res)
+
+	return u, nil
+}
+
+func mapMToUser(res primitive.M) user.User {
 	userId := shared.ID(res["_id"].(string))
 	email, _ := user.NewEmail(res["email"].(string))
 	phoneNumber, _ := user.NewPhoneNumber(res["phoneNumber"].(string))
@@ -56,35 +96,18 @@ func (r MongoDBUserRepository) Get(id shared.ID) (user.User, error) {
 
 	usr := user.ReconstituteUser(userId, email, phoneNumber,
 		isEmailVerified, roles, authNMethod, signUpDate.Time())
-
-	return usr, nil
+	return usr
 }
 
-func (r MongoDBUserRepository) Save(u user.User) error {
-	id := u.UserID().String()
-	users := r.db.Collection("users")
-
+func mapUserToM(u user.User) bson.M {
 	var dbEntry = bson.M{
-		"_id":                  id,
-		"email":                u.Email().Email(),
+		"_id":                  u.UserID().String(),
+		"email":                u.Email().String(),
 		"phoneNumber":          u.PhoneNumber().PhoneNumber(),
 		"isEmailVerified":      u.IsEmailVerified(),
 		"roles":                u.Roles(),
 		"authenticationMethod": u.AuthenticationMethod(),
 		"signUpDate":           u.SignUpDate(),
 	}
-
-	updateOptions := options.Update().SetUpsert(true)
-	_, err := users.UpdateByID(context.Background(), id, bson.D{{"$set", dbEntry}}, updateOptions)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (r MongoDBUserRepository) UserWithEmail(email user.Email) (user.User, error) {
-
-	return user.User{}, shared.NewEntityNotFoundError(email.Email(), "user")
+	return dbEntry
 }

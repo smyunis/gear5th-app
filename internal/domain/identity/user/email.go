@@ -25,6 +25,6 @@ func NewEmail(email string) (Email, error) {
 
 }
 
-func (e Email) Email() string {
+func (e Email) String() string {
 	return e.email
 }

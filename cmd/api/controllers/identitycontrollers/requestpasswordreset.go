@@ -39,7 +39,7 @@ func (c RequestPasswordResetController) RequestPasswordReset(ctx *fiber.Ctx) err
 	if err != nil {
 		probDetails := problemdetails.NewProblemDetails(fiber.StatusBadRequest)
 		probDetails.Title = "Invalid Email"
-		probDetails.Detail = fmt.Sprintf("%s is not a valid email", email.Email())
+		probDetails.Detail = fmt.Sprintf("%s is not a valid email", email.String())
 		ctx.SendStatus(fiber.StatusBadRequest)
 		return ctx.JSON(probDetails)
 	}
@@ -49,7 +49,7 @@ func (c RequestPasswordResetController) RequestPasswordReset(ctx *fiber.Ctx) err
 		if errors.Is(err, identityinteractors.ErrEmailNotVerified) {
 			prob := problemdetails.NewProblemDetails(fiber.StatusPreconditionFailed)
 			prob.Title = "Unverified Email"
-			prob.Detail = fmt.Sprintf("email %s is not verified", email.Email())
+			prob.Detail = fmt.Sprintf("email %s is not verified", email.String())
 			ctx.SendStatus(fiber.StatusPreconditionFailed)
 			return ctx.JSON(prob)
 		}

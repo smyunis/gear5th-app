@@ -24,7 +24,7 @@ func TestValidEmail(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	if mail.Email() != validEmail {
+	if mail.String() != validEmail {
 		t.Fatal("email not saved")
 	}
 }

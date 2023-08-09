@@ -47,7 +47,7 @@ func (usr UserRepositoryStub) UserWithEmail(email user.Email) (user.User, error)
 
 		return usr, err
 	}
-	return user.User{}, shared.NewEntityNotFoundError(email.Email(), "user")
+	return user.User{}, shared.NewEntityNotFoundError(email.String(), "user")
 }
 
 type ManagedUserRepositoryStub struct{}

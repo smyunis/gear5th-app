@@ -35,7 +35,7 @@ func (c *PublisherSignUpController) ManagedUserSignUp(ctx *fiber.Ctx) error {
 	if err != nil {
 		probDetails := problemdetails.NewProblemDetails(fiber.StatusBadRequest)
 		probDetails.Title = "Invalid Email"
-		probDetails.Detail = fmt.Sprintf("%s is not a valid email", email.Email())
+		probDetails.Detail = fmt.Sprintf("%s is not a valid email", email.String())
 		ctx.SendStatus(fiber.StatusBadRequest)
 		return ctx.JSON(probDetails)
 	}

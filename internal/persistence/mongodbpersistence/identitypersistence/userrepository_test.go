@@ -41,23 +41,24 @@ func TestCanSaveUser(t *testing.T) {
 }
 
 func TestCanGetUser(t *testing.T) {
-	id := shared.Id("01H7E2AETWXRH2NRZXC47DAK5B")
+	id := shared.ID("01H7E2AETWXRH2NRZXC47DAK5B")
 
 	u, _ := userRepository.Get(id)
 
 	t.Log(u)
+
 }
 
 func TestCanGetWhatWasSaved(t *testing.T) {
 	userEmail, _ := user.NewEmail("smyunis@outlook.com")
 	ph, _ := user.NewPhoneNumber("0932383239")
-	id := shared.NewID()
+	id := shared.ID("id-xxx-yyy")
 	bd := time.Date(2023, time.June, 3, 0, 0, 0, 0, time.Local)
-
 	u := user.ReconstituteUser(id, userEmail, ph, true,
 		[]user.UserRole{user.Publisher, user.Administrator}, user.Managed, bd)
 
 	err := userRepository.Save(u)
+
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -69,5 +70,29 @@ func TestCanGetWhatWasSaved(t *testing.T) {
 
 	if !reflect.DeepEqual(u, fu) {
 		t.FailNow()
+	}
+}
+
+func TestGetUserByEmail(t *testing.T) {
+	userEmail, _ := user.NewEmail("smsdvvldfjsdsdfjf@outlook.com")
+	ph, _ := user.NewPhoneNumber("0932383239")
+	id := shared.ID("id-email-sub-xxx")
+	bd := time.Date(2023, time.June, 3, 0, 0, 0, 0, time.Local)
+
+
+	u := user.ReconstituteUser(id, userEmail, ph, true,
+		[]user.UserRole{user.Publisher, user.Administrator}, user.Managed, bd)
+
+	err := userRepository.Save(u)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	fu, err := userRepository.UserWithEmail(userEmail)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if !reflect.DeepEqual(u, fu) {
+		t.Log(u)
+		t.Fatal(fu)
 	}
 }

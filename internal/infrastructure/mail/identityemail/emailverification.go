@@ -15,7 +15,7 @@ func sendEmailVerification(event any) {
 	signedUpUser := event.(user.UserCreatedEvent)
 	if !signedUpUser.IsEmailVerified {
 		//TODO send email with link to verify email
-		fmt.Printf("Sending Verification Email ... for %s \n", signedUpUser)
+		fmt.Printf("Sending Verification Email ... for %s \n", signedUpUser.Email.String())
 	}
 
 }
