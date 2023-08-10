@@ -1,6 +1,7 @@
 package testdoubles
 
 import (
+	"context"
 	"reflect"
 	"unsafe"
 
@@ -10,7 +11,7 @@ import (
 
 type PublisherRepositoryStub struct{}
 
-func (p PublisherRepositoryStub) Get(id shared.ID) (publisher.Publisher, error) {
+func (p PublisherRepositoryStub) Get(ctx context.Context, id shared.ID) (publisher.Publisher, error) {
 
 	if id != shared.ID("stub-id-xxx") {
 		return publisher.Publisher{}, shared.NewEntityNotFoundError(id.String(), "publisher")
@@ -26,6 +27,6 @@ func (p PublisherRepositoryStub) Get(id shared.ID) (publisher.Publisher, error) 
 	return *pub, nil
 }
 
-func (p PublisherRepositoryStub) Save(pub publisher.Publisher) error {
+func (p PublisherRepositoryStub) Save(ctx context.Context, pub publisher.Publisher) error {
 	return nil
 }

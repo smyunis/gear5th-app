@@ -1,16 +1,15 @@
 package publishersignupunitofwork
 
 import (
-
+	"context"
+	"fmt"
 
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
 	"go.mongodb.org/mongo-driver/mongo"
-	// "go.mongodb.org/mongo-driver/mongo/options"
-	// "go.mongodb.org/mongo-driver/mongo/readconcern"
-	// "go.mongodb.org/mongo-driver/mongo/readpref"
-	// "go.mongodb.org/mongo-driver/mongo/writeconcern"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 )
 
 type MongoDBPublisherSignUpUnitOfWork struct {
@@ -35,59 +34,48 @@ func NewMongoDBPublisherSignUpUnitOfWork(
 	}
 }
 
-func (w MongoDBPublisherSignUpUnitOfWork) Save(usr user.User, managedUser user.ManagedUser, pub publisher.Publisher) error {
+func (w MongoDBPublisherSignUpUnitOfWork) Save(ctx context.Context, usr user.User, managedUser user.ManagedUser, pub publisher.Publisher) error {
 
-	// wc := writeconcern.Majority()
-	// users := w.db.Collection("users")
-	// managedUsers := w.db.Collection("managedUsers")
+	wc := writeconcern.Majority()
+	txnOptions := options.Transaction().SetWriteConcern(wc)
+	client := w.db.Client()
+	session, err := client.StartSession()
+	if err != nil {
+		return err
+	}
 
-	// txnOptions := options.Transaction().SetWriteConcern(wc)
+	defer session.EndSession(context.Background())
 
-	// client := w.db.Client()
+	err = mongo.WithSession(context.Background(), session, func(sc mongo.SessionContext) error {
+		err := session.StartTransaction(txnOptions)
+		if err != nil {
+			return err
+		}
 
-	// session, err := client.StartSession()
-	// if err != nil {
-	// 	return err
-	// }
+		err = w.userRepository.Save(sc, usr)
+		if err != nil {
+			return fmt.Errorf("save user failed: %w", err)
+		}
+		err = w.managedUserRepository.Save(sc, managedUser)
+		if err != nil {
+			return fmt.Errorf("save managed user failed : %w", err)
+		}
+		err = w.publisherRepository.Save(sc, pub)
+		if err != nil {
+			return fmt.Errorf("save publisher failed : %w", err)
+		}
 
-	// defer session.EndSession(context.Background())
+		err = session.CommitTransaction(sc)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		session.AbortTransaction(context.Background())
+		return err
+	}
 
-	// tnxBody := func(ctx mongo.SessionContext) (interface{}, error) {
-
-	// }
-
-	// result, err := session.WithTransaction(context.Background(), tnxBody, txnOptions)
-
-	// err = mongo.WithSession(context.Background(), session, func(sc mongo.SessionContext) error {
-	// 	session.StartTransaction(txnOptions)
-	// 	//...
-	// 	session.CommitTransaction(sc)
-	// 	return nil // returned
-	// })
-	// if err != nil {
-	// 	session.AbortTransaction(context.Background())
-	// }
-
-
-
-
-
-
-
-
-	// // TODO this method needs to be transactional
-	// err := uow.userRepository.Save(usr)
-	// if err != nil {
-	// 	return fmt.Errorf("save user failed: %w", err)
-	// }
-	// err = uow.managedUserRepository.Save(managedUser)
-	// if err != nil {
-	// 	return fmt.Errorf("save managed user failed : %w", err)
-	// }
-	// err = uow.publisherRepository.Save(pub)
-	// if err != nil {
-	// 	return fmt.Errorf("save publisher failed : %w", err)
-	// }
 	return nil
 }
 

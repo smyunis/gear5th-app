@@ -3,6 +3,7 @@
 package userrepository_test
 
 import (
+	"context"
 	"os"
 	"reflect"
 	"testing"
@@ -37,13 +38,13 @@ func TestCanSaveUser(t *testing.T) {
 	userEmail, _ := user.NewEmail("smyunis@outlook.com")
 	u := user.NewUser(userEmail)
 
-	userRepository.Save(u)
+	userRepository.Save(context.Background(), u)
 }
 
 func TestCanGetUser(t *testing.T) {
 	id := shared.ID("01H7E2AETWXRH2NRZXC47DAK5B")
 
-	u, _ := userRepository.Get(id)
+	u, _ := userRepository.Get(context.Background(), id)
 
 	t.Log(u)
 
@@ -57,13 +58,13 @@ func TestCanGetWhatWasSaved(t *testing.T) {
 	u := user.ReconstituteUser(id, userEmail, ph, true,
 		[]user.UserRole{user.Publisher, user.Administrator}, user.Managed, bd)
 
-	err := userRepository.Save(u)
+	err := userRepository.Save(context.Background(), u)
 
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	fu, err := userRepository.Get(id)
+	fu, err := userRepository.Get(context.Background(), id)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -83,11 +84,11 @@ func TestGetUserByEmail(t *testing.T) {
 	u := user.ReconstituteUser(id, userEmail, ph, true,
 		[]user.UserRole{user.Publisher, user.Administrator}, user.Managed, bd)
 
-	err := userRepository.Save(u)
+	err := userRepository.Save(context.Background(), u)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	fu, err := userRepository.UserWithEmail(userEmail)
+	fu, err := userRepository.UserWithEmail(context.Background(), userEmail)
 	if err != nil {
 		t.Fatal(err.Error())
 	}

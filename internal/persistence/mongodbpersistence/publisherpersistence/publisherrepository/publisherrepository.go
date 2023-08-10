@@ -25,7 +25,7 @@ func NewMongoDBPublisherRepository(dbStore mongodbpersistence.MongoDBStore) Mong
 	}
 }
 
-func (r MongoDBPublisherRepository) Get(id shared.ID) (publisher.Publisher, error) {
+func (r MongoDBPublisherRepository) Get(ctx context.Context,id shared.ID) (publisher.Publisher, error) {
 
 	publishers := r.db.Collection("publishers")
 
@@ -46,7 +46,7 @@ func (r MongoDBPublisherRepository) Get(id shared.ID) (publisher.Publisher, erro
 	return p, nil
 }
 
-func (r MongoDBPublisherRepository) Save(pub publisher.Publisher) error {
+func (r MongoDBPublisherRepository) Save(ctx context.Context,pub publisher.Publisher) error {
 	publishers := r.db.Collection("publishers")
 
 	p := mapPublisherToM(pub)

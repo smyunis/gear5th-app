@@ -25,7 +25,7 @@ func NewMongoDBUserRepository(dbStore mongodbpersistence.MongoDBStore) MongoDBUs
 	}
 }
 
-func (r MongoDBUserRepository) Get(id shared.ID) (user.User, error) {
+func (r MongoDBUserRepository) Get(ctx context.Context, id shared.ID) (user.User, error) {
 
 	users := r.db.Collection("users")
 	resUser := users.FindOne(context.Background(), bson.M{"_id": id.String()})
@@ -44,7 +44,7 @@ func (r MongoDBUserRepository) Get(id shared.ID) (user.User, error) {
 	return u, nil
 }
 
-func (r MongoDBUserRepository) Save(u user.User) error {
+func (r MongoDBUserRepository) Save(ctx context.Context, u user.User) error {
 	id := u.UserID().String()
 	users := r.db.Collection("users")
 
@@ -60,7 +60,7 @@ func (r MongoDBUserRepository) Save(u user.User) error {
 	return nil
 }
 
-func (r MongoDBUserRepository) UserWithEmail(email user.Email) (user.User, error) {
+func (r MongoDBUserRepository) UserWithEmail(ctx context.Context, email user.Email) (user.User, error) {
 
 	users := r.db.Collection("users")
 	resUser := users.FindOne(context.Background(), bson.M{"email": email.String()})

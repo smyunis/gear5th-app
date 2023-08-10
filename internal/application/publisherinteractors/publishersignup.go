@@ -1,6 +1,7 @@
 package publisherinteractors
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -11,7 +12,7 @@ import (
 )
 
 type PublisherSignUpUnitOfWork interface {
-	Save(usr user.User, managedUser user.ManagedUser, pub publisher.Publisher) error
+	Save(ctx context.Context, usr user.User, managedUser user.ManagedUser, pub publisher.Publisher) error
 	UserRepository() user.UserRepository
 }
 
@@ -28,7 +29,7 @@ func NewPublisherSignUpInteractor(unitOfWork PublisherSignUpUnitOfWork) Publishe
 func (i *PublisherSignUpInteractor) ManagedUserSignUp(usr user.User, managedUser user.ManagedUser) error {
 
 	userRepository := i.unitOfWork.UserRepository()
-	existingUser, err := userRepository.UserWithEmail(usr.Email())
+	existingUser, err := userRepository.UserWithEmail(context.Background(), usr.Email())
 
 	if err == nil {
 		usr = existingUser
@@ -37,7 +38,7 @@ func (i *PublisherSignUpInteractor) ManagedUserSignUp(usr user.User, managedUser
 	}
 	pub := usr.SignUpPublisher()
 
-	err = i.unitOfWork.Save(usr, managedUser, pub)
+	err = i.unitOfWork.Save(context.Background(),usr, managedUser, pub)
 
 	if err != nil {
 		return fmt.Errorf("signup publisher failed : %w", err)
@@ -48,21 +49,3 @@ func (i *PublisherSignUpInteractor) ManagedUserSignUp(usr user.User, managedUser
 	return nil
 
 }
-
-// func (i *PublisherSignUpInteractor) savePublisher(usr *user.User, managedUser *user.ManagedUser) error {
-// 	pub := usr.SignUpPublisher()
-
-// 	err := i.userRepository.Save(*usr)
-// 	if err != nil {
-// 		return fmt.Errorf("save user failed: %w", err)
-// 	}
-// 	err = i.managedUserRepository.Save(*managedUser)
-// 	if err != nil {
-// 		return fmt.Errorf("save managed user failed : %w", err)
-// 	}
-// 	err = i.publisherRepository.Save(pub)
-// 	if err != nil {
-// 		return fmt.Errorf("save publisher failed : %w", err)
-// 	}
-// 	return nil
-// }

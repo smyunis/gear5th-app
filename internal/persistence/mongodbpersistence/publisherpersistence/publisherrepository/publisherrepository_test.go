@@ -2,6 +2,7 @@
 package publisherrepository_test
 
 import (
+	"context"
 	"os"
 	"reflect"
 	"testing"
@@ -36,7 +37,7 @@ func TestCanSavePublisher(t *testing.T) {
 	pub := publisher.NewPublisher(shared.NewID())
 	pub.Notify(shared.NewNotification("Alert! Some stuff needs your attention"))
 
-	err := publisherRepository.Save(pub)
+	err := publisherRepository.Save(context.Background(), pub)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -49,12 +50,12 @@ func TestCanGetSavedPublisher(t *testing.T) {
 	}
 	pub := publisher.ReconstitutePublisher(shared.NewID(), notifications)
 
-	err := publisherRepository.Save(pub)
+	err := publisherRepository.Save(context.Background(), pub)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	fp, err := publisherRepository.Get(pub.UserID())
+	fp, err := publisherRepository.Get(context.Background(), pub.UserID())
 	if err != nil {
 		t.Fatal(err.Error())
 	}

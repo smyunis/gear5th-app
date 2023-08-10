@@ -2,6 +2,7 @@
 package manageduserrepository_test
 
 import (
+	"context"
 	"os"
 	"reflect"
 	"testing"
@@ -36,7 +37,7 @@ func TestSaveManagedUser(t *testing.T) {
 	u := user.NewUser(userEmail)
 	mu := u.AsManagedUser(user.NewPersonNameWithFullName("Dracule Mihawk"), "yoruissharp")
 
-	err := managedUserRepository.Save(mu)
+	err := managedUserRepository.Save(context.Background(), mu)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -47,12 +48,12 @@ func TestGetWhatWasSaved(t *testing.T) {
 	id := shared.ID("id-xxx-yyy")
 	m := user.ReconstituteManagedUser(id, user.NewPersonNameWithFullName("Dracule Mihawk"), "pass")
 
-	err := managedUserRepository.Save(m)
+	err := managedUserRepository.Save(context.Background(), m)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	fmu, err := managedUserRepository.Get(id)
+	fmu, err := managedUserRepository.Get(context.Background(), id)
 	if err != nil {
 		t.Fatal(err.Error())
 	}

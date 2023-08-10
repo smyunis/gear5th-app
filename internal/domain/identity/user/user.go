@@ -1,16 +1,18 @@
 package user
 
 import (
+	"context"
 	"time"
+
+	"slices"
 
 	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
-	"slices"
 )
 
 type UserRepository interface {
 	shared.EntityRepository[User]
-	UserWithEmail(email Email) (User, error)
+	UserWithEmail(ctx context.Context, email Email) (User, error)
 }
 
 type UserCreatedEvent struct {

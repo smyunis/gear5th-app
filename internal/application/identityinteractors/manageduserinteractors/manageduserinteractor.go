@@ -1,6 +1,7 @@
 package manageduserinteractors
 
 import (
+	"context"
 	"errors"
 
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
@@ -49,12 +50,12 @@ func (m *ManagedUserInteractor) SignIn(email user.Email, password string) (strin
 
 func (m *ManagedUserInteractor) credentialsValid(email user.Email, password string) (user.User, error) {
 
-	u, err := m.userRepository.UserWithEmail(email)
+	u, err := m.userRepository.UserWithEmail(context.Background(), email)
 	if err != nil {
 		return u, ErrAuthorization
 	}
 
-	managedUser, err := m.managedUserRepository.Get(u.UserID())
+	managedUser, err := m.managedUserRepository.Get(context.Background(), u.UserID())
 	if err != nil {
 		return u, ErrAuthorization
 	}
@@ -72,7 +73,7 @@ func (m *ManagedUserInteractor) credentialsValid(email user.Email, password stri
 
 func (m *ManagedUserInteractor) RequestResetPassword(email user.Email) error {
 
-	usr, err := m.userRepository.UserWithEmail(email)
+	usr, err := m.userRepository.UserWithEmail(context.Background(), email)
 	if err != nil {
 		return err
 	}

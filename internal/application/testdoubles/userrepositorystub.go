@@ -1,6 +1,7 @@
 package testdoubles
 
 import (
+	"context"
 	"reflect"
 	"unsafe"
 
@@ -14,7 +15,7 @@ func NewUserRepositoryStub() UserRepositoryStub {
 	return UserRepositoryStub{}
 }
 
-func (UserRepositoryStub) Get(id shared.ID) (user.User, error) {
+func (UserRepositoryStub) Get(ctx context.Context, id shared.ID) (user.User, error) {
 
 	if id != shared.ID("stub-id-xxx") {
 		return user.User{}, shared.NewEntityNotFoundError(id.String(), "user")
@@ -28,19 +29,19 @@ func (UserRepositoryStub) Get(id shared.ID) (user.User, error) {
 	return *u, nil
 }
 
-func (UserRepositoryStub) Save(u user.User) error {
+func (UserRepositoryStub) Save(ctx context.Context, u user.User) error {
 	return nil
 }
 
-func (usr UserRepositoryStub) UserWithEmail(email user.Email) (user.User, error) {
+func (usr UserRepositoryStub) UserWithEmail(ctx context.Context, email user.Email) (user.User, error) {
 	if mymail, _ := user.NewEmail("mymail@gmail.com"); mymail == email {
 		stubId := shared.ID("stub-id-xxx")
-		usr, err := usr.Get(stubId)
+		usr, err := usr.Get(context.Background(), stubId)
 		return usr, err
 	}
 	if somemail, _ := user.NewEmail("somemail@gmail.com"); somemail == email {
 		stubId := shared.ID("stub-id-xxx")
-		usr, err := usr.Get(stubId)
+		usr, err := usr.Get(context.Background(), stubId)
 
 		setStructField[user.User, user.Email](&usr, "email", somemail)
 		setStructField[user.User, bool](&usr, "isEmailVerified", false)
@@ -52,7 +53,7 @@ func (usr UserRepositoryStub) UserWithEmail(email user.Email) (user.User, error)
 
 type ManagedUserRepositoryStub struct{}
 
-func (ManagedUserRepositoryStub) Get(id shared.ID) (user.ManagedUser, error) {
+func (ManagedUserRepositoryStub) Get(ctx context.Context, id shared.ID) (user.ManagedUser, error) {
 
 	if id != shared.ID("stub-id-xxx") {
 		return user.ManagedUser{}, shared.NewEntityNotFoundError(id.String(), "user")
@@ -65,7 +66,7 @@ func (ManagedUserRepositoryStub) Get(id shared.ID) (user.ManagedUser, error) {
 	return *u, nil
 }
 
-func (ManagedUserRepositoryStub) Save(u user.ManagedUser) error {
+func (ManagedUserRepositoryStub) Save(ctx context.Context, u user.ManagedUser) error {
 	return nil
 }
 

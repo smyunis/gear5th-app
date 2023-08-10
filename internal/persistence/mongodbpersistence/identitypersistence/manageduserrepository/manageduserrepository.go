@@ -25,7 +25,7 @@ func NewMongoDBMangageUserRepository(dbStore mongodbpersistence.MongoDBStore) Mo
 }
 
 
-func (r MongoDBMangageUserRepository) Get(id shared.ID) (user.ManagedUser, error) {
+func (r MongoDBMangageUserRepository) Get(ctx context.Context,id shared.ID) (user.ManagedUser, error) {
 
 	managedUsers := r.db.Collection("managedUsers")
 
@@ -49,7 +49,7 @@ func (r MongoDBMangageUserRepository) Get(id shared.ID) (user.ManagedUser, error
 
 }
 
-func (r MongoDBMangageUserRepository) Save(u user.ManagedUser) error {
+func (r MongoDBMangageUserRepository) Save(ctx context.Context,u user.ManagedUser) error {
 	managedUsers := r.db.Collection("managedUsers")
 
 	mu := bson.M{
