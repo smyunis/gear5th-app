@@ -1,6 +1,7 @@
 package main
 
 import (
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
@@ -37,3 +38,5 @@ func addRoutes(app *fiber.App) {
 	identityRouter.Add(requestPasswordResetController.Method, requestPasswordResetController.Path, requestPasswordResetController.RequestPasswordReset)
 
 }
+
+

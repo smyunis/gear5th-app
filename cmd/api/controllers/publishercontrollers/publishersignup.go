@@ -1,9 +1,11 @@
 package publishercontrollers
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/application/publisherinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-api/pkg/problemdetails"
@@ -59,6 +61,16 @@ func (c *PublisherSignUpController) ManagedUserSignUp(ctx *fiber.Ctx) error {
 
 	err = c.interactor.ManagedUserSignUp(u, mu)
 	if err != nil {
+		if errors.Is(err, application.ErrConflictFound) {
+
+			probDetails := problemdetails.NewProblemDetails(fiber.StatusConflict)
+			probDetails.Title = "Duplicate Publisher"
+			probDetails.Detail = "user signed up with given email is already a publisher"
+
+			ctx.SendStatus(fiber.StatusConflict)
+			return ctx.JSON(probDetails)
+		}
+
 		ctx.SendStatus(fiber.StatusInternalServerError)
 		return ctx.JSON(problemdetails.NewProblemDetails(fiber.StatusInternalServerError))
 	}

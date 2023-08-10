@@ -12,9 +12,13 @@ import (
 	"gitlab.com/gear5th/gear5th-api/internal/application/testdoubles"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/identity/accesstoken"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
-
+	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/identity/accesstoken"
+	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
+	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
+	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
+	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
+	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
 )
 
 var Container wire.ProviderSet = wire.NewSet(
@@ -25,22 +29,30 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Struct(new(testdoubles.PublisherSignUpUnitOfWorkStub), "*"),
 	wire.Struct(new(testdoubles.RequestResetPasswordEmailStub), "*"),
 
-	
-	// Repositories
-	wire.Bind(new(user.UserRepository), new(testdoubles.UserRepositoryStub)),
-	wire.Bind(new(user.ManagedUserRepository), new(testdoubles.ManagedUserRepositoryStub)),
-	wire.Bind(new(publisher.PublisherRepository), new(testdoubles.PublisherRepositoryStub)),
-	wire.Bind(new(publisherinteractors.PublisherSignUpUnitOfWork), new(testdoubles.PublisherSignUpUnitOfWorkStub)),
-	
-	
+	// Repositories with testdouble stubs
+	// wire.Bind(new(user.UserRepository), new(testdoubles.UserRepositoryStub)),
+	// wire.Bind(new(user.ManagedUserRepository), new(testdoubles.ManagedUserRepositoryStub)),
+	// wire.Bind(new(publisher.PublisherRepository), new(testdoubles.PublisherRepositoryStub)),
+	// wire.Bind(new(publisherinteractors.PublisherSignUpUnitOfWork), new(testdoubles.PublisherSignUpUnitOfWorkStub)),
+
+	//MongoDB persistence repositores
+	mongodbpersistence.NewMongoDBStoreBootstrap,
+	wire.Bind(new(mongodbpersistence.MongoDBStore), new(mongodbpersistence.MongoDBStoreBootstrap)),
+	userrepository.NewMongoDBUserRepository,
+	wire.Bind(new(user.UserRepository), new(userrepository.MongoDBUserRepository)),
+	manageduserrepository.NewMongoDBMangageUserRepository,
+	wire.Bind(new(user.ManagedUserRepository), new(manageduserrepository.MongoDBMangageUserRepository)),
+	publisherrepository.NewMongoDBPublisherRepository,
+	wire.Bind(new(publisher.PublisherRepository), new(publisherrepository.MongoDBPublisherRepository)),
+	publishersignupunitofwork.NewMongoDBPublisherSignUpUnitOfWork,
+	wire.Bind(new(publisherinteractors.PublisherSignUpUnitOfWork), new(publishersignupunitofwork.MongoDBPublisherSignUpUnitOfWork)),
+
 	//Infrastructures
 	accesstoken.NewJwtAccessTokenGenenrator,
 	infrastructure.NewEnvConfigurationProvider,
 	wire.Bind(new(identityinteractors.AccessTokenGenerator), new(accesstoken.JwtAccessTokenGenerator)),
 	wire.Bind(new(manageduserinteractors.RequestPasswordResetEmailService), new(testdoubles.RequestResetPasswordEmailStub)),
 	wire.Bind(new(infrastructure.ConfigurationProvider), new(infrastructure.EnvConfigurationProvider)),
-
-
 
 	//Interactors
 	manageduserinteractors.NewManagedUserInteractor,

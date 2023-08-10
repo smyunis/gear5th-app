@@ -14,35 +14,47 @@ import (
 	"gitlab.com/gear5th/gear5th-api/internal/application/testdoubles"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/identity/accesstoken"
+	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
+	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
+	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
+	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
+	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
 )
 
 // Injectors from dependecyproviders.go:
 
 func InitManagedUserController() identitycontrollers.ManagedUserController {
-	userRepositoryStub := testdoubles.UserRepositoryStub{}
-	managedUserRepositoryStub := testdoubles.ManagedUserRepositoryStub{}
 	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
+	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	jwtAccessTokenGenerator := accesstoken.NewJwtAccessTokenGenenrator(envConfigurationProvider)
 	requestResetPasswordEmailStub := testdoubles.RequestResetPasswordEmailStub{}
-	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, jwtAccessTokenGenerator, requestResetPasswordEmailStub)
+	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestResetPasswordEmailStub)
 	managedUserController := identitycontrollers.NewManagedUserController(managedUserInteractor)
 	return managedUserController
 }
 
 func InitPublisherSignUpController() publishercontrollers.PublisherSignUpController {
-	publisherSignUpUnitOfWorkStub := testdoubles.PublisherSignUpUnitOfWorkStub{}
-	publisherSignUpInteractor := publisherinteractors.NewPublisherSignUpInteractor(publisherSignUpUnitOfWorkStub)
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
+	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
+	mongoDBPublisherRepository := publisherrepository.NewMongoDBPublisherRepository(mongoDBStoreBootstrap)
+	mongoDBPublisherSignUpUnitOfWork := publishersignupunitofwork.NewMongoDBPublisherSignUpUnitOfWork(mongoDBStoreBootstrap, mongoDBUserRepository, mongoDBMangageUserRepository, mongoDBPublisherRepository)
+	publisherSignUpInteractor := publisherinteractors.NewPublisherSignUpInteractor(mongoDBPublisherSignUpUnitOfWork)
 	publisherSignUpController := publishercontrollers.NewPublisherSignUpController(publisherSignUpInteractor)
 	return publisherSignUpController
 }
 
 func InitRequestPasswordResetController() identitycontrollers.RequestPasswordResetController {
-	userRepositoryStub := testdoubles.UserRepositoryStub{}
-	managedUserRepositoryStub := testdoubles.ManagedUserRepositoryStub{}
 	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
+	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	jwtAccessTokenGenerator := accesstoken.NewJwtAccessTokenGenenrator(envConfigurationProvider)
 	requestResetPasswordEmailStub := testdoubles.RequestResetPasswordEmailStub{}
-	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(userRepositoryStub, managedUserRepositoryStub, jwtAccessTokenGenerator, requestResetPasswordEmailStub)
+	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestResetPasswordEmailStub)
 	requestPasswordResetController := identitycontrollers.NewRequestPasswordResetController(managedUserInteractor)
 	return requestPasswordResetController
 }

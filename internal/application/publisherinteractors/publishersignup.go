@@ -36,6 +36,11 @@ func (i *PublisherSignUpInteractor) ManagedUserSignUp(usr user.User, managedUser
 	} else if !errors.As(err, &shared.ErrEntityNotFound{}) {
 		return fmt.Errorf("get user failed: %w", err)
 	}
+	
+	if usr.HasRole(user.Publisher) {
+		return application.ErrConflictFound
+	}
+	
 	pub := usr.SignUpPublisher()
 
 	err = i.unitOfWork.Save(context.Background(),usr, managedUser, pub)
