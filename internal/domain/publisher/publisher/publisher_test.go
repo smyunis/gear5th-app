@@ -6,7 +6,7 @@ import (
 
 	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
-	"golang.org/x/exp/slices"
+	"slices"
 )
 
 func TestCreateNewPublisher(t *testing.T) {
