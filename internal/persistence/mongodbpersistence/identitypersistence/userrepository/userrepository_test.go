@@ -1,6 +1,6 @@
 //go:build integration
 
-package identitypersistence_test
+package userrepository_test
 
 import (
 	"os"
@@ -12,7 +12,7 @@ import (
 	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
 	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence"
+	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
 )
 
 func TestMain(m *testing.M) {
@@ -26,7 +26,7 @@ var userRepository user.UserRepository
 func setup() {
 	configProvider := infrastructure.EnvConfigurationProvider{}
 	dbStore := mongodbpersistence.NewMongoDBStoreBootstrap(configProvider)
-	userRepository = identitypersistence.NewMongoDBUserRepository(dbStore)
+	userRepository = userrepository.NewMongoDBUserRepository(dbStore)
 }
 
 func teardown() {

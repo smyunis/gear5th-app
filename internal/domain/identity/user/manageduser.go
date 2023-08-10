@@ -15,6 +15,17 @@ type ManagedUser struct {
 	hashedPassword string
 }
 
+func ReconstituteManagedUser(
+	userId shared.ID,
+	name PersonName,
+	hashedPassword string) ManagedUser {
+	return ManagedUser{
+		userId,
+		name,
+		hashedPassword,
+	}
+}
+
 func (m *ManagedUser) SetPassword(plainPassword string) error {
 	hashed, err := m.hashPlainPassword(plainPassword)
 	if err != nil {
@@ -27,6 +38,18 @@ func (m *ManagedUser) SetPassword(plainPassword string) error {
 func (m *ManagedUser) IsPasswordCorrect(plainPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(m.hashedPassword), []byte(plainPassword))
 	return err == nil
+}
+
+func (m *ManagedUser) Name() PersonName {
+	return m.name
+}
+
+func (m *ManagedUser) UserID() shared.ID {
+	return m.userId
+}
+
+func (m *ManagedUser) HashedPassword() string {
+	return m.hashedPassword
 }
 
 func (m *ManagedUser) hashPlainPassword(plainPassword string) ([]byte, error) {

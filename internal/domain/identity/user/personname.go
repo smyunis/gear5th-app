@@ -25,6 +25,6 @@ func NewPersonNameWithFullName(fullName string) PersonName {
 	}
 }
 
-func (p *PersonName) FullName() string {
+func (p PersonName) FullName() string {
 	return fmt.Sprintf("%s %s", p.firstName, p.lastName)
 }
