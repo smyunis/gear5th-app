@@ -6,8 +6,14 @@ import (
 
 	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 )
+
+type PublisherSignUpUnitOfWork interface {
+	Save(usr user.User, managedUser user.ManagedUser, pub publisher.Publisher) error
+	UserRepository() user.UserRepository
+}
 
 type PublisherSignUpInteractor struct {
 	unitOfWork PublisherSignUpUnitOfWork
