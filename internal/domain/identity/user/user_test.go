@@ -103,3 +103,34 @@ func TestAddsSignUpDateForuser(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestReconsUser(t *testing.T) {
+	userEmail, _ := user.NewEmail("smyunis@outlook.com")
+	u := user.NewUser(userEmail)
+	id := u.UserID()
+
+	ru := user.ReconstituteUser(id, userEmail,
+		u.PhoneNumber(), u.IsEmailVerified(),
+		u.Roles(), u.AuthenticationMethod(), u.SignUpDate())
+
+	if ru.Email() != u.Email() &&
+		ru.UserID() != u.UserID() &&
+		!ru.SignUpDate().Equal(u.SignUpDate()) {
+		t.Fatal("recons not equal")
+	}
+}
+
+func TestReonsManagedUser(t *testing.T) {
+	userEmail, _ := user.NewEmail("smyunis@outlook.com")
+	u := user.NewUser(userEmail)
+	id := u.UserID()
+	name := user.NewPersonNameWithFullName("Dracule Mihawk")
+	mu := u.AsManagedUser(name, "123456")
+
+	rmu := user.ReconstituteManagedUser(id, name, mu.HashedPassword())
+
+	if rmu.UserID() != mu.UserID() && rmu.Name() != mu.Name() {
+		t.Fatal("recons not equal")
+
+	}
+}

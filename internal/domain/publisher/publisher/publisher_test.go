@@ -1,6 +1,7 @@
 package publisher_test
 
 import (
+	"reflect"
 	"testing"
 
 	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
@@ -38,4 +39,16 @@ func TestAcknowledgeNotifications(t *testing.T) {
 		t.FailNow()
 	}
 
+}
+
+func TestReconsitutePublisher(t *testing.T) {
+	id := shared.NewID()
+	np := publisher.NewPublisher(id)
+	np.Notify(shared.NewNotification("Alert!"))
+
+	rp := publisher.ReconstitutePublisher(id, np.UnacknowledgedNotifications())
+
+	if !reflect.DeepEqual(rp, np) {
+		t.Fatal("reconstituted not equal")
+	}
 }

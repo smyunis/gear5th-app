@@ -7,13 +7,23 @@ type PublisherRepository interface {
 }
 
 type Publisher struct {
-	publisherUserId             shared.ID
+	userId             shared.ID
 	unacknowledgedNotifications []shared.Notification
 }
 
 func NewPublisher(userId shared.ID) Publisher {
 	return Publisher{
-		publisherUserId: userId,
+		userId:             userId,
+		unacknowledgedNotifications: make([]shared.Notification, 0),
+	}
+}
+
+func ReconstitutePublisher(
+	publisherUserId shared.ID,
+	unacknowledgedNotifications []shared.Notification) Publisher {
+	return Publisher{
+		publisherUserId,
+		unacknowledgedNotifications,
 	}
 }
 
@@ -29,4 +39,8 @@ func (p *Publisher) UnacknowledgedNotifications() []shared.Notification {
 
 func (p *Publisher) AcknowledgeNotifications() {
 	p.unacknowledgedNotifications = nil
+}
+
+func (p *Publisher) UserID() shared.ID {
+	return p.userId
 }
