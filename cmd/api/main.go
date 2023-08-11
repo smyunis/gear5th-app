@@ -8,7 +8,6 @@ import (
 
 	// Added to register domain event handlers in their init functions
 	"gitlab.com/gear5th/gear5th-api/internal/application"
-	_ "gitlab.com/gear5th/gear5th-api/internal/infrastructure/mail/identityemail"
 )
 
 func main() {
@@ -39,6 +38,8 @@ func addRoutes(app *fiber.App) {
 	requestPasswordResetController := ioc.InitRequestPasswordResetController()
 	identityRouter.Add(requestPasswordResetController.Method, requestPasswordResetController.Path, requestPasswordResetController.RequestPasswordReset)
 
+	verifyEmailController := ioc.InitVerifyEmailController()
+	identityRouter.Add(verifyEmailController.Method, verifyEmailController.Path, verifyEmailController.VerifyEmail)
 }
 
 func registerEventHandlers() {

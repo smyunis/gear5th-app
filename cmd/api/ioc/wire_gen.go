@@ -65,6 +65,20 @@ func InitRequestPasswordResetController() identitycontrollers.RequestPasswordRes
 	return requestPasswordResetController
 }
 
+func InitVerifyEmailController() identitycontrollers.VerifyEmailController {
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
+	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
+	jwtAccessTokenGenerator := accesstoken.NewJwtAccessTokenGenenrator(envConfigurationProvider)
+	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider)
+	redisBootstrapper := rediskeyvaluestore.NewRedisBootstrapper(envConfigurationProvider)
+	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
+	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, redisKeyValueStore)
+	verifyEmailController := identitycontrollers.NewVerifyEmailController(managedUserInteractor)
+	return verifyEmailController
+}
+
 func InitVerifcationEmailSender() identityemail.VerifcationEmailSender {
 	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
 	redisBootstrapper := rediskeyvaluestore.NewRedisBootstrapper(envConfigurationProvider)

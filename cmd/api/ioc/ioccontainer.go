@@ -73,4 +73,5 @@ var Container wire.ProviderSet = wire.NewSet(
 	//Controllers
 	publishercontrollers.NewPublisherSignUpController,
 	identitycontrollers.NewManagedUserController,
+	identitycontrollers.NewVerifyEmailController,
 	identitycontrollers.NewRequestPasswordResetController)

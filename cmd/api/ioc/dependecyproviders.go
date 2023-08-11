@@ -25,6 +25,12 @@ func InitRequestPasswordResetController() identitycontrollers.RequestPasswordRes
 	return identitycontrollers.RequestPasswordResetController{}
 }
 
+func InitVerifyEmailController() identitycontrollers.VerifyEmailController {
+	wire.Build(Container)
+	return identitycontrollers.VerifyEmailController{}
+}
+
+
 // Event Handlers
 
 func InitVerifcationEmailSender() identityemail.VerifcationEmailSender {

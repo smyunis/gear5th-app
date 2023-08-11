@@ -93,7 +93,7 @@ func (m *ManagedUserInteractor) RequestResetPassword(email user.Email) error {
 
 	//Using shared.NewID()  generators abitlity to generate random strings to be used as token
 	token := shared.NewID().String()
-	err = m.kvStore.Save(m.passwordResetStorageKey(usr), token, 30*time.Minute)
+	err = m.kvStore.Save(PasswordResetStoreKey(usr.UserID().String()), token, 30*time.Minute)
 	if err != nil {
 		return err
 	}
@@ -113,7 +113,7 @@ func (m *ManagedUserInteractor) ResetPassword(email user.Email, newPassword, res
 		return identityinteractors.ErrEmailNotVerified
 	}
 
-	token, err := m.kvStore.Get(m.passwordResetStorageKey(u))
+	token, err := m.kvStore.Get(PasswordResetStoreKey(u.UserID().String()))
 	if err != nil {
 		return fmt.Errorf("reset password failed: %w", err)
 	}
@@ -135,6 +135,34 @@ func (m *ManagedUserInteractor) ResetPassword(email user.Email, newPassword, res
 	return nil
 }
 
-func (ManagedUserInteractor) passwordResetStorageKey(u user.User) string {
-	return fmt.Sprintf("identity:manageduser:%s:passwordresettoken", u.UserID().String())
+var ErrInvalidToken = errors.New("invalid or expired token")
+var ErrEntityNotFound = shared.NewEntityNotFoundError("", "")
+
+func (m *ManagedUserInteractor) VerifyEmail(userId shared.ID, token string) error {
+
+	storedToken, err := m.kvStore.Get(EmailVerificationTokenStoreKey(userId.String()))
+	if err != nil {
+		return ErrInvalidToken
+	}
+
+	if storedToken != token {
+		return ErrInvalidToken
+	}
+
+	u, err := m.userRepository.Get(context.Background(), userId)
+	if err != nil {
+		return ErrEntityNotFound
+	}
+
+	u.VerifyEmail()
+
+	return nil
+}
+
+func PasswordResetStoreKey(userId string) string {
+	return fmt.Sprintf("identity:user:%s:passwordresettoken", userId)
+}
+
+func EmailVerificationTokenStoreKey(userId string) string {
+	return fmt.Sprintf("identity:user:%s:emailverificationtoken", userId)
 }
