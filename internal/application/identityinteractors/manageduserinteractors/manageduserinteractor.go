@@ -12,7 +12,9 @@ import (
 	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 )
 
-var ErrInvalidPasswordResetToken = errors.New("reset password token is invalid")
+var ErrInvalidToken = errors.New("invalid or expired token")
+// var ErrEntityNotFound = shared.NewEntityNotFoundError("", "")
+// var ErrInvalidPasswordResetToken = errors.New("reset password token is invalid")
 
 type RequestPasswordResetEmailService interface {
 	SendMail(u user.User, resetPasswordToken string) error
@@ -42,7 +44,6 @@ func NewManagedUserInteractor(
 }
 
 var ErrAuthorization = errors.New("authorization error")
-var ErrEmailUnverified = errors.New("email is not verified")
 
 func (m *ManagedUserInteractor) SignIn(email user.Email, password string) (string, error) {
 	u, err := m.credentialsValid(email, password)
@@ -51,7 +52,7 @@ func (m *ManagedUserInteractor) SignIn(email user.Email, password string) (strin
 	}
 
 	if !u.IsEmailVerified() {
-		return "", ErrEmailUnverified
+		return "", identityinteractors.ErrEmailNotVerified
 	}
 
 	return m.tokenGenerator.Generate(u.UserID())
@@ -93,7 +94,7 @@ func (m *ManagedUserInteractor) RequestResetPassword(email user.Email) error {
 
 	//Using shared.NewID()  generators abitlity to generate random strings to be used as token
 	token := shared.NewID().String()
-	err = m.kvStore.Save(PasswordResetStoreKey(usr.UserID().String()), token, 30*time.Minute)
+	err = m.kvStore.Save(PasswordResetTokenStoreKey(usr.UserID().String()), token, 30*time.Minute)
 	if err != nil {
 		return err
 	}
@@ -113,13 +114,13 @@ func (m *ManagedUserInteractor) ResetPassword(email user.Email, newPassword, res
 		return identityinteractors.ErrEmailNotVerified
 	}
 
-	token, err := m.kvStore.Get(PasswordResetStoreKey(u.UserID().String()))
+	token, err := m.kvStore.Get(PasswordResetTokenStoreKey(u.UserID().String()))
 	if err != nil {
-		return fmt.Errorf("reset password failed: %w", err)
+		return ErrInvalidToken
 	}
 
 	if token != resetToken {
-		return ErrInvalidPasswordResetToken
+		return ErrInvalidToken
 	}
 
 	managedUser, err := m.managedUserRepository.Get(context.Background(), u.UserID())
@@ -132,11 +133,15 @@ func (m *ManagedUserInteractor) ResetPassword(email user.Email, newPassword, res
 		return err
 	}
 
+	err = m.managedUserRepository.Save(context.Background(), managedUser)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-var ErrInvalidToken = errors.New("invalid or expired token")
-var ErrEntityNotFound = shared.NewEntityNotFoundError("", "")
+
 
 func (m *ManagedUserInteractor) VerifyEmail(userId shared.ID, token string) error {
 
@@ -151,7 +156,7 @@ func (m *ManagedUserInteractor) VerifyEmail(userId shared.ID, token string) erro
 
 	u, err := m.userRepository.Get(context.Background(), userId)
 	if err != nil {
-		return ErrEntityNotFound
+		return application.ErrEntityNotFound
 	}
 
 	u.VerifyEmail()
@@ -164,7 +169,7 @@ func (m *ManagedUserInteractor) VerifyEmail(userId shared.ID, token string) erro
 	return nil
 }
 
-func PasswordResetStoreKey(userId string) string {
+func PasswordResetTokenStoreKey(userId string) string {
 	return fmt.Sprintf("identity:user:%s:passwordresettoken", userId)
 }
 

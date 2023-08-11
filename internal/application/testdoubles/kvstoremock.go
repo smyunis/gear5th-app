@@ -3,7 +3,7 @@ package testdoubles
 import (
 	"time"
 
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
+	"gitlab.com/gear5th/gear5th-api/internal/application"
 )
 
 var cache map[string]string = make(map[string]string)
@@ -17,7 +17,7 @@ func NewKVStoreMock() KVStoreMock {
 func (KVStoreMock) Get(key string) (string, error) {
 	val, ok := cache[key]
 	if !ok {
-		return "", shared.NewEntityNotFoundError(key, "in memory store")
+		return "", application.ErrEntityNotFound
 	}
 	return val, nil
 }

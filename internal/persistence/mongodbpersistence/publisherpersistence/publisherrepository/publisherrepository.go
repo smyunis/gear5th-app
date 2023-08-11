@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
@@ -36,7 +37,7 @@ func (r MongoDBPublisherRepository) Get(ctx context.Context,id shared.ID) (publi
 
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return publisher.Publisher{}, shared.NewEntityNotFoundError(id.String(), "publishers")
+			return publisher.Publisher{}, application.ErrEntityNotFound
 		}
 		return publisher.Publisher{}, err
 	}

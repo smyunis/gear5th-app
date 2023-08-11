@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"unsafe"
 
+	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 )
@@ -18,7 +19,7 @@ func NewUserRepositoryStub() UserRepositoryStub {
 func (UserRepositoryStub) Get(ctx context.Context, id shared.ID) (user.User, error) {
 
 	if id != shared.ID("stub-id-xxx") {
-		return user.User{}, shared.NewEntityNotFoundError(id.String(), "user")
+		return user.User{}, application.ErrEntityNotFound
 	}
 
 	u := &user.User{}
@@ -48,7 +49,7 @@ func (usr UserRepositoryStub) UserWithEmail(ctx context.Context, email user.Emai
 
 		return usr, err
 	}
-	return user.User{}, shared.NewEntityNotFoundError(email.String(), "user")
+	return user.User{}, application.ErrEntityNotFound
 }
 
 type ManagedUserRepositoryStub struct{}
@@ -56,7 +57,7 @@ type ManagedUserRepositoryStub struct{}
 func (ManagedUserRepositoryStub) Get(ctx context.Context, id shared.ID) (user.ManagedUser, error) {
 
 	if id != shared.ID("stub-id-xxx") {
-		return user.ManagedUser{}, shared.NewEntityNotFoundError(id.String(), "user")
+		return user.ManagedUser{}, application.ErrEntityNotFound
 	}
 
 	u := &user.ManagedUser{}

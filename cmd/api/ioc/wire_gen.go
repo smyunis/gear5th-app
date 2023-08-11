@@ -31,9 +31,9 @@ func InitManagedUserController() identitycontrollers.ManagedUserController {
 	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	jwtAccessTokenGenerator := accesstoken.NewJwtAccessTokenGenenrator(envConfigurationProvider)
-	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider)
 	redisBootstrapper := rediskeyvaluestore.NewRedisBootstrapper(envConfigurationProvider)
 	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
+	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, redisKeyValueStore)
 	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, redisKeyValueStore)
 	managedUserController := identitycontrollers.NewManagedUserController(managedUserInteractor)
 	return managedUserController
@@ -57,9 +57,9 @@ func InitRequestPasswordResetController() identitycontrollers.RequestPasswordRes
 	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	jwtAccessTokenGenerator := accesstoken.NewJwtAccessTokenGenenrator(envConfigurationProvider)
-	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider)
 	redisBootstrapper := rediskeyvaluestore.NewRedisBootstrapper(envConfigurationProvider)
 	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
+	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, redisKeyValueStore)
 	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, redisKeyValueStore)
 	requestPasswordResetController := identitycontrollers.NewRequestPasswordResetController(managedUserInteractor)
 	return requestPasswordResetController
@@ -71,12 +71,26 @@ func InitVerifyEmailController() identitycontrollers.VerifyEmailController {
 	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	jwtAccessTokenGenerator := accesstoken.NewJwtAccessTokenGenenrator(envConfigurationProvider)
-	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider)
 	redisBootstrapper := rediskeyvaluestore.NewRedisBootstrapper(envConfigurationProvider)
 	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
+	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, redisKeyValueStore)
 	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, redisKeyValueStore)
 	verifyEmailController := identitycontrollers.NewVerifyEmailController(managedUserInteractor)
 	return verifyEmailController
+}
+
+func InitResetPasswordController() identitycontrollers.ResetPasswordController {
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
+	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
+	jwtAccessTokenGenerator := accesstoken.NewJwtAccessTokenGenenrator(envConfigurationProvider)
+	redisBootstrapper := rediskeyvaluestore.NewRedisBootstrapper(envConfigurationProvider)
+	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
+	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, redisKeyValueStore)
+	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, redisKeyValueStore)
+	resetPasswordController := identitycontrollers.NewResetPasswordController(managedUserInteractor)
+	return resetPasswordController
 }
 
 func InitVerifcationEmailSender() identityemail.VerifcationEmailSender {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
@@ -35,7 +36,7 @@ func (r MongoDBMangageUserRepository) Get(ctx context.Context,id shared.ID) (use
 	err := sr.Decode(&res)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return user.ManagedUser{}, shared.NewEntityNotFoundError(id.String(), "managed user")
+			return user.ManagedUser{}, application.ErrEntityNotFound
 		}
 		return user.ManagedUser{}, err
 	}

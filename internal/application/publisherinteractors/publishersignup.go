@@ -8,7 +8,6 @@ import (
 	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 )
 
 type PublisherSignUpUnitOfWork interface {
@@ -33,17 +32,17 @@ func (i *PublisherSignUpInteractor) ManagedUserSignUp(usr user.User, managedUser
 
 	if err == nil {
 		usr = existingUser
-	} else if !errors.As(err, &shared.ErrEntityNotFound{}) {
+	} else if !errors.Is(err, application.ErrEntityNotFound) {
 		return fmt.Errorf("get user failed: %w", err)
 	}
-	
+
 	if usr.HasRole(user.Publisher) {
 		return application.ErrConflictFound
 	}
-	
+
 	pub := usr.SignUpPublisher()
 
-	err = i.unitOfWork.Save(context.Background(),usr, managedUser, pub)
+	err = i.unitOfWork.Save(context.Background(), usr, managedUser, pub)
 
 	if err != nil {
 		return fmt.Errorf("signup publisher failed : %w", err)

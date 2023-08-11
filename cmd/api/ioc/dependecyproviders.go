@@ -30,6 +30,10 @@ func InitVerifyEmailController() identitycontrollers.VerifyEmailController {
 	return identitycontrollers.VerifyEmailController{}
 }
 
+func InitResetPasswordController() identitycontrollers.ResetPasswordController {
+	wire.Build(Container)
+	return identitycontrollers.ResetPasswordController{}
+}
 
 // Event Handlers
 

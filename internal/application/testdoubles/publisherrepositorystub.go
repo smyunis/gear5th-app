@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"unsafe"
 
+	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 )
@@ -14,7 +15,7 @@ type PublisherRepositoryStub struct{}
 func (p PublisherRepositoryStub) Get(ctx context.Context, id shared.ID) (publisher.Publisher, error) {
 
 	if id != shared.ID("stub-id-xxx") {
-		return publisher.Publisher{}, shared.NewEntityNotFoundError(id.String(), "publisher")
+		return publisher.Publisher{}, application.ErrEntityNotFound
 	}
 
 	pub := &publisher.Publisher{}

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
+	"gitlab.com/gear5th/gear5th-api/internal/application"
 )
 
 type RedisKeyValueStore struct {
@@ -22,7 +22,7 @@ func (s RedisKeyValueStore) Get(key string) (string, error) {
 	r := s.client.Get(context.Background(), key)
 	res, err := r.Result()
 	if err != nil {
-		return "", shared.NewEntityNotFoundError(key, "in memory cache")
+		return "", application.ErrEntityNotFound
 	}
 	return res, nil
 }

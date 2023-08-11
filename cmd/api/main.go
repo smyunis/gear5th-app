@@ -40,6 +40,10 @@ func addRoutes(app *fiber.App) {
 
 	verifyEmailController := ioc.InitVerifyEmailController()
 	identityRouter.Add(verifyEmailController.Method, verifyEmailController.Path, verifyEmailController.VerifyEmail)
+
+	resetPasswordController := ioc.InitResetPasswordController()
+	identityRouter.Add(resetPasswordController.Method, resetPasswordController.Path, resetPasswordController.ResetPassword)
+
 }
 
 func registerEventHandlers() {

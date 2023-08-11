@@ -8,6 +8,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers"
+	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-api/pkg/problemdetails"
@@ -46,8 +47,8 @@ func (c ManagedUserController) SignIn(ctx *fiber.Ctx) error {
 
 	token, err := c.interactor.SignIn(email, password)
 	if err != nil {
-		if errors.Is(err, manageduserinteractors.ErrEmailUnverified) {
-			return c.SendProblemDetails(ctx, fiber.StatusBadRequest,
+		if errors.Is(err, identityinteractors.ErrEmailNotVerified) {
+			return c.SendProblemDetails(ctx, fiber.StatusPreconditionRequired,
 				"Unverified Email",
 				fmt.Sprintf("email %s is not verified", email.String()))
 		}

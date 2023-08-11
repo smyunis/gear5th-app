@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"github.com/golang-jwt/jwt/v5"
+	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/testdoubles"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 )
 
 func TestMain(m *testing.M) {
@@ -223,7 +223,7 @@ func TestResetPasswordFailsForUnknownEmail(t *testing.T) {
 
 	err := interactor.ResetPassword(mymail, "newpass", resetToken)
 
-	if !errors.As(err, &shared.ErrEntityNotFound{}) {
+	if !errors.Is(err, application.ErrEntityNotFound) {
 		t.Fatal(err.Error())
 	}
 }
@@ -250,11 +250,10 @@ func TestResetPasswordFailsForUnknownResetToken(t *testing.T) {
 
 func TestResetPasswordForValidToken(t *testing.T) {
 	resetToken := "mypasswordresettoken"
-	kvstore.Save("identity:manageduser:passwordresettoken", resetToken, 0)
+	kvstore.Save(manageduserinteractors.PasswordResetTokenStoreKey("stub-id-xxx"), resetToken, 0)
 	mymail, _ := user.NewEmail("mymail@gmail.com")
 	err := interactor.ResetPassword(mymail, "newpass", "mypasswordresettoken")
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 }
-

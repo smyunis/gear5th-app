@@ -6,10 +6,10 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers"
+	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 )
 
 type emailStr struct {
@@ -46,8 +46,8 @@ func (c RequestPasswordResetController) RequestPasswordReset(ctx *fiber.Ctx) err
 
 	err = c.interactor.RequestResetPassword(email)
 	if err != nil {
-		notfoundErr := &shared.ErrEntityNotFound{}
-		if errors.As(err, notfoundErr) {
+
+		if errors.Is(err, application.ErrEntityNotFound) {
 			return c.SendProblemDetails(ctx, fiber.StatusNotFound,
 				"Email Not Registered",
 				"there is no user who signed up provided email")

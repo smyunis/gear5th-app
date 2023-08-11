@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
@@ -34,7 +35,7 @@ func (r MongoDBUserRepository) Get(ctx context.Context, id shared.ID) (user.User
 	err := resUser.Decode(&res)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return user.User{}, shared.NewEntityNotFoundError(id.String(), "user")
+			return user.User{}, application.ErrEntityNotFound
 		}
 		return user.User{}, err
 	}
@@ -69,7 +70,7 @@ func (r MongoDBUserRepository) UserWithEmail(ctx context.Context, email user.Ema
 	err := resUser.Decode(&res)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return user.User{}, shared.NewEntityNotFoundError(email.String(), "user")
+			return user.User{}, application.ErrEntityNotFound
 		}
 		return user.User{}, err
 	}
