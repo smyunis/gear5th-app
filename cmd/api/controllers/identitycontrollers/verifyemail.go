@@ -1,8 +1,6 @@
 package identitycontrollers
 
 import (
-	"errors"
-
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
@@ -27,29 +25,21 @@ func NewVerifyEmailController(interactor manageduserinteractors.ManagedUserInter
 func (c VerifyEmailController) VerifyEmail(ctx *fiber.Ctx) error {
 	//TODO This endpoint should redirect to a page upon failure and success
 
+	successPageURL := "https://www.google.com/"
+	failPageURL := "https://duckduckgo.com/"
+
 	userId := ctx.Params("userId")
 	token := ctx.Query("token")
 	if userId == "" || token == "" {
-		return c.SendProblemDetails(ctx, fiber.StatusBadRequest, "", "")
+		return ctx.Redirect(failPageURL)
 	}
 
 	uID := shared.ID(userId)
 	err := c.interactor.VerifyEmail(uID, token)
 
 	if err != nil {
-		if errors.Is(err, manageduserinteractors.ErrInvalidToken) {
-			return c.SendProblemDetails(ctx, fiber.StatusNotFound,
-				"Invalid Token",
-				"token is either invalid or has expired")
-		}
-		if errors.Is(err, manageduserinteractors.ErrEntityNotFound) {
-			return c.SendProblemDetails(ctx, fiber.StatusNotFound,
-				"User Not Found",
-				"user with provided ID is not signed up")
-		}
-		return c.SendProblemDetails(ctx, fiber.StatusInternalServerError, "", "")
+		return ctx.Redirect(failPageURL)
 	}
 
-	ctx.SendStatus(fiber.StatusOK)
-	return ctx.SendString("Email verified")
+	return ctx.Redirect(successPageURL)
 }

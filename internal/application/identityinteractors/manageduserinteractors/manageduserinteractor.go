@@ -156,6 +156,11 @@ func (m *ManagedUserInteractor) VerifyEmail(userId shared.ID, token string) erro
 
 	u.VerifyEmail()
 
+	err = m.userRepository.Save(context.Background(), u)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
