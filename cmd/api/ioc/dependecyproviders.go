@@ -6,8 +6,10 @@ import (
 	"github.com/google/wire"
 	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers/identitycontrollers"
 	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers/publishercontrollers"
+	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/mail/identityemail"
 )
 
+// API Controllers
 func InitManagedUserController() identitycontrollers.ManagedUserController {
 	wire.Build(Container)
 	return identitycontrollers.ManagedUserController{}
@@ -21,4 +23,11 @@ func InitPublisherSignUpController() publishercontrollers.PublisherSignUpControl
 func InitRequestPasswordResetController() identitycontrollers.RequestPasswordResetController {
 	wire.Build(Container)
 	return identitycontrollers.RequestPasswordResetController{}
+}
+
+// Event Handlers
+
+func InitVerifcationEmailSender() identityemail.VerifcationEmailSender {
+	wire.Build(Container)
+	return identityemail.VerifcationEmailSender{}
 }

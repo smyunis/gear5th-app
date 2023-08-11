@@ -24,6 +24,7 @@ import (
 
 // Injectors from dependecyproviders.go:
 
+// API Controllers
 func InitManagedUserController() identitycontrollers.ManagedUserController {
 	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
 	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
@@ -62,4 +63,12 @@ func InitRequestPasswordResetController() identitycontrollers.RequestPasswordRes
 	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, redisKeyValueStore)
 	requestPasswordResetController := identitycontrollers.NewRequestPasswordResetController(managedUserInteractor)
 	return requestPasswordResetController
+}
+
+func InitVerifcationEmailSender() identityemail.VerifcationEmailSender {
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	redisBootstrapper := rediskeyvaluestore.NewRedisBootstrapper(envConfigurationProvider)
+	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
+	verifcationEmailSender := identityemail.NewVerifcationEmailSender(envConfigurationProvider, redisKeyValueStore)
+	return verifcationEmailSender
 }

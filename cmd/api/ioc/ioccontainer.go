@@ -60,6 +60,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	// wire.Bind(new(manageduserinteractors.RequestPasswordResetEmailService), new(testdoubles.RequestResetPasswordEmailStub)),
 	wire.Bind(new(manageduserinteractors.RequestPasswordResetEmailService), new(identityemail.RequestPassordResetEmailService)),
 	
+	identityemail.NewVerifcationEmailSender,
 	
 	rediskeyvaluestore.NewRedisBootstrapper,
 	rediskeyvaluestore.NewRedisKeyValueStore,

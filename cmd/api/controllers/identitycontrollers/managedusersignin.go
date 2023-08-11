@@ -39,24 +39,19 @@ func (c ManagedUserController) SignIn(ctx *fiber.Ctx) error {
 
 	email, err := user.NewEmail(username)
 	if err != nil {
-		prob := problemdetails.NewProblemDetails(fiber.StatusBadRequest)
-		prob.Title = "Invalid Email"
-		prob.Detail = fmt.Sprintf("%s is not a valid email", email.String())
-		ctx.SendStatus(fiber.StatusBadRequest)
-		return ctx.JSON(prob)
+		return c.SendProblemDetails(ctx, fiber.StatusBadRequest,
+			"Invalid Email",
+			fmt.Sprintf("%s is not a valid email", email.String()))
 	}
 
 	token, err := c.interactor.SignIn(email, password)
 	if err != nil {
 		if errors.Is(err, manageduserinteractors.ErrEmailUnverified) {
-			prob := problemdetails.NewProblemDetails(fiber.StatusPreconditionRequired)
-			prob.Title = "Unverified Email"
-			prob.Detail = fmt.Sprintf("email %s is not verified", email.String())
-			ctx.SendStatus(fiber.StatusPreconditionRequired)
-			return ctx.JSON(prob)
+			return c.SendProblemDetails(ctx, fiber.StatusBadRequest,
+				"Unverified Email",
+				fmt.Sprintf("email %s is not verified", email.String()))
 		}
-		ctx.SendStatus(fiber.StatusUnauthorized)
-		return ctx.JSON(problemdetails.NewProblemDetails(fiber.StatusUnauthorized))
+		return c.SendProblemDetails(ctx, fiber.StatusUnauthorized, "", "")
 	}
 
 	return ctx.JSON(struct {

@@ -7,6 +7,7 @@ import (
 	"gitlab.com/gear5th/gear5th-api/cmd/api/ioc"
 
 	// Added to register domain event handlers in their init functions
+	"gitlab.com/gear5th/gear5th-api/internal/application"
 	_ "gitlab.com/gear5th/gear5th-api/internal/infrastructure/mail/identityemail"
 )
 
@@ -16,6 +17,8 @@ func main() {
 	if err != nil {
 		panic("could not load config file ./config/.env.*")
 	}
+
+	registerEventHandlers()
 
 	app := fiber.New()
 	app.Use(recover.New())
@@ -38,4 +41,7 @@ func addRoutes(app *fiber.App) {
 
 }
 
-
+func registerEventHandlers() {
+	emailVerificationSender := ioc.InitVerifcationEmailSender()
+	application.ApplicationEventDispatcher.AddHandler("user.signedup", emailVerificationSender.SendMail)
+}

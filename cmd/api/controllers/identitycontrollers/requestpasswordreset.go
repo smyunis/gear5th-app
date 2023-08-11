@@ -9,7 +9,7 @@ import (
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/pkg/problemdetails"
+	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 )
 
 type emailStr struct {
@@ -35,30 +35,29 @@ func (c RequestPasswordResetController) RequestPasswordReset(ctx *fiber.Ctx) err
 	var emailBody emailStr
 	err := ctx.BodyParser(&emailBody)
 	if err != nil {
-		ctx.SendStatus(fiber.StatusBadRequest)
-		return ctx.JSON(problemdetails.NewProblemDetails(fiber.StatusBadRequest))
+		return c.SendProblemDetails(ctx, fiber.StatusBadRequest, "", "")
 	}
 
 	email, err := user.NewEmail(emailBody.Email)
 	if err != nil {
-		probDetails := problemdetails.NewProblemDetails(fiber.StatusBadRequest)
-		probDetails.Title = "Invalid Email"
-		probDetails.Detail = fmt.Sprintf("%s is not a valid email", email.String())
-		ctx.SendStatus(fiber.StatusBadRequest)
-		return ctx.JSON(probDetails)
+		return c.SendProblemDetails(ctx, fiber.StatusBadRequest, "Invalid Email",
+			fmt.Sprintf("%s is not a valid email", email.String()))
 	}
 
 	err = c.interactor.RequestResetPassword(email)
 	if err != nil {
-		if errors.Is(err, identityinteractors.ErrEmailNotVerified) {
-			prob := problemdetails.NewProblemDetails(fiber.StatusPreconditionRequired)
-			prob.Title = "Unverified Email"
-			prob.Detail = fmt.Sprintf("email %s is not verified", email.String())
-			ctx.SendStatus(fiber.StatusPreconditionRequired)
-			return ctx.JSON(prob)
+		notfoundErr := &shared.ErrEntityNotFound{}
+		if errors.As(err, notfoundErr) {
+			return c.SendProblemDetails(ctx, fiber.StatusNotFound,
+				"Email Not Registered",
+				"there is no user who signed up provided email")
 		}
-		ctx.SendStatus(fiber.StatusInternalServerError)
-		return ctx.JSON(problemdetails.NewProblemDetails(fiber.StatusInternalServerError))
+		if errors.Is(err, identityinteractors.ErrEmailNotVerified) {
+			return c.SendProblemDetails(ctx, fiber.StatusPreconditionRequired,
+				"Unverified Email",
+				fmt.Sprintf("email %s is not verified", email.String()))
+		}
+		return c.SendProblemDetails(ctx, fiber.StatusInternalServerError, "", "")
 	}
 	ctx.SendStatus(fiber.StatusOK)
 	return ctx.Send(nil)
