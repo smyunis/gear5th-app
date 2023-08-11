@@ -10,6 +10,7 @@ import (
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/testdoubles"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 )
 
 func TestMain(m *testing.M) {
@@ -21,6 +22,7 @@ func TestMain(m *testing.M) {
 var userRepositoryStub user.UserRepository
 var managedUserRepositoryStub user.ManagedUserRepository
 var tokenGenerator identityinteractors.AccessTokenGenerator
+var kvstore = testdoubles.KVStoreMock{}
 
 var interactor manageduserinteractors.ManagedUserInteractor
 
@@ -33,7 +35,7 @@ func setup() {
 	interactor = manageduserinteractors.NewManagedUserInteractor(
 		userRepositoryStub,
 		managedUserRepositoryStub,
-		tokenGenerator, emailServiceStub)
+		tokenGenerator, emailServiceStub, kvstore)
 }
 
 func teardown() {
@@ -170,7 +172,7 @@ func TestResetPasswordRequestEmailIsSent(t *testing.T) {
 	interactor := manageduserinteractors.NewManagedUserInteractor(
 		userRepositoryStub,
 		managedUserRepositoryStub,
-		tokenGenerator, emailServiceSpy)
+		tokenGenerator, emailServiceSpy, kvstore)
 
 	mymail, _ := user.NewEmail("mymail@gmail.com")
 
@@ -192,7 +194,7 @@ func TestResetPasswordRequestEmailIsNotSentForUnknownEmail(t *testing.T) {
 	interactor := manageduserinteractors.NewManagedUserInteractor(
 		userRepositoryStub,
 		managedUserRepositoryStub,
-		tokenGenerator, emailServiceSpy)
+		tokenGenerator, emailServiceSpy, kvstore)
 
 	mymail, _ := user.NewEmail("yourmail@gmail.com")
 
@@ -205,3 +207,54 @@ func TestResetPasswordRequestEmailIsNotSentForUnknownEmail(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestResetPassword(t *testing.T) {
+	resetToken := "mypasswordresettoken"
+	kvstore.Save("identity:manageduser:passwordresettoken", resetToken, 0)
+	mymail, _ := user.NewEmail("mymail@gmail.com")
+
+	interactor.ResetPassword(mymail, "newpass", resetToken)
+}
+
+func TestResetPasswordFailsForUnknownEmail(t *testing.T) {
+	resetToken := "mypasswordresettoken"
+	kvstore.Save("identity:manageduser:passwordresettoken", resetToken, 0)
+	mymail, _ := user.NewEmail("yourmail@gmail.com")
+
+	err := interactor.ResetPassword(mymail, "newpass", resetToken)
+
+	if !errors.As(err, &shared.ErrEntityNotFound{}) {
+		t.Fatal(err.Error())
+	}
+}
+
+func TestResetPasswordFailsForUnverifiedEmail(t *testing.T) {
+	resetToken := "mypasswordresettoken"
+	kvstore.Save("identity:manageduser:passwordresettoken", resetToken, 0)
+	mymail, _ := user.NewEmail("somemail@gmail.com")
+
+	err := interactor.ResetPassword(mymail, "newpass", resetToken)
+
+	if !errors.Is(err, identityinteractors.ErrEmailNotVerified) {
+		t.Fatal(err.Error())
+	}
+}
+
+func TestResetPasswordFailsForUnknownResetToken(t *testing.T) {
+	mymail, _ := user.NewEmail("mymail@gmail.com")
+	err := interactor.ResetPassword(mymail, "newpass", "yourpasswordresettoken")
+	if err == nil {
+		t.Fatal(err.Error())
+	}
+}
+
+func TestResetPasswordForValidToken(t *testing.T) {
+	resetToken := "mypasswordresettoken"
+	kvstore.Save("identity:manageduser:passwordresettoken", resetToken, 0)
+	mymail, _ := user.NewEmail("mymail@gmail.com")
+	err := interactor.ResetPassword(mymail, "newpass", "mypasswordresettoken")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+}
+

@@ -19,7 +19,7 @@ func NewJwtAccessTokenGenenrator(config infrastructure.ConfigurationProvider) Jw
 }
 
 func (j JwtAccessTokenGenerator) Generate(subject shared.ID) (string, error) {
-	appDomain := j.config.Get("APP_DOMAIN", "api.gear5th.com")
+	appDomain := j.config.Get("APP_URL", "api.gear5th.com")
 	tokenClaims := jwt.RegisteredClaims{
 		Subject:   subject.String(),
 		Issuer:    appDomain,

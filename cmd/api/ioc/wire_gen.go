@@ -11,9 +11,10 @@ import (
 	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers/publishercontrollers"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/publisherinteractors"
-	"gitlab.com/gear5th/gear5th-api/internal/application/testdoubles"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/identity/accesstoken"
+	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/keyvaluestore/rediskeyvaluestore"
+	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/mail/identityemail"
 	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
 	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
 	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
@@ -29,8 +30,10 @@ func InitManagedUserController() identitycontrollers.ManagedUserController {
 	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	jwtAccessTokenGenerator := accesstoken.NewJwtAccessTokenGenenrator(envConfigurationProvider)
-	requestResetPasswordEmailStub := testdoubles.RequestResetPasswordEmailStub{}
-	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestResetPasswordEmailStub)
+	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider)
+	redisBootstrapper := rediskeyvaluestore.NewRedisBootstrapper(envConfigurationProvider)
+	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
+	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, redisKeyValueStore)
 	managedUserController := identitycontrollers.NewManagedUserController(managedUserInteractor)
 	return managedUserController
 }
@@ -53,8 +56,10 @@ func InitRequestPasswordResetController() identitycontrollers.RequestPasswordRes
 	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	jwtAccessTokenGenerator := accesstoken.NewJwtAccessTokenGenenrator(envConfigurationProvider)
-	requestResetPasswordEmailStub := testdoubles.RequestResetPasswordEmailStub{}
-	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestResetPasswordEmailStub)
+	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider)
+	redisBootstrapper := rediskeyvaluestore.NewRedisBootstrapper(envConfigurationProvider)
+	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
+	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, redisKeyValueStore)
 	requestPasswordResetController := identitycontrollers.NewRequestPasswordResetController(managedUserInteractor)
 	return requestPasswordResetController
 }

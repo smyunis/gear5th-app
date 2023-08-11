@@ -28,7 +28,7 @@ func NewMongoDBUserRepository(dbStore mongodbpersistence.MongoDBStore) MongoDBUs
 func (r MongoDBUserRepository) Get(ctx context.Context, id shared.ID) (user.User, error) {
 
 	users := r.db.Collection("users")
-	resUser := users.FindOne(context.Background(), bson.M{"_id": id.String()})
+	resUser := users.FindOne(ctx, bson.M{"_id": id.String()})
 
 	var res bson.M
 	err := resUser.Decode(&res)
@@ -51,7 +51,7 @@ func (r MongoDBUserRepository) Save(ctx context.Context, u user.User) error {
 	var dbEntry = mapUserToM(u)
 
 	updateOptions := options.Update().SetUpsert(true)
-	_, err := users.UpdateByID(context.Background(), id, bson.D{{"$set", dbEntry}}, updateOptions)
+	_, err := users.UpdateByID(ctx, id, bson.D{{"$set", dbEntry}}, updateOptions)
 
 	if err != nil {
 		return err

@@ -12,6 +12,10 @@ import (
 	"gitlab.com/gear5th/gear5th-api/pkg/problemdetails"
 )
 
+type emailStr struct {
+	Email string `json:"email"`
+}
+
 type RequestPasswordResetController struct {
 	controllers.Controller
 	interactor manageduserinteractors.ManagedUserInteractor
@@ -47,10 +51,10 @@ func (c RequestPasswordResetController) RequestPasswordReset(ctx *fiber.Ctx) err
 	err = c.interactor.RequestResetPassword(email)
 	if err != nil {
 		if errors.Is(err, identityinteractors.ErrEmailNotVerified) {
-			prob := problemdetails.NewProblemDetails(fiber.StatusPreconditionFailed)
+			prob := problemdetails.NewProblemDetails(fiber.StatusPreconditionRequired)
 			prob.Title = "Unverified Email"
 			prob.Detail = fmt.Sprintf("email %s is not verified", email.String())
-			ctx.SendStatus(fiber.StatusPreconditionFailed)
+			ctx.SendStatus(fiber.StatusPreconditionRequired)
 			return ctx.JSON(prob)
 		}
 		ctx.SendStatus(fiber.StatusInternalServerError)
@@ -58,8 +62,4 @@ func (c RequestPasswordResetController) RequestPasswordReset(ctx *fiber.Ctx) err
 	}
 	ctx.SendStatus(fiber.StatusOK)
 	return ctx.Send(nil)
-}
-
-type emailStr struct {
-	Email string `json:"email"`
 }

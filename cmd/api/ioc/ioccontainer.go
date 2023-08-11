@@ -6,6 +6,7 @@ import (
 	"github.com/google/wire"
 	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers/identitycontrollers"
 	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers/publishercontrollers"
+	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/publisherinteractors"
@@ -14,6 +15,8 @@ import (
 	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/identity/accesstoken"
+	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/keyvaluestore/rediskeyvaluestore"
+	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/mail/identityemail"
 	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
 	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
 	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
@@ -50,9 +53,17 @@ var Container wire.ProviderSet = wire.NewSet(
 	//Infrastructures
 	accesstoken.NewJwtAccessTokenGenenrator,
 	infrastructure.NewEnvConfigurationProvider,
+	identityemail.NewRequestPassordResetEmailService,
 	wire.Bind(new(identityinteractors.AccessTokenGenerator), new(accesstoken.JwtAccessTokenGenerator)),
-	wire.Bind(new(manageduserinteractors.RequestPasswordResetEmailService), new(testdoubles.RequestResetPasswordEmailStub)),
+	
 	wire.Bind(new(infrastructure.ConfigurationProvider), new(infrastructure.EnvConfigurationProvider)),
+	// wire.Bind(new(manageduserinteractors.RequestPasswordResetEmailService), new(testdoubles.RequestResetPasswordEmailStub)),
+	wire.Bind(new(manageduserinteractors.RequestPasswordResetEmailService), new(identityemail.RequestPassordResetEmailService)),
+	
+	
+	rediskeyvaluestore.NewRedisBootstrapper,
+	rediskeyvaluestore.NewRedisKeyValueStore,
+	wire.Bind(new(application.KeyValueStore), new(rediskeyvaluestore.RedisKeyValueStore)),
 
 	//Interactors
 	manageduserinteractors.NewManagedUserInteractor,

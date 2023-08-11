@@ -46,7 +46,7 @@ func (w MongoDBPublisherSignUpUnitOfWork) Save(ctx context.Context, usr user.Use
 
 	defer session.EndSession(context.Background())
 
-	err = mongo.WithSession(context.Background(), session, func(sc mongo.SessionContext) error {
+	err = mongo.WithSession(ctx, session, func(sc mongo.SessionContext) error {
 		err := session.StartTransaction(txnOptions)
 		if err != nil {
 			return err

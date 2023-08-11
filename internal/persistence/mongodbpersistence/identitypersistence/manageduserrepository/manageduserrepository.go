@@ -29,7 +29,7 @@ func (r MongoDBMangageUserRepository) Get(ctx context.Context,id shared.ID) (use
 
 	managedUsers := r.db.Collection("managedUsers")
 
-	sr := managedUsers.FindOne(context.Background(), bson.D{{"_id", id.String()}})
+	sr := managedUsers.FindOne(ctx, bson.D{{"_id", id.String()}})
 
 	var res bson.M
 	err := sr.Decode(&res)
@@ -59,7 +59,7 @@ func (r MongoDBMangageUserRepository) Save(ctx context.Context,u user.ManagedUse
 	}
 
 	updateOptions := options.Update().SetUpsert(true)
-	_, err := managedUsers.UpdateByID(context.Background(), u.UserID().String(), bson.D{{"$set", mu}}, updateOptions)
+	_, err := managedUsers.UpdateByID(ctx, u.UserID().String(), bson.D{{"$set", mu}}, updateOptions)
 
 	if err != nil {
 		return err

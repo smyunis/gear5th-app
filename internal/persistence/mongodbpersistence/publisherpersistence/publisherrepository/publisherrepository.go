@@ -29,7 +29,7 @@ func (r MongoDBPublisherRepository) Get(ctx context.Context,id shared.ID) (publi
 
 	publishers := r.db.Collection("publishers")
 
-	sr := publishers.FindOne(context.Background(), bson.D{{"_id", id.String()}})
+	sr := publishers.FindOne(ctx, bson.D{{"_id", id.String()}})
 
 	var res bson.M
 	err := sr.Decode(&res)
@@ -52,7 +52,7 @@ func (r MongoDBPublisherRepository) Save(ctx context.Context,pub publisher.Publi
 	p := mapPublisherToM(pub)
 
 	updateOptions := options.Update().SetUpsert(true)
-	_, err := publishers.UpdateByID(context.Background(), pub.UserID().String(),
+	_, err := publishers.UpdateByID(ctx, pub.UserID().String(),
 		bson.D{{"$set", p}}, updateOptions)
 
 	if err != nil {

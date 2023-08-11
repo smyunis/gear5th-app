@@ -1,6 +1,8 @@
 package testdoubles
 
-import "gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
+import (
+	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
+)
 
 // This is not how spies are meant to be. This is a very bad implmentation
 
@@ -11,7 +13,7 @@ var (
 
 type RequestResetPasswordEmailSpy struct{}
 
-func (r RequestResetPasswordEmailSpy) SendMail(u user.User) error {
+func (r RequestResetPasswordEmailSpy) SendMail(u user.User, tok string) error {
 	sendMailCalled = true
 	sendMailArgUser = u
 	return nil
@@ -28,6 +30,6 @@ func RequestResetPasswordEmailSpyReset() {
 
 type RequestResetPasswordEmailStub struct{}
 
-func (r RequestResetPasswordEmailStub) SendMail(u user.User) error {
+func (r RequestResetPasswordEmailStub) SendMail(u user.User,token string) error {
 	return nil
 }
