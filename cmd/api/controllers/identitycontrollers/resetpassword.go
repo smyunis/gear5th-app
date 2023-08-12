@@ -6,6 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers"
+	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
@@ -55,6 +56,11 @@ func (c ResetPasswordController) ResetPassword(ctx *fiber.Ctx) error {
 
 	err = c.interactor.ResetPassword(email, resetPass.NewPassword, resetPass.Token)
 	if err != nil {
+		if errors.Is(err, application.ErrEntityNotFound) {
+			return c.SendProblemDetails(ctx, fiber.StatusNotFound,
+				"Email Not Registered",
+				"there is no user who signed up provided email")
+		}
 		if errors.Is(err, manageduserinteractors.ErrInvalidToken) {
 			return c.SendProblemDetails(ctx, fiber.StatusBadRequest,
 				"Invalid Reset Password Token",

@@ -59,6 +59,6 @@ func (c RequestPasswordResetController) RequestPasswordReset(ctx *fiber.Ctx) err
 		}
 		return c.SendProblemDetails(ctx, fiber.StatusInternalServerError, "", "")
 	}
-	ctx.SendStatus(fiber.StatusOK)
+	ctx.SendStatus(fiber.StatusAccepted)
 	return ctx.Send(nil)
 }
