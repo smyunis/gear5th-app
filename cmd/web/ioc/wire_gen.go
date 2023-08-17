@@ -7,8 +7,8 @@
 package ioc
 
 import (
-	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers/identitycontrollers"
-	"gitlab.com/gear5th/gear5th-api/cmd/api/controllers/publishercontrollers"
+	"gitlab.com/gear5th/gear5th-api/cmd/web/controllers/publish/identitycontrollers"
+	"gitlab.com/gear5th/gear5th-api/cmd/web/controllers/publish/publishercontrollers"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/publisherinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"

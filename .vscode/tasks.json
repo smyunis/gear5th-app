@@ -3,12 +3,12 @@
 	"tasks": [
 		{
 			"type": "go",
-			"label": "go: build api",
+			"label": "go: build web",
 			"command": "build",
 			"args": [
 				"-o",
-				"${workspaceFolder}/build/gear5th-api",
-				"./cmd/api/main.go"
+				"${workspaceFolder}/build/gear5th-web",
+				"./cmd/web/main.go"
 			],
 			"problemMatcher": [
 				"$go"
