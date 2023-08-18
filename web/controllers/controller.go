@@ -5,7 +5,14 @@ import (
 	"gitlab.com/gear5th/gear5th-api/pkg/problemdetails"
 )
 
+type ControllerRoute struct {
+	Method string
+	Path   string
+}
+type ControllerHandlers map[ControllerRoute]func(*fiber.Ctx) error
+
 type Controller struct {
+	// Handlers ControllerHandlers
 	Method string
 	Path   string
 }

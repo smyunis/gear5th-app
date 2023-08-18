@@ -2,7 +2,7 @@ package publish
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"gitlab.com/gear5th/gear5th-api/cmd/web/ioc"
+	"gitlab.com/gear5th/gear5th-api/web/ioc"
 )
 
 func Routes(app *fiber.App) {
@@ -10,7 +10,8 @@ func Routes(app *fiber.App) {
 	publishRouter := app.Group("/publish")
 
 	managedUserController := ioc.InitManagedUserController()
-	publishRouter.Add(managedUserController.Method, managedUserController.Path, managedUserController.SignIn)
+	publishRouter.Add(fiber.MethodGet, "/identity/signin", managedUserController.SignIn)
+	publishRouter.Add(fiber.MethodPost, "/identity/signin", managedUserController.ManagedUserSignIn)
 
 	publisherSignUpController := ioc.InitPublisherSignUpController()
 	publishRouter.Add(publisherSignUpController.Method, publisherSignUpController.Path, publisherSignUpController.ManagedUserSignUp)

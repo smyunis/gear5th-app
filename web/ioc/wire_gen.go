@@ -7,8 +7,6 @@
 package ioc
 
 import (
-	"gitlab.com/gear5th/gear5th-api/cmd/web/controllers/publish/identitycontrollers"
-	"gitlab.com/gear5th/gear5th-api/cmd/web/controllers/publish/publishercontrollers"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/publisherinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
@@ -20,6 +18,8 @@ import (
 	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
 	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
+	"gitlab.com/gear5th/gear5th-api/web/controllers/publish/identitycontrollers"
+	"gitlab.com/gear5th/gear5th-api/web/controllers/publish/publishercontrollers"
 )
 
 // Injectors from dependecyproviders.go:

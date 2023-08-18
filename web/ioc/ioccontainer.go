@@ -4,8 +4,8 @@ package ioc
 
 import (
 	"github.com/google/wire"
-	"gitlab.com/gear5th/gear5th-api/cmd/web/controllers/publish/identitycontrollers"
-	"gitlab.com/gear5th/gear5th-api/cmd/web/controllers/publish/publishercontrollers"
+	"gitlab.com/gear5th/gear5th-api/web/controllers/publish/identitycontrollers"
+	"gitlab.com/gear5th/gear5th-api/web/controllers/publish/publishercontrollers"
 	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"

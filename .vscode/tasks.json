@@ -8,7 +8,7 @@
 			"args": [
 				"-o",
 				"${workspaceFolder}/build/gear5th-web",
-				"./cmd/web/main.go"
+				"./web/main.go"
 			],
 			"problemMatcher": [
 				"$go"
