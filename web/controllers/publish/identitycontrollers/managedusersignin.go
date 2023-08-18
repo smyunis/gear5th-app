@@ -1,12 +1,23 @@
 package identitycontrollers
 
 import (
+	"errors"
+
 	"github.com/gofiber/fiber/v2"
+	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
+	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 )
 
+type MangedUserSigninPresenter struct {
+	HasValidationErrors       bool
+	HasNonValidationError     bool
+	NonValidationErrorMessage string
+	Email                     string
+	Password                  string
+}
+
 type ManagedUserController struct {
-	// controllers.Controller
 	interactor manageduserinteractors.ManagedUserInteractor
 }
 
@@ -16,54 +27,73 @@ func NewManagedUserController(interactor manageduserinteractors.ManagedUserInter
 	}
 }
 
-// GET
-func (c ManagedUserController) SignIn(ctx *fiber.Ctx) error {
+func (c *ManagedUserController) AddRoutes(router *fiber.Router) {
+	(*router).Add(fiber.MethodGet, "/identity/signin", c.Get)
+	(*router).Add(fiber.MethodPost, "/identity/signin", c.Post)
+}
 
+func (c ManagedUserController) Get(ctx *fiber.Ctx) error {
 	return ctx.Render("publish/identity/signin", nil, "publish/layouts/main")
 }
 
-type MangedUserSigninPresenter struct {
-	HasValidationErrors bool
-}
-
-// POST
-func (c ManagedUserController) ManagedUserSignIn(ctx *fiber.Ctx) error {
+func (c ManagedUserController) Post(ctx *fiber.Ctx) error {
 
 	userEmail := ctx.FormValue("email", "")
 	password := ctx.FormValue("password", "")
 
 	if userEmail == "" || password == "" {
-		// ctx.SendStatus(fiber.StatusUnauthorized)
 		return ctx.Render("publish/identity/signin", MangedUserSigninPresenter{
 			HasValidationErrors: true,
 		}, "publish/layouts/main")
 
 	}
 
-	return ctx.Render("publish/identity/signin", MangedUserSigninPresenter{
-		HasValidationErrors: true,
-	}, "publish/layouts/main")
+	email, err := user.NewEmail(userEmail)
+	if err != nil {
+		p := MangedUserSigninPresenter{
+			HasValidationErrors: true,
+			Email:               userEmail,
+			Password:            password,
+		}
+		return ctx.Render("publish/identity/signin", p, "publish/layouts/main")
+	}
 
-	// 	email, err := user.NewEmail(userEmail)
-	// 	if err != nil {
-	// 		return c.SendProblemDetails(ctx, fiber.StatusBadRequest,
-	// 			"Invalid Email",
-	// 			fmt.Sprintf("%s is not a valid email", email.String()))
-	// 	}
+	token, err := c.interactor.SignIn(email, password)
+	if err != nil {
+		if errors.Is(err, identityinteractors.ErrEmailNotVerified) {
+			p := MangedUserSigninPresenter{
+				HasNonValidationError:     true,
+				NonValidationErrorMessage: "Your email has not been verified yet. Click on the verification link sent to your email",
+				Email:                     userEmail,
+				Password:                  password,
+			}
+			return ctx.Render("publish/identity/signin", p, "publish/layouts/main")
 
-	// 	token, err := c.interactor.SignIn(email, password)
-	// 	if err != nil {
-	// 		if errors.Is(err, identityinteractors.ErrEmailNotVerified) {
-	// 			return c.SendProblemDetails(ctx, fiber.StatusPreconditionRequired,
-	// 				"Unverified Email",
-	// 				fmt.Sprintf("email %s is not verified", email.String()))
-	// 		}
-	// 		return c.SendProblemDetails(ctx, fiber.StatusUnauthorized, "", "")
-	// 	}
+		}
+		if errors.Is(err, manageduserinteractors.ErrAuthorization) {
+			p := MangedUserSigninPresenter{
+				HasValidationErrors: true,
+				Email:               userEmail,
+				Password:            password,
+			}
+			return ctx.Render("publish/identity/signin", p, "publish/layouts/main")
+		}
 
-	//		return ctx.JSON(struct {
-	//			AccessToken string `json:"accessToken"`
-	//		}{token})
-	//	}
+		p := MangedUserSigninPresenter{
+			HasNonValidationError:     true,
+			NonValidationErrorMessage: "We're unable to sign you at at the moment. Please try agian later",
+			Email:                     userEmail,
+			Password:                  password,
+		}
+		return ctx.Render("publish/identity/signin", p, "publish/layouts/main")
+	}
+
+	ctx.Cookie(&fiber.Cookie{
+		Name:  "gear5th-access-token",
+		Value: token,
+	})
+
+	// return ctx.RedirectToRoute("publish/identity/signin", p, "publish/layouts/main")
+	return ctx.Redirect("https://www.google.com")
 
 }

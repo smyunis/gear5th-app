@@ -1,12 +1,17 @@
 {{define "title"}}Publisher signin{{end}}
-<h1 class="text-amber-700">Sign in page </h1>
+<h1 class="text-stone-700">Sign in page </h1>
 
 {{if .HasValidationErrors}}
-<p class="text-red-700">Error present</p>
+<p class="text-red-700">Validation Error present</p>
 {{end}}
 
+{{if .HasNonValidationError}}
+<p class="text-red-700">{{.NonValidationErrorMessage}}</p>
+{{end}}
+
+
 <form method="post">
-    <input type="email" name="email" id="email" />
-    <input type="password" name="password" id="password">
+    <input type="email" name="email" id="email" value="{{.Email}}" />
+    <input type="password" name="password" id="password" value="{{.Password}}">
     <input type="submit" value="Submit">
 </form>

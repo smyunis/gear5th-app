@@ -10,8 +10,9 @@ func Routes(app *fiber.App) {
 	publishRouter := app.Group("/publish")
 
 	managedUserController := ioc.InitManagedUserController()
-	publishRouter.Add(fiber.MethodGet, "/identity/signin", managedUserController.SignIn)
-	publishRouter.Add(fiber.MethodPost, "/identity/signin", managedUserController.ManagedUserSignIn)
+	// publishRouter.Add(fiber.MethodGet, "/identity/signin", managedUserController.Get)
+	// publishRouter.Add(fiber.MethodPost, "/identity/signin", managedUserController.Post)
+	managedUserController.AddRoutes(&publishRouter)
 
 	publisherSignUpController := ioc.InitPublisherSignUpController()
 	publishRouter.Add(publisherSignUpController.Method, publisherSignUpController.Path, publisherSignUpController.ManagedUserSignUp)

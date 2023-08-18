@@ -13,6 +13,7 @@ import (
 )
 
 var ErrInvalidToken = errors.New("invalid or expired token")
+
 // var ErrEntityNotFound = shared.NewEntityNotFoundError("", "")
 // var ErrInvalidPasswordResetToken = errors.New("reset password token is invalid")
 
@@ -46,7 +47,7 @@ func NewManagedUserInteractor(
 var ErrAuthorization = errors.New("authorization error")
 
 func (m *ManagedUserInteractor) SignIn(email user.Email, password string) (string, error) {
-	u, err := m.credentialsValid(email, password)
+	u, err := m.CredentialsValid(email, password)
 	if err != nil {
 		return "", ErrAuthorization
 	}
@@ -58,7 +59,7 @@ func (m *ManagedUserInteractor) SignIn(email user.Email, password string) (strin
 	return m.tokenGenerator.Generate(u.UserID())
 }
 
-func (m *ManagedUserInteractor) credentialsValid(email user.Email, password string) (user.User, error) {
+func (m *ManagedUserInteractor) CredentialsValid(email user.Email, password string) (user.User, error) {
 
 	u, err := m.userRepository.UserWithEmail(context.Background(), email)
 	if err != nil {
@@ -140,8 +141,6 @@ func (m *ManagedUserInteractor) ResetPassword(email user.Email, newPassword, res
 
 	return nil
 }
-
-
 
 func (m *ManagedUserInteractor) VerifyEmail(userId shared.ID, token string) error {
 

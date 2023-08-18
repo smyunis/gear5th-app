@@ -8,8 +8,9 @@ import (
 type ControllerRoute struct {
 	Method string
 	Path   string
+	Handler func(*fiber.Ctx) error
 }
-type ControllerHandlers map[ControllerRoute]func(*fiber.Ctx) error
+type ControllerRoutes []ControllerRoute
 
 type Controller struct {
 	// Handlers ControllerHandlers
