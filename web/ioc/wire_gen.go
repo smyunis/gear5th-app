@@ -25,7 +25,7 @@ import (
 // Injectors from dependecyproviders.go:
 
 // API Controllers
-func InitManagedUserController() identitycontrollers.ManagedUserController {
+func InitManagedUserController() identitycontrollers.UserSignInController {
 	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
 	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
 	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
@@ -35,7 +35,7 @@ func InitManagedUserController() identitycontrollers.ManagedUserController {
 	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
 	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, redisKeyValueStore)
 	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, redisKeyValueStore)
-	managedUserController := identitycontrollers.NewManagedUserController(managedUserInteractor)
+	managedUserController := identitycontrollers.NewUserSignInController(managedUserInteractor)
 	return managedUserController
 }
 

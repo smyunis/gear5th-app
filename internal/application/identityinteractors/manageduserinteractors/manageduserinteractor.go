@@ -49,7 +49,10 @@ var ErrAuthorization = errors.New("authorization error")
 func (m *ManagedUserInteractor) SignIn(email user.Email, password string) (string, error) {
 	u, err := m.CredentialsValid(email, password)
 	if err != nil {
-		return "", ErrAuthorization
+		if errors.Is(err, application.ErrEntityNotFound) {
+			return "", ErrAuthorization
+		}
+		return "", err
 	}
 
 	if !u.IsEmailVerified() {
@@ -63,12 +66,18 @@ func (m *ManagedUserInteractor) CredentialsValid(email user.Email, password stri
 
 	u, err := m.userRepository.UserWithEmail(context.Background(), email)
 	if err != nil {
-		return u, ErrAuthorization
+		if errors.Is(err, application.ErrEntityNotFound) {
+			return u, ErrAuthorization
+		}
+		return u, err
 	}
 
 	managedUser, err := m.managedUserRepository.Get(context.Background(), u.UserID())
 	if err != nil {
-		return u, ErrAuthorization
+		if errors.Is(err, application.ErrEntityNotFound) {
+			return u, ErrAuthorization
+		}
+		return u, err
 	}
 
 	if email != u.Email() {

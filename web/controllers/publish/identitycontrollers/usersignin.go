@@ -2,6 +2,7 @@ package identitycontrollers
 
 import (
 	"errors"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
@@ -9,51 +10,52 @@ import (
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 )
 
-type MangedUserSigninPresenter struct {
-	HasValidationErrors       bool
+type UserSigninPresenter struct {
+	HasValidationError        bool
 	HasNonValidationError     bool
 	NonValidationErrorMessage string
 	Email                     string
 	Password                  string
 }
 
-type ManagedUserController struct {
+type UserSignInController struct {
 	interactor manageduserinteractors.ManagedUserInteractor
 }
 
-func NewManagedUserController(interactor manageduserinteractors.ManagedUserInteractor) ManagedUserController {
-	return ManagedUserController{
+func NewUserSignInController(interactor manageduserinteractors.ManagedUserInteractor) UserSignInController {
+	return UserSignInController{
 		interactor,
 	}
 }
 
-func (c *ManagedUserController) AddRoutes(router *fiber.Router) {
+func (c *UserSignInController) AddRoutes(router *fiber.Router) {
 	(*router).Add(fiber.MethodGet, "/identity/signin", c.Get)
 	(*router).Add(fiber.MethodPost, "/identity/signin", c.Post)
 }
 
-func (c ManagedUserController) Get(ctx *fiber.Ctx) error {
+func (*UserSignInController) Get(ctx *fiber.Ctx) error {
 	return ctx.Render("publish/identity/signin", nil, "publish/layouts/main")
 }
 
-func (c ManagedUserController) Post(ctx *fiber.Ctx) error {
+func (c *UserSignInController) Post(ctx *fiber.Ctx) error {
 
 	userEmail := ctx.FormValue("email", "")
 	password := ctx.FormValue("password", "")
+	staySignedIn := c.shouldStaySignedIn(ctx.FormValue("stay-signed-in", ""))
 
 	if userEmail == "" || password == "" {
-		return ctx.Render("publish/identity/signin", MangedUserSigninPresenter{
-			HasValidationErrors: true,
+		return ctx.Render("publish/identity/signin", UserSigninPresenter{
+			HasValidationError: true,
 		}, "publish/layouts/main")
 
 	}
 
 	email, err := user.NewEmail(userEmail)
 	if err != nil {
-		p := MangedUserSigninPresenter{
-			HasValidationErrors: true,
-			Email:               userEmail,
-			Password:            password,
+		p := UserSigninPresenter{
+			HasValidationError: true,
+			Email:              userEmail,
+			Password:           password,
 		}
 		return ctx.Render("publish/identity/signin", p, "publish/layouts/main")
 	}
@@ -61,7 +63,7 @@ func (c ManagedUserController) Post(ctx *fiber.Ctx) error {
 	token, err := c.interactor.SignIn(email, password)
 	if err != nil {
 		if errors.Is(err, identityinteractors.ErrEmailNotVerified) {
-			p := MangedUserSigninPresenter{
+			p := UserSigninPresenter{
 				HasNonValidationError:     true,
 				NonValidationErrorMessage: "Your email has not been verified yet. Click on the verification link sent to your email",
 				Email:                     userEmail,
@@ -71,29 +73,39 @@ func (c ManagedUserController) Post(ctx *fiber.Ctx) error {
 
 		}
 		if errors.Is(err, manageduserinteractors.ErrAuthorization) {
-			p := MangedUserSigninPresenter{
-				HasValidationErrors: true,
-				Email:               userEmail,
-				Password:            password,
+			p := UserSigninPresenter{
+				HasValidationError: true,
+				Email:              userEmail,
+				Password:           password,
 			}
 			return ctx.Render("publish/identity/signin", p, "publish/layouts/main")
 		}
 
-		p := MangedUserSigninPresenter{
+		p := UserSigninPresenter{
 			HasNonValidationError:     true,
-			NonValidationErrorMessage: "We're unable to sign you at at the moment. Please try agian later",
+			NonValidationErrorMessage: "We're unable to sign you in at the moment. Please try agian later",
 			Email:                     userEmail,
 			Password:                  password,
 		}
 		return ctx.Render("publish/identity/signin", p, "publish/layouts/main")
 	}
 
-	ctx.Cookie(&fiber.Cookie{
-		Name:  "gear5th-access-token",
-		Value: token,
-	})
+	if staySignedIn {
+		ctx.Cookie(&fiber.Cookie{
+			Name:     "gear5th-access-token",
+			Value:    token,
+			Path:     "/publish",
+			SameSite: "Lax",
+			Expires: time.Now().Add(720 * time.Hour), // 30 days
+			// Secure: true, //TODO Must be set in production once TLS is setup
+		})
+	}
 
-	// return ctx.RedirectToRoute("publish/identity/signin", p, "publish/layouts/main")
 	return ctx.Redirect("https://www.google.com")
+	// return ctx.RedirectToRoute("publish/identity/signin", p, "publish/layouts/main")
 
+}
+
+func (*UserSignInController) shouldStaySignedIn(formData string) bool {
+	return formData == "on"
 }

@@ -1,17 +1,56 @@
-{{define "title"}}Publisher signin{{end}}
-<h1 class="text-stone-700">Sign in page </h1>
+{{define "title"}}Publisher sign in{{end}}
 
-{{if .HasValidationErrors}}
-<p class="text-red-700">Validation Error present</p>
-{{end}}
+<div class=" h-full w-full p-20">
 
-{{if .HasNonValidationError}}
-<p class="text-red-700">{{.NonValidationErrorMessage}}</p>
-{{end}}
+    <div class="w-[472px] mx-auto px-9 py-8 bg-white rounded-sm shadow-sm">
 
+        <div class="w-full">
+            <img src="/assets/logo_with_title.png" alt="gear5th logo" class="mx-auto" width="150" height="150">
+        </div>
 
-<form method="post">
-    <input type="email" name="email" id="email" value="{{.Email}}" />
-    <input type="password" name="password" id="password" value="{{.Password}}">
-    <input type="submit" value="Submit">
-</form>
+        <div class="flex justify-between pt-9 pb-6">
+            <span class="text-2xl text-darkest font-bold">Sign in</span>
+            <span class="text-lg"><a href="#" class="text-secondary font-bold">Sign up</a> instead? </span>
+        </div>
+
+        {{if .HasValidationError}}
+        <div class="p-4 mb-6 border rounded-sm  bg-red-100 border-[#f16f6d] text-xs text-red-700 font-sans font-normal">
+            <span> That email and password combination didn't work. Try again.</span>
+        </div>
+        {{else if .HasNonValidationError}}
+        <div class="p-4 mb-6 border rounded-sm  bg-red-100 border-[#f16f6d] text-xs text-red-700 font-sans font-normal">
+            <span> {{.NonValidationErrorMessage}}</span>
+        </div>
+        {{end}}
+
+        <form method="post" class="text-dark my-4">
+            <div class="mb-4">
+                <label class="text-xs">Email</label>
+                <input type="email" name="email" id="email" value="{{.Email}}" required
+                    class="p-2 form-input block w-full rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+            </div>
+            <div class="mb-4">
+                <label class="text-xs">Password</label>
+                <input type="password" name="password" id="password" value="{{.Password}}" required
+                    class="p-2 form-input block w-full rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+            </div>
+            <div class="flex justify-between text-sm mb-4">
+                <div class="flex items-center">
+                    <input type="checkbox" name="stay-signed-in" id="stay-signed-in" checked
+                        class="form-checkbox text-primary mr-1 flex-none">
+                    <label for="stay-signed-in">
+                        Stay signed in for 30 days
+                    </label>
+                </div>
+                <div>
+                    <a href="#" class="font-bold underline">Forgot password?</a>
+                </div>
+            </div>
+            <div class="my-8">
+                <button type=" submit" class="w-full h-10 text-white bg-primary px-4 py-2 rounded-sm">
+                    Sign in
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
