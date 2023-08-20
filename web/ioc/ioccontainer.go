@@ -14,7 +14,7 @@ import (
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/identity/accesstoken"
+	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/identity/tokens"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/keyvaluestore/rediskeyvaluestore"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/mail/identityemail"
 	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
@@ -51,14 +51,19 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(publisherinteractors.PublisherSignUpUnitOfWork), new(publishersignupunitofwork.MongoDBPublisherSignUpUnitOfWork)),
 
 	//Infrastructures
-	accesstoken.NewJwtAccessTokenGenenrator,
+	tokens.NewJwtAccessTokenGenenrator,
 	infrastructure.NewEnvConfigurationProvider,
+	tokens.NewHS256HMACValidationService,
 	identityemail.NewRequestPassordResetEmailService,
-	wire.Bind(new(identityinteractors.AccessTokenGenerator), new(accesstoken.JwtAccessTokenGenerator)),
+	wire.Bind(new(identityinteractors.AccessTokenGenerator), new(tokens.JwtAccessTokenGenerator)),
+	wire.Bind(new(identityinteractors.DigitalSignatureValidationService), new(tokens.HS256HMACValidationService)),
+
+
 	
 	wire.Bind(new(infrastructure.ConfigurationProvider), new(infrastructure.EnvConfigurationProvider)),
 	// wire.Bind(new(manageduserinteractors.RequestPasswordResetEmailService), new(testdoubles.RequestResetPasswordEmailStub)),
 	wire.Bind(new(manageduserinteractors.RequestPasswordResetEmailService), new(identityemail.RequestPassordResetEmailService)),
+	wire.Bind(new(publisherinteractors.VerificationEmailService), new(identityemail.VerifcationEmailSender)),
 	
 	identityemail.NewVerifcationEmailSender,
 	
@@ -72,7 +77,7 @@ var Container wire.ProviderSet = wire.NewSet(
 
 	//Controllers
 	publishercontrollers.NewPublisherSignUpController,
-	identitycontrollers.NewManagedUserController,
+	identitycontrollers.NewUserSignInController,
 	identitycontrollers.NewVerifyEmailController,
 	identitycontrollers.NewResetPasswordController,
 	identitycontrollers.NewRequestPasswordResetController)

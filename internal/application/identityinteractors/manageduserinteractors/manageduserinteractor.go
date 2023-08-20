@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
@@ -13,9 +12,6 @@ import (
 )
 
 var ErrInvalidToken = errors.New("invalid or expired token")
-
-// var ErrEntityNotFound = shared.NewEntityNotFoundError("", "")
-// var ErrInvalidPasswordResetToken = errors.New("reset password token is invalid")
 
 type RequestPasswordResetEmailService interface {
 	SendMail(u user.User, resetPasswordToken string) error
@@ -27,6 +23,7 @@ type ManagedUserInteractor struct {
 	tokenGenerator        identityinteractors.AccessTokenGenerator
 	emailService          RequestPasswordResetEmailService
 	kvStore               application.KeyValueStore
+	signService           identityinteractors.DigitalSignatureValidationService
 }
 
 func NewManagedUserInteractor(
@@ -34,13 +31,15 @@ func NewManagedUserInteractor(
 	managedUserRepository user.ManagedUserRepository,
 	tokenGenerator identityinteractors.AccessTokenGenerator,
 	emailService RequestPasswordResetEmailService,
-	kvStore application.KeyValueStore) ManagedUserInteractor {
+	kvStore application.KeyValueStore,
+	signService identityinteractors.DigitalSignatureValidationService) ManagedUserInteractor {
 	return ManagedUserInteractor{
 		userRepository,
 		managedUserRepository,
 		tokenGenerator,
 		emailService,
 		kvStore,
+		signService,
 	}
 }
 
@@ -104,10 +103,15 @@ func (m *ManagedUserInteractor) RequestResetPassword(email user.Email) error {
 
 	//Using shared.NewID()  generators abitlity to generate random strings to be used as token
 	token := shared.NewID().String()
-	err = m.kvStore.Save(PasswordResetTokenStoreKey(usr.UserID().String()), token, 30*time.Minute)
+	token, err = m.signService.Generate(token)
 	if err != nil {
 		return err
 	}
+
+	// err = m.kvStore.Save(PasswordResetTokenStoreKey(usr.UserID().String()), token, 30*time.Minute)
+	// if err != nil {
+	// 	return err
+	// }
 
 	m.emailService.SendMail(usr, token)
 	return nil
@@ -124,12 +128,16 @@ func (m *ManagedUserInteractor) ResetPassword(email user.Email, newPassword, res
 		return identityinteractors.ErrEmailNotVerified
 	}
 
-	token, err := m.kvStore.Get(PasswordResetTokenStoreKey(u.UserID().String()))
-	if err != nil {
-		return ErrInvalidToken
-	}
+	// token, err := m.kvStore.Get(PasswordResetTokenStoreKey(u.UserID().String()))
+	// if err != nil {
+	// 	return ErrInvalidToken
+	// }
 
-	if token != resetToken {
+	// if token != resetToken {
+	// 	return ErrInvalidToken
+	// }
+
+	if !m.signService.Validate(resetToken) {
 		return ErrInvalidToken
 	}
 
@@ -153,12 +161,7 @@ func (m *ManagedUserInteractor) ResetPassword(email user.Email, newPassword, res
 
 func (m *ManagedUserInteractor) VerifyEmail(userId shared.ID, token string) error {
 
-	storedToken, err := m.kvStore.Get(EmailVerificationTokenStoreKey(userId.String()))
-	if err != nil {
-		return ErrInvalidToken
-	}
-
-	if storedToken != token {
+	if !m.signService.Validate(token) {
 		return ErrInvalidToken
 	}
 

@@ -3,22 +3,21 @@ package identityemail
 import (
 	"fmt"
 	"net/url"
-	"time"
 
-	"gitlab.com/gear5th/gear5th-api/internal/application"
-	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
+	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
 )
 
 type VerifcationEmailSender struct {
-	appURL  *url.URL
-	kvStore application.KeyValueStore
+	appURL             *url.URL
+	digitalSignService identityinteractors.DigitalSignatureValidationService
 }
 
-func NewVerifcationEmailSender(config infrastructure.ConfigurationProvider, kvStore application.KeyValueStore) VerifcationEmailSender {
-	appurlstr := config.Get("APP_URL", "https://api.gear5th.com")
+func NewVerifcationEmailSender(config infrastructure.ConfigurationProvider,
+	digitalSignService identityinteractors.DigitalSignatureValidationService) VerifcationEmailSender {
+	appurlstr := config.Get("APP_URL", "https://gear5th.com")
 	a, err := url.Parse(appurlstr)
 	if err != nil {
 		panic(err.Error())
@@ -26,32 +25,31 @@ func NewVerifcationEmailSender(config infrastructure.ConfigurationProvider, kvSt
 
 	return VerifcationEmailSender{
 		a,
-		kvStore,
+		digitalSignService,
 	}
 }
 
-func (s VerifcationEmailSender) SendMail(event any) {
-	signedUpUser := event.(user.UserCreatedEvent)
+func (s VerifcationEmailSender) SendMail(u user.User) error {
+	// TODO log errors that happen here
 
 	token := shared.NewID().String()
-
-	k := manageduserinteractors.EmailVerificationTokenStoreKey(signedUpUser.UserId.String())
-
-	err := s.kvStore.Save(k, token, 30*time.Minute)
+	token, err := s.digitalSignService.Generate(token)
 	if err != nil {
-		fmt.Printf("error saving to kv store : %s", err.Error())
+		return err
 	}
-	verificationURL := s.buildEmailVerificationURL(signedUpUser, token)
+
+	verificationURL := s.buildEmailVerificationURL(u.UserID().String(), token)
 
 	//TODO send email with link to verify email
 
-	fmt.Printf("Sending Verification Email to %s <-> %s\n", signedUpUser.Email.String(), verificationURL)
+	fmt.Printf("Sending Verification Email to %s <-> %s\n", u.Email().String(), verificationURL)
+	return nil
 
 }
 
-func (s VerifcationEmailSender) buildEmailVerificationURL(signedUpUser user.UserCreatedEvent, token string) string {
-	// <APP_URL>/identity/managed/{userId}/verify-email?token={token}
-	s.appURL.Path = fmt.Sprintf("/identity/managed/%s/verify-email", signedUpUser.UserId.String())
+func (s VerifcationEmailSender) buildEmailVerificationURL(signedUpUserID, token string) string {
+	// <APP_URL>/publish/identity/managed/{userId}/verify-email?token={token}
+	s.appURL.Path = fmt.Sprintf("/publish/identity/managed/%s/verify-email", signedUpUserID)
 	q := s.appURL.Query()
 	q.Set("token", token)
 	s.appURL.RawQuery = q.Encode()

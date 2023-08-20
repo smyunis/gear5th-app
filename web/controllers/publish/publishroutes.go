@@ -2,6 +2,7 @@ package publish
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"gitlab.com/gear5th/gear5th-api/web/controllers/publish/homecontrollers"
 	"gitlab.com/gear5th/gear5th-api/web/ioc"
 )
 
@@ -13,7 +14,11 @@ func Routes(app *fiber.App) {
 	managedUserController.AddRoutes(&publishRouter)
 
 	publisherSignUpController := ioc.InitPublisherSignUpController()
-	publishRouter.Add(publisherSignUpController.Method, publisherSignUpController.Path, publisherSignUpController.ManagedUserSignUp)
+	publisherSignUpController.AddRoutes(&publishRouter)
+
+	//TODO get from DI
+	homeController := homecontrollers.NewHomeController()
+	homeController.AddRoutes(&publishRouter)
 
 	requestPasswordResetController := ioc.InitRequestPasswordResetController()
 	publishRouter.Add(requestPasswordResetController.Method, requestPasswordResetController.Path, requestPasswordResetController.RequestPasswordReset)

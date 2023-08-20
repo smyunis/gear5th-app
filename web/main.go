@@ -6,8 +6,6 @@ import (
 	"github.com/gofiber/template/html/v2"
 	"github.com/joho/godotenv"
 	"gitlab.com/gear5th/gear5th-api/web/controllers/publish"
-	"gitlab.com/gear5th/gear5th-api/web/ioc"
-	"gitlab.com/gear5th/gear5th-api/internal/application"
 )
 
 func main() {
@@ -31,6 +29,4 @@ func main() {
 }
 
 func registerEventHandlers() {
-	emailVerificationSender := ioc.InitVerifcationEmailSender()
-	application.ApplicationEventDispatcher.AddHandler("user.signedup", emailVerificationSender.SendMail)
 }

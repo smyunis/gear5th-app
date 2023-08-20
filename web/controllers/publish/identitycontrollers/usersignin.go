@@ -29,15 +29,15 @@ func NewUserSignInController(interactor manageduserinteractors.ManagedUserIntera
 }
 
 func (c *UserSignInController) AddRoutes(router *fiber.Router) {
-	(*router).Add(fiber.MethodGet, "/identity/signin", c.Get)
-	(*router).Add(fiber.MethodPost, "/identity/signin", c.Post)
+	(*router).Add(fiber.MethodGet, "/identity/signin", c.userSignInOnGet)
+	(*router).Add(fiber.MethodPost, "/identity/signin", c.userSignInOnPost)
 }
 
-func (*UserSignInController) Get(ctx *fiber.Ctx) error {
+func (*UserSignInController) userSignInOnGet(ctx *fiber.Ctx) error {
 	return ctx.Render("publish/identity/signin", nil, "publish/layouts/main")
 }
 
-func (c *UserSignInController) Post(ctx *fiber.Ctx) error {
+func (c *UserSignInController) userSignInOnPost(ctx *fiber.Ctx) error {
 
 	userEmail := ctx.FormValue("email", "")
 	password := ctx.FormValue("password", "")
@@ -65,7 +65,7 @@ func (c *UserSignInController) Post(ctx *fiber.Ctx) error {
 		if errors.Is(err, identityinteractors.ErrEmailNotVerified) {
 			p := UserSigninPresenter{
 				HasNonValidationError:     true,
-				NonValidationErrorMessage: "Your email has not been verified yet. Click on the verification link sent to your email",
+				NonValidationErrorMessage: "Your email has not been verified yet. Click on the verification link sent to your email.",
 				Email:                     userEmail,
 				Password:                  password,
 			}
@@ -83,7 +83,7 @@ func (c *UserSignInController) Post(ctx *fiber.Ctx) error {
 
 		p := UserSigninPresenter{
 			HasNonValidationError:     true,
-			NonValidationErrorMessage: "We're unable to sign you in at the moment. Please try agian later",
+			NonValidationErrorMessage: "We're unable to sign you in at the moment. Try agian later.",
 			Email:                     userEmail,
 			Password:                  password,
 		}
@@ -92,11 +92,11 @@ func (c *UserSignInController) Post(ctx *fiber.Ctx) error {
 
 	if staySignedIn {
 		ctx.Cookie(&fiber.Cookie{
-			Name:     "gear5th-access-token",
+			Name:     AccessTokenCookieName(),
 			Value:    token,
 			Path:     "/publish",
 			SameSite: "Lax",
-			Expires: time.Now().Add(720 * time.Hour), // 30 days
+			Expires:  time.Now().Add(720 * time.Hour), // 30 days
 			// Secure: true, //TODO Must be set in production once TLS is setup
 		})
 	}
@@ -108,4 +108,8 @@ func (c *UserSignInController) Post(ctx *fiber.Ctx) error {
 
 func (*UserSignInController) shouldStaySignedIn(formData string) bool {
 	return formData == "on"
+}
+
+func AccessTokenCookieName() string {
+	return "gear5th-access-token"
 }

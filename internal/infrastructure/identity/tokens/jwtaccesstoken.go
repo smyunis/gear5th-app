@@ -1,4 +1,4 @@
-package accesstoken
+package tokens
 
 import (
 	"time"

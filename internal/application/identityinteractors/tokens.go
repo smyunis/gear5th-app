@@ -9,3 +9,8 @@ type AccessTokenGenerator interface {
 type AccessTokenValidator interface {
 	Validate(token string) error
 }
+
+type DigitalSignatureValidationService interface {
+	Generate(message string) (string, error)
+	Validate(hmacMessage string) bool
+}

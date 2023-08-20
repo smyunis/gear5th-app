@@ -10,9 +10,9 @@ import (
 )
 
 // API Controllers
-func InitManagedUserController() identitycontrollers.ManagedUserController {
+func InitManagedUserController() identitycontrollers.UserSignInController {
 	wire.Build(Container)
-	return identitycontrollers.ManagedUserController{}
+	return identitycontrollers.UserSignInController{}
 }
 
 func InitPublisherSignUpController() publishercontrollers.PublisherSignUpController {

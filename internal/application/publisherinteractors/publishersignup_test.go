@@ -22,7 +22,8 @@ func setup() {
 	// managedUserRepositoryStub := testdoubles.ManagedUserRepositoryStub{}
 	// pubRepoStub := testdoubles.PublisherRepositoryStub{}
 	pubSignupUnitOfWork := testdoubles.PublisherSignUpUnitOfWorkStub{}
-	interactor = publisherinteractors.NewPublisherSignUpInteractor(pubSignupUnitOfWork)
+	verfEmailServiceMock := testdoubles.VerificationEmailServiceMock{}
+	interactor = publisherinteractors.NewPublisherSignUpInteractor(pubSignupUnitOfWork,verfEmailServiceMock)
 }
 
 func teardown() {

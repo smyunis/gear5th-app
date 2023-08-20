@@ -23,6 +23,8 @@ var userRepositoryStub user.UserRepository
 var managedUserRepositoryStub user.ManagedUserRepository
 var tokenGenerator identityinteractors.AccessTokenGenerator
 var kvstore = testdoubles.KVStoreMock{}
+var digiSignService = testdoubles.DigitalSignatureValidationServiceMock{}
+
 
 var interactor manageduserinteractors.ManagedUserInteractor
 
@@ -35,7 +37,7 @@ func setup() {
 	interactor = manageduserinteractors.NewManagedUserInteractor(
 		userRepositoryStub,
 		managedUserRepositoryStub,
-		tokenGenerator, emailServiceStub, kvstore)
+		tokenGenerator, emailServiceStub, kvstore,digiSignService)
 }
 
 func teardown() {
@@ -172,7 +174,7 @@ func TestResetPasswordRequestEmailIsSent(t *testing.T) {
 	interactor := manageduserinteractors.NewManagedUserInteractor(
 		userRepositoryStub,
 		managedUserRepositoryStub,
-		tokenGenerator, emailServiceSpy, kvstore)
+		tokenGenerator, emailServiceSpy, kvstore,digiSignService)
 
 	mymail, _ := user.NewEmail("mymail@gmail.com")
 
@@ -191,10 +193,12 @@ func TestResetPasswordRequestEmailIsNotSentForUnknownEmail(t *testing.T) {
 	var emailServiceSpy = testdoubles.RequestResetPasswordEmailSpy{}
 	testdoubles.RequestResetPasswordEmailSpyReset()
 
+	digiSignService := testdoubles.DigitalSignatureValidationServiceMock{}
+
 	interactor := manageduserinteractors.NewManagedUserInteractor(
 		userRepositoryStub,
 		managedUserRepositoryStub,
-		tokenGenerator, emailServiceSpy, kvstore)
+		tokenGenerator, emailServiceSpy, kvstore, digiSignService)
 
 	mymail, _ := user.NewEmail("yourmail@gmail.com")
 
