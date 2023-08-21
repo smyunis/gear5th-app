@@ -22,7 +22,6 @@ type ManagedUserInteractor struct {
 	managedUserRepository user.ManagedUserRepository
 	tokenGenerator        identityinteractors.AccessTokenGenerator
 	emailService          RequestPasswordResetEmailService
-	kvStore               application.KeyValueStore
 	signService           identityinteractors.DigitalSignatureValidationService
 }
 
@@ -31,14 +30,12 @@ func NewManagedUserInteractor(
 	managedUserRepository user.ManagedUserRepository,
 	tokenGenerator identityinteractors.AccessTokenGenerator,
 	emailService RequestPasswordResetEmailService,
-	kvStore application.KeyValueStore,
 	signService identityinteractors.DigitalSignatureValidationService) ManagedUserInteractor {
 	return ManagedUserInteractor{
 		userRepository,
 		managedUserRepository,
 		tokenGenerator,
 		emailService,
-		kvStore,
 		signService,
 	}
 }
@@ -108,11 +105,6 @@ func (m *ManagedUserInteractor) RequestResetPassword(email user.Email) error {
 		return err
 	}
 
-	// err = m.kvStore.Save(PasswordResetTokenStoreKey(usr.UserID().String()), token, 30*time.Minute)
-	// if err != nil {
-	// 	return err
-	// }
-
 	m.emailService.SendMail(usr, token)
 	return nil
 }
@@ -127,15 +119,6 @@ func (m *ManagedUserInteractor) ResetPassword(email user.Email, newPassword, res
 	if !u.IsEmailVerified() {
 		return identityinteractors.ErrEmailNotVerified
 	}
-
-	// token, err := m.kvStore.Get(PasswordResetTokenStoreKey(u.UserID().String()))
-	// if err != nil {
-	// 	return ErrInvalidToken
-	// }
-
-	// if token != resetToken {
-	// 	return ErrInvalidToken
-	// }
 
 	if !m.signService.Validate(resetToken) {
 		return ErrInvalidToken

@@ -23,7 +23,7 @@ func main() {
 	})
 	app.Use(recover.New())
 	app.Static("/", "web/public")
-	publish.Routes(app)
+	publish.AddRoutes(app)
 
 	app.Listen(":5071")
 }

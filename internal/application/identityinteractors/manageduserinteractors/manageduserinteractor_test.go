@@ -37,7 +37,7 @@ func setup() {
 	interactor = manageduserinteractors.NewManagedUserInteractor(
 		userRepositoryStub,
 		managedUserRepositoryStub,
-		tokenGenerator, emailServiceStub, kvstore,digiSignService)
+		tokenGenerator, emailServiceStub,digiSignService)
 }
 
 func teardown() {
@@ -174,7 +174,7 @@ func TestResetPasswordRequestEmailIsSent(t *testing.T) {
 	interactor := manageduserinteractors.NewManagedUserInteractor(
 		userRepositoryStub,
 		managedUserRepositoryStub,
-		tokenGenerator, emailServiceSpy, kvstore,digiSignService)
+		tokenGenerator, emailServiceSpy,digiSignService)
 
 	mymail, _ := user.NewEmail("mymail@gmail.com")
 
@@ -198,7 +198,7 @@ func TestResetPasswordRequestEmailIsNotSentForUnknownEmail(t *testing.T) {
 	interactor := manageduserinteractors.NewManagedUserInteractor(
 		userRepositoryStub,
 		managedUserRepositoryStub,
-		tokenGenerator, emailServiceSpy, kvstore, digiSignService)
+		tokenGenerator, emailServiceSpy, digiSignService)
 
 	mymail, _ := user.NewEmail("yourmail@gmail.com")
 
