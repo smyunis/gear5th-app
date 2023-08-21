@@ -5,60 +5,79 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
-	"gitlab.com/gear5th/gear5th-api/web/controllers"
 	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
 )
 
-type emailStr struct {
-	Email string `json:"email"`
+type requestPasswordResetPresenter struct {
+	Email string
+	ErrorMessage string
 }
 
 type RequestPasswordResetController struct {
-	controllers.Controller
 	interactor manageduserinteractors.ManagedUserInteractor
 }
 
 func NewRequestPasswordResetController(interactor manageduserinteractors.ManagedUserInteractor) RequestPasswordResetController {
 	return RequestPasswordResetController{
-		controllers.Controller{
-			fiber.MethodPost,
-			"/identity/managed/request-password-reset",
-		},
 		interactor,
 	}
 }
 
-func (c RequestPasswordResetController) RequestPasswordReset(ctx *fiber.Ctx) error {
-	var emailBody emailStr
-	err := ctx.BodyParser(&emailBody)
-	if err != nil {
-		return c.SendProblemDetails(ctx, fiber.StatusBadRequest, "", "")
+func (c *RequestPasswordResetController) AddRoutes(router *fiber.Router) {
+	(*router).Add(fiber.MethodGet, "/identity/managed/request-password-reset", c.onGet)
+	(*router).Add(fiber.MethodPost, "/identity/managed/request-password-reset", c.onPost)
+}
+
+func (c RequestPasswordResetController) onGet(ctx *fiber.Ctx) error {
+	return ctx.Render("publish/identity/managed/request-password-reset", nil, "publish/layouts/main")
+}
+
+func (c RequestPasswordResetController) onPost(ctx *fiber.Ctx) error {
+	e := ctx.FormValue("email", "")
+	if e == "" {
+		p := requestPasswordResetPresenter{
+			Email: e,
+			ErrorMessage: "Invalid email. Check and try again.",
+		}
+		return ctx.Render("publish/identity/managed/request-password-reset", p, "publish/layouts/main")
 	}
 
-	email, err := user.NewEmail(emailBody.Email)
+	email, err := user.NewEmail(e)
 	if err != nil {
-		return c.SendProblemDetails(ctx, fiber.StatusBadRequest, "Invalid Email",
-			fmt.Sprintf("%s is not a valid email", email.String()))
+		p := requestPasswordResetPresenter{
+			ErrorMessage: fmt.Sprintf("%s is not a valid email. Check and try agian.", e),
+		}
+		return ctx.Render("publish/identity/managed/request-password-reset", p, "publish/layouts/main")
 	}
 
 	err = c.interactor.RequestResetPassword(email)
 	if err != nil {
 
 		if errors.Is(err, application.ErrEntityNotFound) {
-			return c.SendProblemDetails(ctx, fiber.StatusNotFound,
-				"Email Not Registered",
-				"there is no user who signed up provided email")
+			p := requestPasswordResetPresenter{
+				Email: e,
+				ErrorMessage: "There is no user who signed up with that email. Check and try agian.",
+			}
+			return ctx.Render("publish/identity/managed/request-password-reset", p, "publish/layouts/main")
 		}
 		if errors.Is(err, identityinteractors.ErrEmailNotVerified) {
-			return c.SendProblemDetails(ctx, fiber.StatusPreconditionRequired,
-				"Unverified Email",
-				fmt.Sprintf("email %s is not verified", email.String()))
+			p := requestPasswordResetPresenter{
+				Email: e,
+				ErrorMessage: "Your email has not been verified by our system. Click on a verification link sent to your email then try resetting your password again.",
+			}
+			return ctx.Render("publish/identity/managed/request-password-reset", p, "publish/layouts/main")
 		}
-		return c.SendProblemDetails(ctx, fiber.StatusInternalServerError, "", "")
+		p := requestPasswordResetPresenter{
+			Email: e,
+			ErrorMessage: "We're unable to reset your password at the moment. Try again later.",
+		}
+		return ctx.Render("publish/identity/managed/request-password-reset", p, "publish/layouts/main")
 	}
-	ctx.SendStatus(fiber.StatusAccepted)
-	return ctx.Send(nil)
+	p := requestPasswordResetPresenter{
+		Email: e,
+	}
+	return ctx.Render("publish/identity/managed/request-password-reset-success", p, "publish/layouts/main")
 }

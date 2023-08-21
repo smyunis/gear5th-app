@@ -3,7 +3,6 @@ package manageduserinteractors
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
@@ -98,9 +97,7 @@ func (m *ManagedUserInteractor) RequestResetPassword(email user.Email) error {
 		return identityinteractors.ErrEmailNotVerified
 	}
 
-	//Using shared.NewID()  generators abitlity to generate random strings to be used as token
-	token := shared.NewID().String()
-	token, err = m.signService.Generate(token)
+	token, err := m.signService.Generate(email.String())
 	if err != nil {
 		return err
 	}
@@ -111,6 +108,15 @@ func (m *ManagedUserInteractor) RequestResetPassword(email user.Email) error {
 
 func (m *ManagedUserInteractor) ResetPassword(email user.Email, newPassword, resetToken string) error {
 
+	hashedEmail, err := m.signService.GetMessage(resetToken)
+	if hashedEmail != email.String() || err != nil {
+		return ErrInvalidToken
+	}
+
+	if !m.signService.Validate(resetToken) {
+		return ErrInvalidToken
+	}
+
 	u, err := m.userRepository.UserWithEmail(context.Background(), email)
 	if err != nil {
 		return err
@@ -118,10 +124,6 @@ func (m *ManagedUserInteractor) ResetPassword(email user.Email, newPassword, res
 
 	if !u.IsEmailVerified() {
 		return identityinteractors.ErrEmailNotVerified
-	}
-
-	if !m.signService.Validate(resetToken) {
-		return ErrInvalidToken
 	}
 
 	managedUser, err := m.managedUserRepository.Get(context.Background(), u.UserID())
@@ -163,10 +165,10 @@ func (m *ManagedUserInteractor) VerifyEmail(userId shared.ID, token string) erro
 	return nil
 }
 
-func PasswordResetTokenStoreKey(userId string) string {
-	return fmt.Sprintf("identity:user:%s:passwordresettoken", userId)
-}
+// func PasswordResetTokenStoreKey(userId string) string {
+// 	return fmt.Sprintf("identity:user:%s:passwordresettoken", userId)
+// }
 
-func EmailVerificationTokenStoreKey(userId string) string {
-	return fmt.Sprintf("identity:user:%s:emailverificationtoken", userId)
-}
+// func EmailVerificationTokenStoreKey(userId string) string {
+// 	return fmt.Sprintf("identity:user:%s:emailverificationtoken", userId)
+// }

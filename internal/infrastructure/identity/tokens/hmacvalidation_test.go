@@ -45,3 +45,20 @@ func TestCanVerifyGeneratedSigniture(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+
+func TestCanGetMessageFromGeneratedHash(t *testing.T) {
+	msg := "his.awsomemail@gmail.com"
+	hash, err := hservice.Generate(msg)
+	if err != nil {
+		t.FailNow()
+	}
+
+	m, err := hservice.GetMessage(hash)
+	if err != nil {
+		t.FailNow()
+	}
+	if m != msg {
+		t.FailNow()
+	}
+}

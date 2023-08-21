@@ -254,7 +254,7 @@ func TestResetPasswordFailsForUnknownResetToken(t *testing.T) {
 
 func TestResetPasswordForValidToken(t *testing.T) {
 	resetToken := "mypasswordresettoken"
-	kvstore.Save(manageduserinteractors.PasswordResetTokenStoreKey("stub-id-xxx"), resetToken, 0)
+	kvstore.Save("stub-id-xxx", resetToken, 0)
 	mymail, _ := user.NewEmail("mymail@gmail.com")
 	err := interactor.ResetPassword(mymail, "newpass", "mypasswordresettoken")
 	if err != nil {

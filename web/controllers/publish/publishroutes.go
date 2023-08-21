@@ -6,7 +6,7 @@ import (
 	"gitlab.com/gear5th/gear5th-api/web/ioc"
 )
 
-func AddRoutes(app *fiber.App) {
+func Routes(app *fiber.App) {
 
 	publishRouter := app.Group("/publish")
 
@@ -21,12 +21,11 @@ func AddRoutes(app *fiber.App) {
 	homeController.AddRoutes(&publishRouter)
 
 	requestPasswordResetController := ioc.InitRequestPasswordResetController()
-	publishRouter.Add(requestPasswordResetController.Method, requestPasswordResetController.Path, requestPasswordResetController.RequestPasswordReset)
+	requestPasswordResetController.AddRoutes(&publishRouter)
 
 	verifyEmailController := ioc.InitVerifyEmailController()
 	verifyEmailController.AddRoutes(&publishRouter)
 
 	resetPasswordController := ioc.InitResetPasswordController()
-	publishRouter.Add(resetPasswordController.Method, resetPasswordController.Path, resetPasswordController.ResetPassword)
-
+	resetPasswordController.AddRoutes(&publishRouter)
 }

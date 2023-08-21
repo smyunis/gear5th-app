@@ -8,74 +8,80 @@ import (
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/web/controllers"
 )
 
-type resetPassword struct {
-	Token       string `json:"token"`
-	Email       string `json:"email"`
-	NewPassword string `json:"newPassword"`
+type resetPasswordPresenter struct {
+	Email        string `form:"email"`
+	NewPassword  string `form:"new-password"`
+	Token        string `form:"token"`
+	UserID       string `form:"user-id"`
+	ErrorMessage string
 }
 
 type ResetPasswordController struct {
-	controllers.Controller
 	interactor manageduserinteractors.ManagedUserInteractor
 }
 
 func NewResetPasswordController(interactor manageduserinteractors.ManagedUserInteractor) ResetPasswordController {
 	return ResetPasswordController{
-		controllers.Controller{
-			Method: fiber.MethodGet,
-			Path:   "/identity/managed/:userID/reset-password",
-		},
 		interactor,
 	}
 }
 
-// http://localhost:5071/publish/identity/managed/01H8A9QYKP27CTS7D8E5F48H9M/reset-password?token=01H8AA6M7EBX3TJBG60T2W1DD5%2B989d017463acd69ccb60484860d1ab6a90d04c4f401d8b309f47964e7192346f
+func (c *ResetPasswordController) AddRoutes(router *fiber.Router) {
+	(*router).Add(fiber.MethodGet, "/identity/managed/:userID/reset-password", c.onGet)
+	(*router).Add(fiber.MethodPost, "/identity/managed/:userID/reset-password", c.onPost)
+}
 
-func (c ResetPasswordController) ResetPassword(ctx *fiber.Ctx) error {
-	// resetPass := &resetPassword{}
-	// err := ctx.BodyParser(resetPass)
+func (c ResetPasswordController) onGet(ctx *fiber.Ctx) error {
+
 	token := ctx.Query("token", "")
 	userID := ctx.Params("userID")
-	if userID == "" {
-		return c.SendProblemDetails(ctx, fiber.StatusBadRequest, "", "")
+	if userID == "" || token == "" {
+		return ctx.Render("publish/identity/managed/reset-password-result", false, "publish/layouts/main")
 	}
 
-	if token == "" {
-		return c.SendProblemDetails(ctx, fiber.StatusBadRequest,
-			"Missing Reset Password Token",
-			"valid reset password token must be provided")
+	presenter := &resetPasswordPresenter{
+		Token: token,
+		UserID: userID,
 	}
+	return ctx.Render("publish/identity/managed/reset-password", presenter, "publish/layouts/main")
 
-	email, err := user.NewEmail("mymail@gmail.com")
+}
+
+func (c ResetPasswordController) onPost(ctx *fiber.Ctx) error {
+
+	presenter := &resetPasswordPresenter{}
+	err := ctx.BodyParser(presenter)
 	if err != nil {
+		presenter.ErrorMessage = "There are one or more invalid inputs. Check and try again"
+		return ctx.Render("publish/identity/managed/reset-password", presenter, "publish/layouts/main")
 
-		return ctx.Redirect("https://bing.com")
 	}
 
-	//TODO get password from form
-	err = c.interactor.ResetPassword(email, "gokuisking", token)
+	email, err := user.NewEmail(presenter.Email)
+	if err != nil {
+		presenter.ErrorMessage = presenter.Email + " is not a valid email. Check and try again."
+		return ctx.Render("publish/identity/managed/reset-password", presenter, "publish/layouts/main")
+	}
+
+	err = c.interactor.ResetPassword(email, presenter.Email, presenter.Token)
 	if err != nil {
 		if errors.Is(err, application.ErrEntityNotFound) {
-			return c.SendProblemDetails(ctx, fiber.StatusNotFound,
-				"Email Not Registered",
-				"there is no user who signed up provided email")
+			presenter.ErrorMessage = "There is no user who signed up with that email. Check and try agian."
+			return ctx.Render("publish/identity/managed/reset-password", presenter, "publish/layouts/main")
 		}
 		if errors.Is(err, manageduserinteractors.ErrInvalidToken) {
-			return c.SendProblemDetails(ctx, fiber.StatusBadRequest,
-				"Invalid Reset Password Token",
-				"the reset password token provided is invalid or has expired")
+			presenter.ErrorMessage = "We're unable to reset your password. This may be due to the link sent to your email being altered or you have entered a wrong email. Check and try again."
+			return ctx.Render("publish/identity/managed/reset-password", presenter, "publish/layouts/main")
 		}
 		if errors.Is(err, identityinteractors.ErrEmailNotVerified) {
-			return c.SendProblemDetails(ctx, fiber.StatusPreconditionRequired,
-				"Unverified Email",
-				"your email is not verified")
+			presenter.ErrorMessage = "Your email has not been verified by our system. Click on a verification link sent to your email then try resetting your password again."
+			return ctx.Render("publish/identity/managed/reset-password", presenter, "publish/layouts/main")
 		}
-		return c.SendProblemDetails(ctx, fiber.StatusInternalServerError, "", "")
+		presenter.ErrorMessage = "We're unable to reset your password at the moment. Try again later."
+		return ctx.Render("publish/identity/managed/reset-password", presenter, "publish/layouts/main")
 	}
 
-	ctx.SendStatus(fiber.StatusCreated)
-	return ctx.Redirect("https://www.google.com")
+	return ctx.Render("publish/identity/managed/reset-password-result", true, "publish/layouts/main")
 }

@@ -13,4 +13,5 @@ type AccessTokenValidator interface {
 type DigitalSignatureValidationService interface {
 	Generate(message string) (string, error)
 	Validate(hmacMessage string) bool
+	GetMessage(hashed string) (string, error)
 }
