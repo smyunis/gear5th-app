@@ -15,10 +15,7 @@
         </div>
 
         {{if .ErrorMessage}}
-        <div id="error-message"
-            class="p-4 mb-6 border rounded-sm bg-red-100 border-[#f16f6d] text-xs text-red-700 font-sans font-normal">
-            {{.ErrorMessage}}
-        </div>
+        {{template "error-alert" .ErrorMessage}}
         {{end}}
 
         <form method="post" id="create-account-form" class="text-dark my-4">

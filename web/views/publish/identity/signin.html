@@ -10,17 +10,14 @@
 
         <div class="flex justify-between pt-9 pb-4">
             <span class="text-2xl text-darkest font-bold">Sign in</span>
-            <span class="text-lg"><a href="/publish/identity/signup" class="text-secondary font-bold">Sign up</a> instead? </span>
+            <span class="text-lg"><a href="/publish/identity/signup" class="text-secondary font-bold">Sign up</a>
+                instead? </span>
         </div>
 
         {{if .HasValidationError}}
-        <div class="p-4 mb-6 border rounded-sm  bg-red-100 border-[#f16f6d] text-xs text-red-700 font-sans font-normal">
-            <span> That email and password combination didn't work. Try again.</span>
-        </div>
+        {{template "error-alert" "That email and password combination didn't work. Try again."}}
         {{else if .HasNonValidationError}}
-        <div class="p-4 mb-6 border rounded-sm  bg-red-100 border-[#f16f6d] text-xs text-red-700 font-sans font-normal">
-            <span> {{.NonValidationErrorMessage}}</span>
-        </div>
+        {{template "error-alert" .NonValidationErrorMessage}}
         {{end}}
 
         <form method="post" class="text-dark my-4">
@@ -43,7 +40,8 @@
                     </label>
                 </div>
                 <div>
-                    <a href="/publish/identity/managed/request-password-reset" class="font-bold underline">Forgot password?</a>
+                    <a href="/publish/identity/managed/request-password-reset" class="font-bold underline">Forgot
+                        password?</a>
                 </div>
             </div>
             <div class="my-8">

@@ -65,7 +65,7 @@ func (c ResetPasswordController) onPost(ctx *fiber.Ctx) error {
 		return ctx.Render("publish/identity/managed/reset-password", presenter, "publish/layouts/main")
 	}
 
-	err = c.interactor.ResetPassword(email, presenter.Email, presenter.Token)
+	err = c.interactor.ResetPassword(email, presenter.NewPassword, presenter.Token)
 	if err != nil {
 		if errors.Is(err, application.ErrEntityNotFound) {
 			presenter.ErrorMessage = "There is no user who signed up with that email. Check and try agian."
