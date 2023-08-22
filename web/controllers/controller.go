@@ -4,7 +4,7 @@ import (
 	"html/template"
 
 	"github.com/gofiber/fiber/v2"
-	"gitlab.com/gear5th/gear5th-api/pkg/problemdetails"
+	"gitlab.com/gear5th/gear5th-app/pkg/problemdetails"
 )
 
 func MainLayoutTemplate() *template.Template {

@@ -1,4 +1,5 @@
-//go:build integration
+//go:build db
+
 package publisherrepository_test
 
 import (
@@ -8,11 +9,11 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/mongotestdoubles"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 )
 
 func TestMain(m *testing.M) {
@@ -24,7 +25,7 @@ func TestMain(m *testing.M) {
 var publisherRepository publisher.PublisherRepository
 
 func setup() {
-	configProvider := infrastructure.EnvConfigurationProvider{}
+	configProvider := mongotestdoubles.NewTestEnvConfigurationProvider()
 	dbStore := mongodbpersistence.NewMongoDBStoreBootstrap(configProvider)
 	publisherRepository = publisherrepository.NewMongoDBPublisherRepository(dbStore)
 }

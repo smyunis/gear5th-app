@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
-	"gitlab.com/gear5th/gear5th-api/internal/application"
+	"gitlab.com/gear5th/gear5th-app/internal/application"
 )
 
 type RedisKeyValueStore struct {

@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"gitlab.com/gear5th/gear5th-api/internal/application"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
+	"gitlab.com/gear5th/gear5th-app/internal/application"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -26,7 +26,7 @@ func NewMongoDBPublisherRepository(dbStore mongodbpersistence.MongoDBStore) Mong
 	}
 }
 
-func (r MongoDBPublisherRepository) Get(ctx context.Context,id shared.ID) (publisher.Publisher, error) {
+func (r MongoDBPublisherRepository) Get(ctx context.Context, id shared.ID) (publisher.Publisher, error) {
 
 	publishers := r.db.Collection("publishers")
 
@@ -47,7 +47,7 @@ func (r MongoDBPublisherRepository) Get(ctx context.Context,id shared.ID) (publi
 	return p, nil
 }
 
-func (r MongoDBPublisherRepository) Save(ctx context.Context,pub publisher.Publisher) error {
+func (r MongoDBPublisherRepository) Save(ctx context.Context, pub publisher.Publisher) error {
 	publishers := r.db.Collection("publishers")
 
 	p := mapPublisherToM(pub)

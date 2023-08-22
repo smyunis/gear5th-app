@@ -1,4 +1,4 @@
-module gitlab.com/gear5th/gear5th-api
+module gitlab.com/gear5th/gear5th-app
 
 go 1.21.0
 

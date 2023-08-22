@@ -9,8 +9,8 @@ import (
 	"regexp"
 	"strings"
 
-	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/site"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/site"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
 )
 
 type AdsTxtVerificationService struct {

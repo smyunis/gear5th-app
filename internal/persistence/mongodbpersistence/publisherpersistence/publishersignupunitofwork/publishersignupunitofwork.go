@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/writeconcern"

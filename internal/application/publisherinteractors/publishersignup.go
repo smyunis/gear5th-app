@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"gitlab.com/gear5th/gear5th-api/internal/application"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
+	"gitlab.com/gear5th/gear5th-app/internal/application"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
 )
 
 type VerificationEmailService interface {

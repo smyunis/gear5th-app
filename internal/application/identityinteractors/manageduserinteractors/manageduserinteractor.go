@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"gitlab.com/gear5th/gear5th-api/internal/application"
-	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
+	"gitlab.com/gear5th/gear5th-app/internal/application"
+	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 )
 
 var ErrInvalidToken = errors.New("invalid or expired token")

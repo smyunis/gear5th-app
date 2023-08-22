@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
 )
 
 type JwtAccessTokenGenerator struct {

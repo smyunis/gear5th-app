@@ -1,7 +1,7 @@
 package user
 
 import (
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 	"golang.org/x/crypto/bcrypt"
 )
 

@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"github.com/golang-jwt/jwt/v5"
-	"gitlab.com/gear5th/gear5th-api/internal/application"
-	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
-	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
-	"gitlab.com/gear5th/gear5th-api/internal/application/testdoubles"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-app/internal/application"
+	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors/manageduserinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/testdoubles"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 )
 
 func TestMain(m *testing.M) {
@@ -23,8 +23,7 @@ var userRepositoryStub user.UserRepository
 var managedUserRepositoryStub user.ManagedUserRepository
 var tokenGenerator identityinteractors.AccessTokenGenerator
 var kvstore = testdoubles.KVStoreMock{}
-var digiSignService = testdoubles.DigitalSignatureValidationServiceMock{}
-
+var digiSignService = &testdoubles.DigitalSignatureValidationServiceMock{}
 
 var interactor manageduserinteractors.ManagedUserInteractor
 
@@ -37,7 +36,7 @@ func setup() {
 	interactor = manageduserinteractors.NewManagedUserInteractor(
 		userRepositoryStub,
 		managedUserRepositoryStub,
-		tokenGenerator, emailServiceStub,digiSignService)
+		tokenGenerator, emailServiceStub, digiSignService)
 }
 
 func teardown() {
@@ -174,7 +173,7 @@ func TestResetPasswordRequestEmailIsSent(t *testing.T) {
 	interactor := manageduserinteractors.NewManagedUserInteractor(
 		userRepositoryStub,
 		managedUserRepositoryStub,
-		tokenGenerator, emailServiceSpy,digiSignService)
+		tokenGenerator, emailServiceSpy, digiSignService)
 
 	mymail, _ := user.NewEmail("mymail@gmail.com")
 
@@ -193,7 +192,7 @@ func TestResetPasswordRequestEmailIsNotSentForUnknownEmail(t *testing.T) {
 	var emailServiceSpy = testdoubles.RequestResetPasswordEmailSpy{}
 	testdoubles.RequestResetPasswordEmailSpyReset()
 
-	digiSignService := testdoubles.DigitalSignatureValidationServiceMock{}
+	digiSignService := &testdoubles.DigitalSignatureValidationServiceMock{}
 
 	interactor := manageduserinteractors.NewManagedUserInteractor(
 		userRepositoryStub,
@@ -221,8 +220,7 @@ func TestResetPassword(t *testing.T) {
 }
 
 func TestResetPasswordFailsForUnknownEmail(t *testing.T) {
-	resetToken := "mypasswordresettoken"
-	kvstore.Save("identity:manageduser:passwordresettoken", resetToken, 0)
+	resetToken := "yourmail@gmail.com xxx"
 	mymail, _ := user.NewEmail("yourmail@gmail.com")
 
 	err := interactor.ResetPassword(mymail, "newpass", resetToken)
@@ -233,8 +231,7 @@ func TestResetPasswordFailsForUnknownEmail(t *testing.T) {
 }
 
 func TestResetPasswordFailsForUnverifiedEmail(t *testing.T) {
-	resetToken := "mypasswordresettoken"
-	kvstore.Save("identity:manageduser:passwordresettoken", resetToken, 0)
+	resetToken := "somemail@gmail.com xxx"
 	mymail, _ := user.NewEmail("somemail@gmail.com")
 
 	err := interactor.ResetPassword(mymail, "newpass", resetToken)
@@ -253,10 +250,9 @@ func TestResetPasswordFailsForUnknownResetToken(t *testing.T) {
 }
 
 func TestResetPasswordForValidToken(t *testing.T) {
-	resetToken := "mypasswordresettoken"
-	kvstore.Save("stub-id-xxx", resetToken, 0)
+	resetToken := "mymail@gmail.com xxx"
 	mymail, _ := user.NewEmail("mymail@gmail.com")
-	err := interactor.ResetPassword(mymail, "newpass", "mypasswordresettoken")
+	err := interactor.ResetPassword(mymail, "newpass", resetToken)
 	if err != nil {
 		t.Fatal(err.Error())
 	}

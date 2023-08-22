@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"testing"
 
-	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/site"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/site"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 )
 
 func TestSiteHostnameVerification(t *testing.T) {

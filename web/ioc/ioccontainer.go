@@ -4,24 +4,24 @@ package ioc
 
 import (
 	"github.com/google/wire"
-	"gitlab.com/gear5th/gear5th-api/web/controllers/publish/identitycontrollers"
-	"gitlab.com/gear5th/gear5th-api/web/controllers/publish/publishercontrollers"
-	"gitlab.com/gear5th/gear5th-api/internal/application"
-	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
-	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
-	"gitlab.com/gear5th/gear5th-api/internal/application/publisherinteractors"
-	"gitlab.com/gear5th/gear5th-api/internal/application/testdoubles"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/identity/tokens"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/keyvaluestore/rediskeyvaluestore"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/mail/identityemail"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
+	"gitlab.com/gear5th/gear5th-app/internal/application"
+	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors/manageduserinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/testdoubles"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/tokens"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/keyvaluestore/rediskeyvaluestore"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/identitycontrollers"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/publishercontrollers"
 )
 
 var Container wire.ProviderSet = wire.NewSet(
@@ -58,15 +58,13 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(identityinteractors.AccessTokenGenerator), new(tokens.JwtAccessTokenGenerator)),
 	wire.Bind(new(identityinteractors.DigitalSignatureValidationService), new(tokens.HS256HMACValidationService)),
 
-
-	
 	wire.Bind(new(infrastructure.ConfigurationProvider), new(infrastructure.EnvConfigurationProvider)),
 	// wire.Bind(new(manageduserinteractors.RequestPasswordResetEmailService), new(testdoubles.RequestResetPasswordEmailStub)),
 	wire.Bind(new(manageduserinteractors.RequestPasswordResetEmailService), new(identityemail.RequestPassordResetEmailService)),
 	wire.Bind(new(publisherinteractors.VerificationEmailService), new(identityemail.VerifcationEmailSender)),
-	
+
 	identityemail.NewVerifcationEmailSender,
-	
+
 	rediskeyvaluestore.NewRedisBootstrapper,
 	rediskeyvaluestore.NewRedisKeyValueStore,
 	wire.Bind(new(application.KeyValueStore), new(rediskeyvaluestore.RedisKeyValueStore)),

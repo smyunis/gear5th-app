@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/url"
 
-	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
+	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
 )
 
 type VerifcationEmailSender struct {

@@ -4,9 +4,9 @@ import (
 	"os"
 	"testing"
 
-	"gitlab.com/gear5th/gear5th-api/internal/application/publisherinteractors"
-	"gitlab.com/gear5th/gear5th-api/internal/application/testdoubles"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/testdoubles"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 )
 
 func TestMain(m *testing.M) {
@@ -23,7 +23,7 @@ func setup() {
 	// pubRepoStub := testdoubles.PublisherRepositoryStub{}
 	pubSignupUnitOfWork := testdoubles.PublisherSignUpUnitOfWorkStub{}
 	verfEmailServiceMock := testdoubles.VerificationEmailServiceMock{}
-	interactor = publisherinteractors.NewPublisherSignUpInteractor(pubSignupUnitOfWork,verfEmailServiceMock)
+	interactor = publisherinteractors.NewPublisherSignUpInteractor(pubSignupUnitOfWork, verfEmailServiceMock)
 }
 
 func teardown() {
@@ -36,8 +36,3 @@ func TestPublisherManagedUserSignUp(t *testing.T) {
 
 	_ = interactor.ManagedUserSignUp(usr, manageduser)
 }
-
-
-
-
-

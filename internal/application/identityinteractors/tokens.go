@@ -1,6 +1,6 @@
 package identityinteractors
 
-import "gitlab.com/gear5th/gear5th-api/internal/domain/shared"
+import "gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 
 type AccessTokenGenerator interface {
 	Generate(subject shared.ID) (string, error)

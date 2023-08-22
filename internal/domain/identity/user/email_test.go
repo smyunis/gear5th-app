@@ -3,7 +3,7 @@ package user_test
 import (
 	"testing"
 
-	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 )
 
 func TestInvalid_email(t *testing.T) {

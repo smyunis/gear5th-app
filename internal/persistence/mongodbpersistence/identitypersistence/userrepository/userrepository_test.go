@@ -1,4 +1,4 @@
-//go:build integration
+//go:build db
 
 package userrepository_test
 
@@ -9,11 +9,11 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/mongotestdoubles"
 )
 
 func TestMain(m *testing.M) {
@@ -25,7 +25,7 @@ func TestMain(m *testing.M) {
 var userRepository user.UserRepository
 
 func setup() {
-	configProvider := infrastructure.EnvConfigurationProvider{}
+	configProvider := mongotestdoubles.NewTestEnvConfigurationProvider()
 	dbStore := mongodbpersistence.NewMongoDBStoreBootstrap(configProvider)
 	userRepository = userrepository.NewMongoDBUserRepository(dbStore)
 }
@@ -79,7 +79,6 @@ func TestGetUserByEmail(t *testing.T) {
 	ph, _ := user.NewPhoneNumber("0932383239")
 	id := shared.ID("id-email-sub-xxx")
 	bd := time.Date(2023, time.June, 3, 0, 0, 0, 0, time.Local)
-
 
 	u := user.ReconstituteUser(id, userEmail, ph, true,
 		[]user.UserRole{user.Publisher, user.Administrator}, user.Managed, bd)

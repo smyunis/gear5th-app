@@ -1,19 +1,19 @@
 package publisher
 
-import "gitlab.com/gear5th/gear5th-api/internal/domain/shared"
+import "gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 
 type PublisherRepository interface {
 	shared.EntityRepository[Publisher]
 }
 
 type Publisher struct {
-	userId             shared.ID
+	userId                      shared.ID
 	unacknowledgedNotifications []shared.Notification
 }
 
 func NewPublisher(userId shared.ID) Publisher {
 	return Publisher{
-		userId:             userId,
+		userId:                      userId,
 		unacknowledgedNotifications: make([]shared.Notification, 0),
 	}
 }

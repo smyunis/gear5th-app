@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
-	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/web/controllers"
+	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors/manageduserinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-app/web/controllers"
 )
 
 var signintemplate *template.Template

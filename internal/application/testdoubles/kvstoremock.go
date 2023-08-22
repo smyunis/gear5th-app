@@ -3,7 +3,7 @@ package testdoubles
 import (
 	"time"
 
-	"gitlab.com/gear5th/gear5th-api/internal/application"
+	"gitlab.com/gear5th/gear5th-app/internal/application"
 )
 
 var cache map[string]string = make(map[string]string)

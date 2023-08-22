@@ -8,8 +8,8 @@ import (
 	"os"
 	"testing"
 
-	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/site"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/siteverification"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/site"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
 )
 
 func TestMain(m *testing.M) {

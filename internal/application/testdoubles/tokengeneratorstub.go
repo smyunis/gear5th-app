@@ -1,6 +1,6 @@
 package testdoubles
 
-import "gitlab.com/gear5th/gear5th-api/internal/domain/shared"
+import "gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 
 type JwtAccessTokenGeneratorStub struct{}
 

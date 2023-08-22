@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/redis/go-redis/v9"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
 )
 
 var client *redis.Client

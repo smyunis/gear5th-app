@@ -1,4 +1,5 @@
-//go:build integration
+//go:build db
+
 package publishersignupunitofwork_test
 
 import (
@@ -7,16 +8,16 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/gear5th/gear5th-api/internal/application/publisherinteractors"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
+	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/mongotestdoubles"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
 )
 
 func TestMain(m *testing.M) {
@@ -30,7 +31,7 @@ func TestMain(m *testing.M) {
 var pubSignUpUnitOfWork publisherinteractors.PublisherSignUpUnitOfWork
 
 func setup() {
-	configProvider := infrastructure.EnvConfigurationProvider{}
+	configProvider := mongotestdoubles.NewTestEnvConfigurationProvider()
 	dbStore := mongodbpersistence.NewMongoDBStoreBootstrap(configProvider)
 	userRepository := userrepository.NewMongoDBUserRepository(dbStore)
 	managedUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(dbStore)

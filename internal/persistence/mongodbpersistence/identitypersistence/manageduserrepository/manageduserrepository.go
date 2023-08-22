@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"gitlab.com/gear5th/gear5th-api/internal/application"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
+	"gitlab.com/gear5th/gear5th-app/internal/application"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -25,8 +25,7 @@ func NewMongoDBMangageUserRepository(dbStore mongodbpersistence.MongoDBStore) Mo
 	}
 }
 
-
-func (r MongoDBMangageUserRepository) Get(ctx context.Context,id shared.ID) (user.ManagedUser, error) {
+func (r MongoDBMangageUserRepository) Get(ctx context.Context, id shared.ID) (user.ManagedUser, error) {
 
 	managedUsers := r.db.Collection("managedUsers")
 
@@ -50,7 +49,7 @@ func (r MongoDBMangageUserRepository) Get(ctx context.Context,id shared.ID) (use
 
 }
 
-func (r MongoDBMangageUserRepository) Save(ctx context.Context,u user.ManagedUser) error {
+func (r MongoDBMangageUserRepository) Save(ctx context.Context, u user.ManagedUser) error {
 	managedUsers := r.db.Collection("managedUsers")
 
 	mu := bson.M{

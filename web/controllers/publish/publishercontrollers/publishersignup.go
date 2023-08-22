@@ -6,10 +6,10 @@ import (
 	"html/template"
 
 	"github.com/gofiber/fiber/v2"
-	"gitlab.com/gear5th/gear5th-api/internal/application"
-	"gitlab.com/gear5th/gear5th-api/internal/application/publisherinteractors"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/web/controllers"
+	"gitlab.com/gear5th/gear5th-app/internal/application"
+	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-app/web/controllers"
 )
 
 var publisherSignUpTemplate *template.Template

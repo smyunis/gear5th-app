@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"time"
 
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 )
 
 type Site struct {

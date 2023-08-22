@@ -1,15 +1,22 @@
 package testdoubles
 
-type DigitalSignatureValidationServiceMock struct{}
+import "strings"
 
-func (m DigitalSignatureValidationServiceMock) Generate(message string) (string, error) {
-	return "token", nil
+type DigitalSignatureValidationServiceMock struct {
+	msg string
 }
 
-func (m DigitalSignatureValidationServiceMock) Validate(hmacMessage string) bool {
+var dsvMsg string
+
+func (m *DigitalSignatureValidationServiceMock) Generate(message string) (string, error) {
+	m.msg = message
+	return message + " xxx", nil
+}
+
+func (m *DigitalSignatureValidationServiceMock) Validate(hmacMessage string) bool {
 	return true
 }
 
-func (m DigitalSignatureValidationServiceMock) GetMessage(message string) (string, error) {
-	return "msg",nil
+func (m *DigitalSignatureValidationServiceMock) GetMessage(message string) (string, error) {
+	return strings.Split(message, " ")[0],nil
 }

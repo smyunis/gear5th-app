@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -30,7 +30,6 @@ func NewMongoDBStoreBootstrap(config infrastructure.ConfigurationProvider) Mongo
 func (m MongoDBStoreBootstrap) initDB() error {
 
 	if client == nil {
-		// connString := m.config.Get("MONGODB_URL", "mongodb://localhost:27017/?retryWrites=true&serverSelectionTimeoutMS=5000&connectTimeoutMS=10000")
 		connString := m.config.Get("MONGODB_URL", "")
 		clientOptions := options.Client().ApplyURI(connString)
 		var err error

@@ -4,9 +4,10 @@ import (
 	"reflect"
 	"testing"
 
-	"gitlab.com/gear5th/gear5th-api/internal/domain/publisher/publisher"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 	"slices"
+
+	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 )
 
 func TestCreateNewPublisher(t *testing.T) {

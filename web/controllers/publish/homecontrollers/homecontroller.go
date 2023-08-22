@@ -4,7 +4,7 @@ import (
 	"html/template"
 
 	"github.com/gofiber/fiber/v2"
-	"gitlab.com/gear5th/gear5th-api/web/controllers"
+	"gitlab.com/gear5th/gear5th-app/web/controllers"
 )
 
 var homeTemplate *template.Template

@@ -1,10 +1,12 @@
 package main
 
 import (
+	_ "embed"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
-	"gitlab.com/gear5th/gear5th-api/web/controllers/publish"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish"
 )
 
 func main() {
@@ -27,5 +29,3 @@ func main() {
 
 func registerEventHandlers() {
 }
-
-

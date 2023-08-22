@@ -1,4 +1,5 @@
-//go:build integration
+//go:build db
+
 package manageduserrepository_test
 
 import (
@@ -7,11 +8,11 @@ import (
 	"reflect"
 	"testing"
 
-	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/mongotestdoubles"
 )
 
 func TestMain(m *testing.M) {
@@ -23,7 +24,8 @@ func TestMain(m *testing.M) {
 var managedUserRepository user.ManagedUserRepository
 
 func setup() {
-	configProvider := infrastructure.EnvConfigurationProvider{}
+	configProvider := mongotestdoubles.NewTestEnvConfigurationProvider()
+
 	dbStore := mongodbpersistence.NewMongoDBStoreBootstrap(configProvider)
 	managedUserRepository = manageduserrepository.NewMongoDBMangageUserRepository(dbStore)
 }

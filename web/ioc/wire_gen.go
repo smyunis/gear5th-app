@@ -7,18 +7,18 @@
 package ioc
 
 import (
-	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
-	"gitlab.com/gear5th/gear5th-api/internal/application/publisherinteractors"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/identity/tokens"
-	"gitlab.com/gear5th/gear5th-api/internal/infrastructure/mail/identityemail"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
-	"gitlab.com/gear5th/gear5th-api/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
-	"gitlab.com/gear5th/gear5th-api/web/controllers/publish/identitycontrollers"
-	"gitlab.com/gear5th/gear5th-api/web/controllers/publish/publishercontrollers"
+	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors/manageduserinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/tokens"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/identitycontrollers"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/publishercontrollers"
 )
 
 // Injectors from dependecyproviders.go:
