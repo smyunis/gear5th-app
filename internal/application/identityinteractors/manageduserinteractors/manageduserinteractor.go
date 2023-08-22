@@ -144,13 +144,22 @@ func (m *ManagedUserInteractor) ResetPassword(email user.Email, newPassword, res
 	return nil
 }
 
-func (m *ManagedUserInteractor) VerifyEmail(userId shared.ID, token string) error {
+func (m *ManagedUserInteractor) VerifyEmail(userID shared.ID, token string) error {
+
+	tokenUserID, err := m.signService.GetMessage(token)
+	if err != nil {
+		return ErrInvalidToken
+	}
+
+	if tokenUserID != userID.String() {
+		return ErrInvalidToken
+	}
 
 	if !m.signService.Validate(token) {
 		return ErrInvalidToken
 	}
 
-	u, err := m.userRepository.Get(context.Background(), userId)
+	u, err := m.userRepository.Get(context.Background(), userID)
 	if err != nil {
 		return application.ErrEntityNotFound
 	}

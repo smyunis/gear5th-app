@@ -1,36 +1,29 @@
 {{define "title"}}Verify email | gear5th{{end}}
 
-<div class=" h-full w-full p-20">
+{{define "in-central-card"}}
 
-    <div class="w-[472px] mx-auto px-9 py-8 bg-white rounded-sm shadow-sm">
-
-        <div class="w-full">
-            <img src="/assets/logo_with_title.png" alt="gear5th logo" class="mx-auto" width="150" height="150">
-        </div>
-
-        {{if .IsSuccessful}}
-        <div class="py-10 text-left">
-            <h2 class="text-darkest font-bold text-2xl">
-                Your email has been verified
-            </h2>
-            <div class="my-8">
-                <a href="/publish/identity/signin">
-                    <button type="button" class="w-full h-10 text-white bg-primary px-4 py-2 rounded-sm">
-                        Go to Sign in
-                    </button>
-                </a>
-            </div>
-        </div>
-        {{else}}
-        <div class="py-10 text-left">
-            <h2 class="text-darkest font-bold text-2xl mb-4">
-                We're unable to verify your email
-            </h2>
-            <p class="text-base">
-               This may be due to the link sent to your email being altered. Check and try again.
-            </p>
-        </div>
-        {{end}}
-
+{{if .IsSuccessful}}
+<div class="py-10 text-left">
+    <h2 class="text-darkest font-bold text-2xl">
+        Your email has been verified
+    </h2>
+    <div class="my-8">
+        <a href="/publish/identity/signin">
+            <button type="button" class="w-full h-10 text-white bg-primary px-4 py-2 rounded-sm">
+                Go to Sign in
+            </button>
+        </a>
     </div>
 </div>
+{{else}}
+<div class="py-10 text-left">
+    <h2 class="text-darkest font-bold text-2xl mb-4">
+        We're unable to verify your email
+    </h2>
+    <p class="text-base">
+        This may be due to the link sent to your email being altered. Check and try again.
+    </p>
+</div>
+{{end}}
+
+{{end}}

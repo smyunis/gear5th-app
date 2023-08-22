@@ -2,13 +2,30 @@ package identitycontrollers
 
 import (
 	"errors"
+	"html/template"
 
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-api/internal/application"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-api/web/controllers"
 )
+
+var resetPasswordTemplate *template.Template
+var resetPasswordResultTemplate *template.Template
+
+func init() {
+	resetPasswordTemplate = template.Must(
+		controllers.MainLayoutTemplate().ParseFiles(
+			"web/views/publish/layouts/central-card.html",
+			"web/views/publish/identity/managed/reset-password.html"))
+
+	resetPasswordResultTemplate = template.Must(
+		controllers.MainLayoutTemplate().ParseFiles(
+			"web/views/publish/layouts/central-card.html",
+			"web/views/publish/identity/managed/reset-password-result.html"))
+}
 
 type resetPasswordPresenter struct {
 	Email        string `form:"email"`
@@ -38,15 +55,14 @@ func (c ResetPasswordController) onGet(ctx *fiber.Ctx) error {
 	token := ctx.Query("token", "")
 	userID := ctx.Params("userID")
 	if userID == "" || token == "" {
-		return ctx.Render("publish/identity/managed/reset-password-result", false, "publish/layouts/main")
+		return controllers.Render(ctx, resetPasswordResultTemplate, false)
 	}
 
 	presenter := &resetPasswordPresenter{
-		Token: token,
+		Token:  token,
 		UserID: userID,
 	}
-	return ctx.Render("publish/identity/managed/reset-password", presenter, "publish/layouts/main")
-
+	return controllers.Render(ctx, resetPasswordTemplate, presenter)
 }
 
 func (c ResetPasswordController) onPost(ctx *fiber.Ctx) error {
@@ -55,33 +71,31 @@ func (c ResetPasswordController) onPost(ctx *fiber.Ctx) error {
 	err := ctx.BodyParser(presenter)
 	if err != nil {
 		presenter.ErrorMessage = "There are one or more invalid inputs. Check and try again"
-		return ctx.Render("publish/identity/managed/reset-password", presenter, "publish/layouts/main")
+		return controllers.Render(ctx, resetPasswordTemplate, presenter)
 
 	}
 
 	email, err := user.NewEmail(presenter.Email)
 	if err != nil {
 		presenter.ErrorMessage = presenter.Email + " is not a valid email. Check and try again."
-		return ctx.Render("publish/identity/managed/reset-password", presenter, "publish/layouts/main")
+		return controllers.Render(ctx, resetPasswordTemplate, presenter)
+
 	}
 
 	err = c.interactor.ResetPassword(email, presenter.NewPassword, presenter.Token)
 	if err != nil {
-		if errors.Is(err, application.ErrEntityNotFound) {
+		switch {
+		case errors.Is(err, application.ErrEntityNotFound):
 			presenter.ErrorMessage = "There is no user who signed up with that email. Check and try agian."
-			return ctx.Render("publish/identity/managed/reset-password", presenter, "publish/layouts/main")
-		}
-		if errors.Is(err, manageduserinteractors.ErrInvalidToken) {
+		case errors.Is(err, manageduserinteractors.ErrInvalidToken):
 			presenter.ErrorMessage = "We're unable to reset your password. This may be due to the link sent to your email being altered or you have entered a wrong email. Check and try again."
-			return ctx.Render("publish/identity/managed/reset-password", presenter, "publish/layouts/main")
-		}
-		if errors.Is(err, identityinteractors.ErrEmailNotVerified) {
+		case errors.Is(err, identityinteractors.ErrEmailNotVerified):
 			presenter.ErrorMessage = "Your email has not been verified by our system. Click on a verification link sent to your email then try resetting your password again."
-			return ctx.Render("publish/identity/managed/reset-password", presenter, "publish/layouts/main")
+		default:
+			presenter.ErrorMessage = "We're unable to reset your password at the moment. Try again later."
 		}
-		presenter.ErrorMessage = "We're unable to reset your password at the moment. Try again later."
-		return ctx.Render("publish/identity/managed/reset-password", presenter, "publish/layouts/main")
+		return controllers.Render(ctx, resetPasswordTemplate, presenter)
 	}
 
-	return ctx.Render("publish/identity/managed/reset-password-result", true, "publish/layouts/main")
+	return controllers.Render(ctx, resetPasswordResultTemplate, true)
 }

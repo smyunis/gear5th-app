@@ -1,24 +1,27 @@
 package controllers
 
 import (
+	"html/template"
+
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-api/pkg/problemdetails"
 )
 
-type ControllerRoute struct {
-	Method string
-	Path   string
-	Handler func(*fiber.Ctx) error
-}
-type ControllerRoutes []ControllerRoute
-
-type Controller struct {
-	// Handlers ControllerHandlers
-	Method string
-	Path   string
+func MainLayoutTemplate() *template.Template {
+	return template.Must(template.ParseFiles(
+		"web/views/publish/layouts/main.html",
+		//All components
+		"web/views/publish/layouts/components/error-alert.html"))
 }
 
-func (Controller) SendProblemDetails(ctx *fiber.Ctx, status int, title, detail string) error {
+type Controller struct{}
+
+func Render(ctx *fiber.Ctx, t *template.Template, binding any) error {
+	ctx.Set("Content-Type", "text/html")
+	return t.Execute(ctx.Response().BodyWriter(), binding)
+}
+
+func SendProblemDetails(ctx *fiber.Ctx, status int, title, detail string) error {
 	prob := problemdetails.NewProblemDetails(status)
 	if title != "" {
 		prob.Title = title

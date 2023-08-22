@@ -2,20 +2,33 @@ package identitycontrollers
 
 import (
 	"errors"
+	"html/template"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-api/web/controllers"
 )
 
+var signintemplate *template.Template
+
+func init() {
+	signintemplate = template.Must(
+		controllers.MainLayoutTemplate().ParseFiles(
+			"web/views/publish/layouts/central-card.html",
+			"web/views/publish/identity/signin.html"))
+
+}
+
+const validationErrorMessage = "That email and password combination didn't work. Try again."
+
 type UserSigninPresenter struct {
-	HasValidationError        bool
-	HasNonValidationError     bool
-	NonValidationErrorMessage string
-	Email                     string
-	Password                  string
+	Email        string `form:"email"`
+	Password     string `form:"password"`
+	StaySignedIn bool   `form:"stay-signed-in"`
+	ErrorMessage string
 }
 
 type UserSignInController struct {
@@ -29,68 +42,46 @@ func NewUserSignInController(interactor manageduserinteractors.ManagedUserIntera
 }
 
 func (c *UserSignInController) AddRoutes(router *fiber.Router) {
-	(*router).Add(fiber.MethodGet, "/identity/signin", c.userSignInOnGet)
-	(*router).Add(fiber.MethodPost, "/identity/signin", c.userSignInOnPost)
+	(*router).Add(fiber.MethodGet, "/identity/signin", c.onGet)
+	(*router).Add(fiber.MethodPost, "/identity/signin", c.onPost)
 }
 
-func (*UserSignInController) userSignInOnGet(ctx *fiber.Ctx) error {
-	return ctx.Render("publish/identity/signin", nil, "publish/layouts/main")
+func (*UserSignInController) onGet(ctx *fiber.Ctx) error {
+	return controllers.Render(ctx, signintemplate, &UserSigninPresenter{})
+	// return c.renderSignInPage(ctx, &UserSigninPresenter{})
 }
 
-func (c *UserSignInController) userSignInOnPost(ctx *fiber.Ctx) error {
+func (c *UserSignInController) onPost(ctx *fiber.Ctx) error {
+	p := &UserSigninPresenter{}
+	err := ctx.BodyParser(p)
 
-	userEmail := ctx.FormValue("email", "")
-	password := ctx.FormValue("password", "")
-	staySignedIn := c.shouldStaySignedIn(ctx.FormValue("stay-signed-in", ""))
-
-	if userEmail == "" || password == "" {
-		return ctx.Render("publish/identity/signin", UserSigninPresenter{
-			HasValidationError: true,
-		}, "publish/layouts/main")
-
-	}
-
-	email, err := user.NewEmail(userEmail)
 	if err != nil {
-		p := UserSigninPresenter{
-			HasValidationError: true,
-			Email:              userEmail,
-			Password:           password,
-		}
-		return ctx.Render("publish/identity/signin", p, "publish/layouts/main")
+		p.ErrorMessage = validationErrorMessage
+		return c.renderSignInPage(ctx, p)
 	}
 
-	token, err := c.interactor.SignIn(email, password)
+	email, err := user.NewEmail(p.Email)
+	if err != nil {
+		p.ErrorMessage = validationErrorMessage
+		return c.renderSignInPage(ctx, p)
+	}
+
+	token, err := c.interactor.SignIn(email, p.Password)
 	if err != nil {
 		if errors.Is(err, identityinteractors.ErrEmailNotVerified) {
-			p := UserSigninPresenter{
-				HasNonValidationError:     true,
-				NonValidationErrorMessage: "Your email has not been verified yet. Click on the verification link sent to your email.",
-				Email:                     userEmail,
-				Password:                  password,
-			}
-			return ctx.Render("publish/identity/signin", p, "publish/layouts/main")
-
+			p.ErrorMessage = "Your email has not been verified yet. Click on the verification link sent to your email."
+			return c.renderSignInPage(ctx, p)
 		}
 		if errors.Is(err, manageduserinteractors.ErrAuthorization) {
-			p := UserSigninPresenter{
-				HasValidationError: true,
-				Email:              userEmail,
-				Password:           password,
-			}
-			return ctx.Render("publish/identity/signin", p, "publish/layouts/main")
+			p.ErrorMessage = validationErrorMessage
+			return c.renderSignInPage(ctx, p)
 		}
 
-		p := UserSigninPresenter{
-			HasNonValidationError:     true,
-			NonValidationErrorMessage: "We're unable to sign you in at the moment. Try agian later.",
-			Email:                     userEmail,
-			Password:                  password,
-		}
-		return ctx.Render("publish/identity/signin", p, "publish/layouts/main")
+		p.ErrorMessage = "We're unable to sign you in at the moment. Try agian later."
+		return c.renderSignInPage(ctx, p)
 	}
 
-	if staySignedIn {
+	if p.StaySignedIn {
 		ctx.Cookie(&fiber.Cookie{
 			Name:     AccessTokenCookieName(),
 			Value:    token,
@@ -101,13 +92,11 @@ func (c *UserSignInController) userSignInOnPost(ctx *fiber.Ctx) error {
 		})
 	}
 
-	return ctx.Redirect("https://www.google.com")
-	// return ctx.RedirectToRoute("publish/identity/signin", p, "publish/layouts/main")
-
+	return ctx.Redirect("/publish/home")
 }
 
-func (*UserSignInController) shouldStaySignedIn(formData string) bool {
-	return formData == "on"
+func (*UserSignInController) renderSignInPage(ctx *fiber.Ctx, p *UserSigninPresenter) error {
+	return controllers.Render(ctx, signintemplate, p)
 }
 
 func AccessTokenCookieName() string {

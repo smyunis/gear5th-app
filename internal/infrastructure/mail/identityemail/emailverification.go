@@ -6,7 +6,6 @@ import (
 
 	"gitlab.com/gear5th/gear5th-api/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-api/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-api/internal/domain/shared"
 	"gitlab.com/gear5th/gear5th-api/internal/infrastructure"
 )
 
@@ -32,8 +31,7 @@ func NewVerifcationEmailSender(config infrastructure.ConfigurationProvider,
 func (s VerifcationEmailSender) SendMail(u user.User) error {
 	// TODO log errors that happen here
 
-	token := shared.NewID().String()
-	token, err := s.digitalSignService.Generate(token)
+	token, err := s.digitalSignService.Generate(u.UserID().String())
 	if err != nil {
 		return err
 	}

@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/gofiber/template/html/v2"
 	"github.com/joho/godotenv"
 	"gitlab.com/gear5th/gear5th-api/web/controllers/publish"
 )
@@ -17,10 +16,8 @@ func main() {
 
 	registerEventHandlers()
 
-	engine := html.New("./web/views", ".html")
-	app := fiber.New(fiber.Config{
-		Views: engine,
-	})
+	app := fiber.New()
+
 	app.Use(recover.New())
 	app.Static("/", "web/public")
 	publish.Routes(app)
@@ -30,3 +27,5 @@ func main() {
 
 func registerEventHandlers() {
 }
+
+

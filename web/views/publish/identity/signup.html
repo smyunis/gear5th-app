@@ -1,78 +1,69 @@
 {{define "title"}}Publisher sign up | gear5th{{end}}
 
-<div class=" h-full w-full p-20">
+{{define "in-central-card"}}
 
-    <div class="w-[472px] mx-auto px-9 py-8 bg-white rounded-sm shadow-sm">
-
-        <div class="w-full">
-            <img src="/assets/logo_with_title.png" alt="gear5th logo" class="mx-auto" width="150" height="150">
-        </div>
-
-        <div class="flex justify-between pt-9 pb-4">
-            <span class="text-2xl text-darkest font-bold">Create an account</span>
-            <span class="text-lg"><a href="/publish/identity/signin" class="text-secondary font-bold">Sign in</a>
-                instead? </span>
-        </div>
-
-        {{if .ErrorMessage}}
-        {{template "error-alert" .ErrorMessage}}
-        {{end}}
-
-        <form method="post" id="create-account-form" class="text-dark my-4">
-            <div class="flex justify-between max-w-full">
-
-                <div class="mb-4 flex-shrink pr-4">
-                    <label for="first-name" class="text-xs">First name</label>
-                    <input type="text" name="first-name" id="first-name" value="{{.FirstName}}" required
-                        class=" p-2 w-full form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
-                </div>
-                <div class="mb-4 ">
-                    <label for="last-name" class="text-xs">Last name</label>
-                    <input type="text" name="last-name" id="last-name" value="{{.LastName}}" required
-                        class="p-2 w-full form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
-                </div>
-
-            </div>
-
-            <div class="mb-4">
-                <label for="email" class="text-xs">Email</label>
-                <input type="email" name="email" id="email" value="{{.Email}}" required
-                    class="p-2 form-input block w-full rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
-            </div>
-            <div class="mb-4">
-                <label for="phone-number" class="text-xs">Phone number</label>
-                <p class="text-[10px]">eg. 0929186232</p>
-                <input type="tel" name="phone-number" id="phone-number" value="{{.PhoneNumber}}" required size="30"
-                    maxlength="24"
-                    class="p-2 form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
-            </div>
-            <div class="mb-4">
-                <label for="password" class="text-xs">Password</label>
-                <input type="password" name="password" id="password" maxlength="64" required
-                    class="p-2 form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
-            </div>
-
-            <div class="mb-4">
-                <label for="re-password" class="text-xs">Re-enter password</label>
-                <input type="password" name="re-password" id="re-password" maxlength="64" required
-                    class="p-2 form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
-            </div>
-
-            <div class="my-8">
-                <p class="text-xs pb-4">
-                    By creating an account, I agree to the <a href="#" class="underline">Terms and conditions of
-                        service</a>
-                </p>
-                <div>
-                    <button type="submit" class="w-full h-10 text-white bg-primary px-4 py-2 rounded-sm">
-                        Create account
-                    </button>
-                </div>
-            </div>
-        </form>
-    </div>
+<div class="flex justify-between pt-9 pb-4">
+    <span class="text-2xl text-darkest font-bold">Create an account</span>
+    <span class="text-lg"><a href="/publish/identity/signin" class="text-secondary font-bold">Sign in</a>
+        instead? </span>
 </div>
 
+{{if .ErrorMessage}}
+{{template "error-alert" .ErrorMessage}}
+{{end}}
+
+<form method="post" id="create-account-form" class="text-dark my-4">
+    <div class="flex justify-between max-w-full">
+
+        <div class="mb-4 flex-shrink pr-4">
+            <label for="first-name" class="text-xs">First name</label>
+            <input type="text" name="first-name" id="first-name" value="{{.FirstName}}" required
+                class=" p-2 w-full form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+        </div>
+        <div class="mb-4 ">
+            <label for="last-name" class="text-xs">Last name</label>
+            <input type="text" name="last-name" id="last-name" value="{{.LastName}}" required
+                class="p-2 w-full form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+        </div>
+
+    </div>
+
+    <div class="mb-4">
+        <label for="email" class="text-xs">Email</label>
+        <input type="email" name="email" id="email" value="{{.Email}}" required
+            class="p-2 form-input block w-full rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+    <div class="mb-4">
+        <label for="phone-number" class="text-xs">Phone number</label>
+        <!-- <p class="text-[10px]">eg. 0929186232</p> -->
+        <input type="tel" name="phone-number" id="phone-number" value="{{.PhoneNumber}}" required size="30" placeholder="eg. 0929186232"
+            maxlength="24"
+            class="text-medium p-2 form-input block w-full rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+    <div class="mb-4">
+        <label for="password" class="text-xs">Password</label>
+        <input type="password" name="password" id="password" maxlength="64" required
+            class="p-2 form-input block w-full rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+
+    <div class="mb-4">
+        <label for="re-password" class="text-xs">Re-enter password</label>
+        <input type="password" name="re-password" id="re-password" maxlength="64" required
+            class="p-2 form-input block w-full rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+
+    <div class="my-8">
+        <p class="text-xs pb-4">
+            By creating an account, I agree to the <a href="#" class="underline">Terms and conditions of
+                service</a>
+        </p>
+        <div>
+            <button type="submit" class="w-full h-10 text-white bg-primary px-4 py-2 rounded-sm">
+                Create account
+            </button>
+        </div>
+    </div>
+</form>
 <script>
 
     let createAccountForm = document.getElementById("create-account-form")
@@ -91,3 +82,4 @@
     });
 
 </script>
+{{end}}

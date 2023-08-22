@@ -18,7 +18,9 @@
 				"isDefault": true
 			},
 			"dependsOn": [
-				"copy .env conifg"
+				"copy .env conifg",
+				"copy web/views",
+				"copy web/public"
 			]
 		},
 		{
@@ -26,6 +28,18 @@
 			"hide": true,
 			"type": "shell",
 			"command": "mkdir -p ${workspaceFolder}/build && cp -r ${workspaceFolder}/config/ ${workspaceFolder}/build/",
+		},
+		{
+			"label": "copy web/views",
+			"hide": true,
+			"type": "shell",
+			"command": "mkdir -p ${workspaceFolder}/build/web/views && cp -r ${workspaceFolder}/web/views ${workspaceFolder}/build/web/",
+		},
+		{
+			"label": "copy web/public",
+			"hide": true,
+			"type": "shell",
+			"command": "mkdir -p ${workspaceFolder}/build/web/public && cp -r ${workspaceFolder}/web/public ${workspaceFolder}/build/web/",
 		},
 	]
 }
