@@ -95,7 +95,7 @@ func (c *ResetPasswordController) onPost(ctx *fiber.Ctx) error {
 		case errors.Is(err, identityinteractors.ErrEmailNotVerified):
 			presenter.ErrorMessage = "Your email has not been verified by our system. Click on a verification link sent to your email then try resetting your password again."
 		default:
-			c.logger.Error("identity.resetpassword", err)
+			c.logger.Error("identity/resetpassword", err)
 			presenter.ErrorMessage = "We're unable to reset your password at the moment. Try again later."
 		}
 		return controllers.Render(ctx, resetPasswordTemplate, presenter)

@@ -22,12 +22,16 @@ type PublisherSignUpUnitOfWork interface {
 type PublisherSignUpInteractor struct {
 	unitOfWork               PublisherSignUpUnitOfWork
 	verificationEmailService VerificationEmailService
+	logger                   application.Logger
 }
 
-func NewPublisherSignUpInteractor(unitOfWork PublisherSignUpUnitOfWork, verificationEmailService VerificationEmailService) PublisherSignUpInteractor {
+func NewPublisherSignUpInteractor(unitOfWork PublisherSignUpUnitOfWork,
+	verificationEmailService VerificationEmailService,
+	logger application.Logger) PublisherSignUpInteractor {
 	return PublisherSignUpInteractor{
 		unitOfWork,
 		verificationEmailService,
+		logger,
 	}
 }
 
@@ -56,7 +60,7 @@ func (i *PublisherSignUpInteractor) ManagedUserSignUp(usr user.User, managedUser
 
 	err = i.verificationEmailService.SendMail(usr)
 	if err != nil {
-		//TODO log error
+		i.logger.Error("publisher/signup/verificationemail", err)
 	}
 
 	application.ApplicationEventDispatcher.DispatchAsync(usr.DomainEvents())

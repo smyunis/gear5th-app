@@ -44,7 +44,7 @@ func (s VerifcationEmailSender) SendMail(u user.User) error {
 
 	//TODO send email with link to verify email
 
-	s.logger.Info("mail.verificationemail", fmt.Sprintf("Sending Verification Email to %s <-> %s\n", u.Email().String(), verificationURL))
+	s.logger.Info("mail/verificationemail", fmt.Sprintf("Sending Verification Email to %s <-> %s\n", u.Email().String(), verificationURL))
 	return nil
 
 }

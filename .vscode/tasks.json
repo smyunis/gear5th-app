@@ -7,7 +7,7 @@
 			"command": "build",
 			"args": [
 				"-o",
-				"${workspaceFolder}/build/gear5th-web",
+				"${workspaceFolder}/build/gear5th-app",
 				"./web/main.go"
 			],
 			"problemMatcher": [
@@ -18,10 +18,17 @@
 				"isDefault": true
 			},
 			"dependsOn": [
+				"clean build",
 				"copy .env conifg",
 				"copy web/views",
 				"copy web/public"
 			]
+		},
+		{
+			"label": "clean build",
+			"hide": true,
+			"type": "shell",
+			"command": "rm -r ${workspaceFolder}/build && mkdir -p ${workspaceFolder}/build",
 		},
 		{
 			"label": "copy .env conifg",
@@ -40,6 +47,6 @@
 			"hide": true,
 			"type": "shell",
 			"command": "mkdir -p ${workspaceFolder}/build/web/public && cp -r ${workspaceFolder}/web/public ${workspaceFolder}/build/web/",
-		},
+		}
 	]
 }

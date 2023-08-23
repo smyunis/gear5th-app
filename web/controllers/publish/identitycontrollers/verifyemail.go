@@ -56,7 +56,7 @@ func (c *VerifyEmailController) onGet(ctx *fiber.Ctx) error {
 	err := c.interactor.VerifyEmail(uID, token)
 
 	if err != nil {
-		c.logger.Error("identity.verifyemail", err)
+		c.logger.Error("identity/verifyemail", err)
 		p := verifyEmailPresenter{
 			IsSuccessful: false,
 		}

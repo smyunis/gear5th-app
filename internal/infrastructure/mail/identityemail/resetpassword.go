@@ -38,7 +38,7 @@ func (s RequestPassordResetEmailService) SendMail(u user.User, passwordResetToke
 
 	//TODO send mail here
 
-	s.logger.Info("mail.resetpassword", fmt.Sprintf("Sent reset password mail to %s <-> %s \n", u.Email().String(), passwordResetURL))
+	s.logger.Info("mail/resetpassword", fmt.Sprintf("Sent reset password mail to %s <-> %s \n", u.Email().String(), passwordResetURL))
 
 	return nil
 }

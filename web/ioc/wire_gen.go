@@ -48,7 +48,7 @@ func InitPublisherSignUpController() publishercontrollers.PublisherSignUpControl
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
 	verifcationEmailSender := identityemail.NewVerifcationEmailSender(envConfigurationProvider, hs256HMACValidationService, appLogger)
-	publisherSignUpInteractor := publisherinteractors.NewPublisherSignUpInteractor(mongoDBPublisherSignUpUnitOfWork, verifcationEmailSender)
+	publisherSignUpInteractor := publisherinteractors.NewPublisherSignUpInteractor(mongoDBPublisherSignUpUnitOfWork, verifcationEmailSender, appLogger)
 	publisherSignUpController := publishercontrollers.NewPublisherSignUpController(publisherSignUpInteractor, appLogger)
 	return publisherSignUpController
 }

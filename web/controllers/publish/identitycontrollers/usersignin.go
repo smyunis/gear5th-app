@@ -81,7 +81,7 @@ func (c *UserSignInController) onPost(ctx *fiber.Ctx) error {
 			return c.renderSignInPage(ctx, p)
 		}
 
-		c.logger.Error("identity.signin", err)
+		c.logger.Error("identity/signin", err)
 		p.ErrorMessage = "We're unable to sign you in at the moment. Try agian later."
 		return c.renderSignInPage(ctx, p)
 	}
