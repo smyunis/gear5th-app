@@ -12,7 +12,6 @@ func MainLayoutTemplate() *template.Template {
 	return template.Must(mainTmpl.ParseGlob("web/views/publish/layouts/components/*.html"))
 }
 
-type Controller struct{}
 
 func Render(ctx *fiber.Ctx, t *template.Template, binding any) error {
 	ctx.Set("Content-Type", "text/html")

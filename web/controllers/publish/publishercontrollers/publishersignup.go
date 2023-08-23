@@ -38,11 +38,14 @@ type publisherSignUp struct {
 
 type PublisherSignUpController struct {
 	interactor publisherinteractors.PublisherSignUpInteractor
+	logger     application.Logger
 }
 
-func NewPublisherSignUpController(interactor publisherinteractors.PublisherSignUpInteractor) PublisherSignUpController {
+func NewPublisherSignUpController(interactor publisherinteractors.PublisherSignUpInteractor,
+	logger application.Logger) PublisherSignUpController {
 	return PublisherSignUpController{
 		interactor,
+		logger,
 	}
 }
 
@@ -101,6 +104,7 @@ func (c *PublisherSignUpController) publisherSignUpOnPost(ctx *fiber.Ctx) error 
 			return controllers.Render(ctx, publisherSignUpTemplate, p)
 		}
 
+		c.logger.Error("publishers.signup", err)
 		p.ErrorMessage = "We're unable to sign you up at the moment. Try agian later."
 		return controllers.Render(ctx, publisherSignUpTemplate, p)
 	}

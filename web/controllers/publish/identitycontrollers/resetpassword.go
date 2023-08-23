@@ -37,11 +37,14 @@ type resetPasswordPresenter struct {
 
 type ResetPasswordController struct {
 	interactor manageduserinteractors.ManagedUserInteractor
+	logger     application.Logger
 }
 
-func NewResetPasswordController(interactor manageduserinteractors.ManagedUserInteractor) ResetPasswordController {
+func NewResetPasswordController(interactor manageduserinteractors.ManagedUserInteractor,
+	logger application.Logger) ResetPasswordController {
 	return ResetPasswordController{
 		interactor,
+		logger,
 	}
 }
 
@@ -50,7 +53,7 @@ func (c *ResetPasswordController) AddRoutes(router *fiber.Router) {
 	(*router).Add(fiber.MethodPost, "/identity/managed/:userID/reset-password", c.onPost)
 }
 
-func (c ResetPasswordController) onGet(ctx *fiber.Ctx) error {
+func (c *ResetPasswordController) onGet(ctx *fiber.Ctx) error {
 
 	token := ctx.Query("token", "")
 	userID := ctx.Params("userID")
@@ -65,7 +68,7 @@ func (c ResetPasswordController) onGet(ctx *fiber.Ctx) error {
 	return controllers.Render(ctx, resetPasswordTemplate, presenter)
 }
 
-func (c ResetPasswordController) onPost(ctx *fiber.Ctx) error {
+func (c *ResetPasswordController) onPost(ctx *fiber.Ctx) error {
 
 	presenter := &resetPasswordPresenter{}
 	err := ctx.BodyParser(presenter)
@@ -92,6 +95,7 @@ func (c ResetPasswordController) onPost(ctx *fiber.Ctx) error {
 		case errors.Is(err, identityinteractors.ErrEmailNotVerified):
 			presenter.ErrorMessage = "Your email has not been verified by our system. Click on a verification link sent to your email then try resetting your password again."
 		default:
+			c.logger.Error("identity.resetpassword", err)
 			presenter.ErrorMessage = "We're unable to reset your password at the moment. Try again later."
 		}
 		return controllers.Render(ctx, resetPasswordTemplate, presenter)

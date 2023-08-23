@@ -49,7 +49,7 @@ func InitPublisherSignUpController() publishercontrollers.PublisherSignUpControl
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
 	verifcationEmailSender := identityemail.NewVerifcationEmailSender(envConfigurationProvider, hs256HMACValidationService, appLogger)
 	publisherSignUpInteractor := publisherinteractors.NewPublisherSignUpInteractor(mongoDBPublisherSignUpUnitOfWork, verifcationEmailSender)
-	publisherSignUpController := publishercontrollers.NewPublisherSignUpController(publisherSignUpInteractor)
+	publisherSignUpController := publishercontrollers.NewPublisherSignUpController(publisherSignUpInteractor, appLogger)
 	return publisherSignUpController
 }
 
@@ -63,7 +63,7 @@ func InitRequestPasswordResetController() identitycontrollers.RequestPasswordRes
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
 	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
 	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, hs256HMACValidationService)
-	requestPasswordResetController := identitycontrollers.NewRequestPasswordResetController(managedUserInteractor)
+	requestPasswordResetController := identitycontrollers.NewRequestPasswordResetController(managedUserInteractor, appLogger)
 	return requestPasswordResetController
 }
 
@@ -77,7 +77,7 @@ func InitVerifyEmailController() identitycontrollers.VerifyEmailController {
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
 	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
 	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, hs256HMACValidationService)
-	verifyEmailController := identitycontrollers.NewVerifyEmailController(managedUserInteractor)
+	verifyEmailController := identitycontrollers.NewVerifyEmailController(managedUserInteractor, appLogger)
 	return verifyEmailController
 }
 
@@ -91,7 +91,7 @@ func InitResetPasswordController() identitycontrollers.ResetPasswordController {
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
 	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
 	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, hs256HMACValidationService)
-	resetPasswordController := identitycontrollers.NewResetPasswordController(managedUserInteractor)
+	resetPasswordController := identitycontrollers.NewResetPasswordController(managedUserInteractor, appLogger)
 	return resetPasswordController
 }
 

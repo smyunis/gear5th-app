@@ -35,11 +35,14 @@ type requestPasswordResetPresenter struct {
 
 type RequestPasswordResetController struct {
 	interactor manageduserinteractors.ManagedUserInteractor
+	logger     application.Logger
 }
 
-func NewRequestPasswordResetController(interactor manageduserinteractors.ManagedUserInteractor) RequestPasswordResetController {
+func NewRequestPasswordResetController(interactor manageduserinteractors.ManagedUserInteractor,
+	logger application.Logger) RequestPasswordResetController {
 	return RequestPasswordResetController{
 		interactor,
+		logger,
 	}
 }
 
@@ -53,8 +56,6 @@ func (c RequestPasswordResetController) onGet(ctx *fiber.Ctx) error {
 }
 
 func (c RequestPasswordResetController) onPost(ctx *fiber.Ctx) error {
-	// e := ctx.FormValue("email", "")
-
 	p := &requestPasswordResetPresenter{}
 	err := ctx.BodyParser(p)
 	if err != nil {
@@ -70,18 +71,17 @@ func (c RequestPasswordResetController) onPost(ctx *fiber.Ctx) error {
 
 	err = c.interactor.RequestResetPassword(email)
 	if err != nil {
-
-		if errors.Is(err, application.ErrEntityNotFound) {
+		switch {
+		case errors.Is(err, application.ErrEntityNotFound):
 			p.ErrorMessage = "There is no user who signed up with that email. Check and try agian."
-			return controllers.Render(ctx, requestPasswordResetTemplate, p)
-		}
-		if errors.Is(err, identityinteractors.ErrEmailNotVerified) {
+		case errors.Is(err, identityinteractors.ErrEmailNotVerified):
 			p.ErrorMessage = "Your email has not been verified by our system. Click on a verification link sent to your email then try resetting your password again."
-			return controllers.Render(ctx, requestPasswordResetTemplate, p)
-
+		default:
+			c.logger.Error("identity.requestpasswordreset", err)
+			p.ErrorMessage = "We're unable to reset your password at the moment. Try again later."
 		}
-		p.ErrorMessage = "We're unable to reset your password at the moment. Try again later."
 		return controllers.Render(ctx, requestPasswordResetTemplate, p)
+
 	}
 	return controllers.Render(ctx, requestPasswordResetSuccessTemplate, nil)
 }

@@ -4,6 +4,7 @@ import (
 	"html/template"
 
 	"github.com/gofiber/fiber/v2"
+	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 	"gitlab.com/gear5th/gear5th-app/web/controllers"
@@ -18,13 +19,21 @@ func init() {
 			"web/views/publish/identity/managed/verify-email.html"))
 }
 
-type VerifyEmailController struct {
-	interactor manageduserinteractors.ManagedUserInteractor
+type verifyEmailPresenter struct {
+	IsSuccessful bool
 }
 
-func NewVerifyEmailController(interactor manageduserinteractors.ManagedUserInteractor) VerifyEmailController {
+type VerifyEmailController struct {
+	interactor manageduserinteractors.ManagedUserInteractor
+
+	logger application.Logger
+}
+
+func NewVerifyEmailController(interactor manageduserinteractors.ManagedUserInteractor,
+	logger application.Logger) VerifyEmailController {
 	return VerifyEmailController{
 		interactor,
+		logger,
 	}
 }
 
@@ -32,16 +41,12 @@ func (c *VerifyEmailController) AddRoutes(router *fiber.Router) {
 	(*router).Add(fiber.MethodGet, "/identity/managed/:userId/verify-email", c.onGet)
 }
 
-type VerifyEmailPresenter struct {
-	IsSuccessful bool
-}
+func (c *VerifyEmailController) onGet(ctx *fiber.Ctx) error {
 
-func (c VerifyEmailController) onGet(ctx *fiber.Ctx) error {
-
-	userId := ctx.Params("userId")
-	token := ctx.Query("token")
+	userId := ctx.Params("userId", "")
+	token := ctx.Query("token", "")
 	if userId == "" || token == "" {
-		p := VerifyEmailPresenter{
+		p := verifyEmailPresenter{
 			IsSuccessful: false,
 		}
 		return controllers.Render(ctx, verifyEmailTemplate, p)
@@ -51,12 +56,13 @@ func (c VerifyEmailController) onGet(ctx *fiber.Ctx) error {
 	err := c.interactor.VerifyEmail(uID, token)
 
 	if err != nil {
-		p := VerifyEmailPresenter{
+		c.logger.Error("identity.verifyemail", err)
+		p := verifyEmailPresenter{
 			IsSuccessful: false,
 		}
 		return controllers.Render(ctx, verifyEmailTemplate, p)
 	}
-	p := VerifyEmailPresenter{
+	p := verifyEmailPresenter{
 		IsSuccessful: true,
 	}
 	return controllers.Render(ctx, verifyEmailTemplate, p)
