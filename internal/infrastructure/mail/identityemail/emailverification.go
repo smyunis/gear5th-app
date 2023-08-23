@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
+	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
@@ -11,11 +12,13 @@ import (
 
 type VerifcationEmailSender struct {
 	appURL             *url.URL
-	digitalSignService identityinteractors.DigitalSignatureValidationService
+	digitalSignService identityinteractors.DigitalSignatureService
+	logger             application.Logger
 }
 
 func NewVerifcationEmailSender(config infrastructure.ConfigurationProvider,
-	digitalSignService identityinteractors.DigitalSignatureValidationService) VerifcationEmailSender {
+	digitalSignService identityinteractors.DigitalSignatureService,
+	logger application.Logger) VerifcationEmailSender {
 	appurlstr := config.Get("APP_URL", "https://gear5th.com")
 	a, err := url.Parse(appurlstr)
 	if err != nil {
@@ -25,6 +28,7 @@ func NewVerifcationEmailSender(config infrastructure.ConfigurationProvider,
 	return VerifcationEmailSender{
 		a,
 		digitalSignService,
+		logger,
 	}
 }
 
@@ -40,7 +44,7 @@ func (s VerifcationEmailSender) SendMail(u user.User) error {
 
 	//TODO send email with link to verify email
 
-	fmt.Printf("Sending Verification Email to %s <-> %s\n", u.Email().String(), verificationURL)
+	s.logger.Info("mail.verificationemail", fmt.Sprintf("Sending Verification Email to %s <-> %s\n", u.Email().String(), verificationURL))
 	return nil
 
 }

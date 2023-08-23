@@ -21,7 +21,7 @@ type ManagedUserInteractor struct {
 	managedUserRepository user.ManagedUserRepository
 	tokenGenerator        identityinteractors.AccessTokenGenerator
 	emailService          RequestPasswordResetEmailService
-	signService           identityinteractors.DigitalSignatureValidationService
+	signService           identityinteractors.DigitalSignatureService
 }
 
 func NewManagedUserInteractor(
@@ -29,7 +29,7 @@ func NewManagedUserInteractor(
 	managedUserRepository user.ManagedUserRepository,
 	tokenGenerator identityinteractors.AccessTokenGenerator,
 	emailService RequestPasswordResetEmailService,
-	signService identityinteractors.DigitalSignatureValidationService) ManagedUserInteractor {
+	signService identityinteractors.DigitalSignatureService) ManagedUserInteractor {
 	return ManagedUserInteractor{
 		userRepository,
 		managedUserRepository,

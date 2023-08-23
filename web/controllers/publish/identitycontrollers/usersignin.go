@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
@@ -22,6 +23,7 @@ func init() {
 
 }
 
+const AccessTokenCookieName = "gear5th-access-token"
 const validationErrorMessage = "That email and password combination didn't work. Try again."
 
 type UserSigninPresenter struct {
@@ -33,11 +35,14 @@ type UserSigninPresenter struct {
 
 type UserSignInController struct {
 	interactor manageduserinteractors.ManagedUserInteractor
+	logger     application.Logger
 }
 
-func NewUserSignInController(interactor manageduserinteractors.ManagedUserInteractor) UserSignInController {
+func NewUserSignInController(interactor manageduserinteractors.ManagedUserInteractor,
+	logger application.Logger) UserSignInController {
 	return UserSignInController{
 		interactor,
+		logger,
 	}
 }
 
@@ -48,7 +53,6 @@ func (c *UserSignInController) AddRoutes(router *fiber.Router) {
 
 func (*UserSignInController) onGet(ctx *fiber.Ctx) error {
 	return controllers.Render(ctx, signintemplate, &UserSigninPresenter{})
-	// return c.renderSignInPage(ctx, &UserSigninPresenter{})
 }
 
 func (c *UserSignInController) onPost(ctx *fiber.Ctx) error {
@@ -77,13 +81,14 @@ func (c *UserSignInController) onPost(ctx *fiber.Ctx) error {
 			return c.renderSignInPage(ctx, p)
 		}
 
+		c.logger.Error("identity.signin", err)
 		p.ErrorMessage = "We're unable to sign you in at the moment. Try agian later."
 		return c.renderSignInPage(ctx, p)
 	}
 
 	if p.StaySignedIn {
 		ctx.Cookie(&fiber.Cookie{
-			Name:     AccessTokenCookieName(),
+			Name:     AccessTokenCookieName,
 			Value:    token,
 			Path:     "/publish",
 			SameSite: "Lax",
@@ -97,8 +102,4 @@ func (c *UserSignInController) onPost(ctx *fiber.Ctx) error {
 
 func (*UserSignInController) renderSignInPage(ctx *fiber.Ctx, p *UserSigninPresenter) error {
 	return controllers.Render(ctx, signintemplate, p)
-}
-
-func AccessTokenCookieName() string {
-	return "gear5th-access-token"
 }

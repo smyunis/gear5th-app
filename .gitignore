@@ -1,3 +1,7 @@
 tmp/
 build/
+logs/
 config/.env.prod
+
+gear5th-app.log
+**/gear5th-app.log

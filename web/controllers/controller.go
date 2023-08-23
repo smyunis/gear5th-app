@@ -8,10 +8,8 @@ import (
 )
 
 func MainLayoutTemplate() *template.Template {
-	return template.Must(template.ParseFiles(
-		"web/views/publish/layouts/main.html",
-		//All components
-		"web/views/publish/layouts/components/error-alert.html"))
+	mainTmpl := template.Must(template.ParseFiles("web/views/publish/layouts/main.html"))
+	return template.Must(mainTmpl.ParseGlob("web/views/publish/layouts/components/*.html"))
 }
 
 type Controller struct{}

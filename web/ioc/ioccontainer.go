@@ -56,13 +56,16 @@ var Container wire.ProviderSet = wire.NewSet(
 	tokens.NewHS256HMACValidationService,
 	identityemail.NewRequestPassordResetEmailService,
 	wire.Bind(new(identityinteractors.AccessTokenGenerator), new(tokens.JwtAccessTokenGenerator)),
-	wire.Bind(new(identityinteractors.DigitalSignatureValidationService), new(tokens.HS256HMACValidationService)),
+	wire.Bind(new(identityinteractors.DigitalSignatureService), new(tokens.HS256HMACValidationService)),
 
 	wire.Bind(new(infrastructure.ConfigurationProvider), new(infrastructure.EnvConfigurationProvider)),
 	// wire.Bind(new(manageduserinteractors.RequestPasswordResetEmailService), new(testdoubles.RequestResetPasswordEmailStub)),
 	wire.Bind(new(manageduserinteractors.RequestPasswordResetEmailService), new(identityemail.RequestPassordResetEmailService)),
 	wire.Bind(new(publisherinteractors.VerificationEmailService), new(identityemail.VerifcationEmailSender)),
-
+	
+	wire.Bind(new(application.Logger), new(infrastructure.AppLogger)),
+	infrastructure.NewAppLogger,
+	
 	identityemail.NewVerifcationEmailSender,
 
 	rediskeyvaluestore.NewRedisBootstrapper,

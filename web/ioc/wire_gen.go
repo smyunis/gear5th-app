@@ -31,9 +31,10 @@ func InitManagedUserController() identitycontrollers.UserSignInController {
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	jwtAccessTokenGenerator := tokens.NewJwtAccessTokenGenenrator(envConfigurationProvider)
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
-	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
 	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, hs256HMACValidationService)
-	userSignInController := identitycontrollers.NewUserSignInController(managedUserInteractor)
+	userSignInController := identitycontrollers.NewUserSignInController(managedUserInteractor, appLogger)
 	return userSignInController
 }
 
@@ -45,7 +46,8 @@ func InitPublisherSignUpController() publishercontrollers.PublisherSignUpControl
 	mongoDBPublisherRepository := publisherrepository.NewMongoDBPublisherRepository(mongoDBStoreBootstrap)
 	mongoDBPublisherSignUpUnitOfWork := publishersignupunitofwork.NewMongoDBPublisherSignUpUnitOfWork(mongoDBStoreBootstrap, mongoDBUserRepository, mongoDBMangageUserRepository, mongoDBPublisherRepository)
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
-	verifcationEmailSender := identityemail.NewVerifcationEmailSender(envConfigurationProvider, hs256HMACValidationService)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	verifcationEmailSender := identityemail.NewVerifcationEmailSender(envConfigurationProvider, hs256HMACValidationService, appLogger)
 	publisherSignUpInteractor := publisherinteractors.NewPublisherSignUpInteractor(mongoDBPublisherSignUpUnitOfWork, verifcationEmailSender)
 	publisherSignUpController := publishercontrollers.NewPublisherSignUpController(publisherSignUpInteractor)
 	return publisherSignUpController
@@ -58,7 +60,8 @@ func InitRequestPasswordResetController() identitycontrollers.RequestPasswordRes
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	jwtAccessTokenGenerator := tokens.NewJwtAccessTokenGenenrator(envConfigurationProvider)
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
-	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
 	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, hs256HMACValidationService)
 	requestPasswordResetController := identitycontrollers.NewRequestPasswordResetController(managedUserInteractor)
 	return requestPasswordResetController
@@ -71,7 +74,8 @@ func InitVerifyEmailController() identitycontrollers.VerifyEmailController {
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	jwtAccessTokenGenerator := tokens.NewJwtAccessTokenGenenrator(envConfigurationProvider)
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
-	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
 	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, hs256HMACValidationService)
 	verifyEmailController := identitycontrollers.NewVerifyEmailController(managedUserInteractor)
 	return verifyEmailController
@@ -84,7 +88,8 @@ func InitResetPasswordController() identitycontrollers.ResetPasswordController {
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	jwtAccessTokenGenerator := tokens.NewJwtAccessTokenGenenrator(envConfigurationProvider)
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
-	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
 	managedUserInteractor := manageduserinteractors.NewManagedUserInteractor(mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, hs256HMACValidationService)
 	resetPasswordController := identitycontrollers.NewResetPasswordController(managedUserInteractor)
 	return resetPasswordController
@@ -93,6 +98,7 @@ func InitResetPasswordController() identitycontrollers.ResetPasswordController {
 func InitVerifcationEmailSender() identityemail.VerifcationEmailSender {
 	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
-	verifcationEmailSender := identityemail.NewVerifcationEmailSender(envConfigurationProvider, hs256HMACValidationService)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	verifcationEmailSender := identityemail.NewVerifcationEmailSender(envConfigurationProvider, hs256HMACValidationService, appLogger)
 	return verifcationEmailSender
 }

@@ -13,7 +13,7 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-var hservice identityinteractors.DigitalSignatureValidationService
+var hservice identityinteractors.DigitalSignatureService
 
 func setup() {
 	hservice = tokens.NewHS256HMACValidationService()
