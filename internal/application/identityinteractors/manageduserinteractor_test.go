@@ -1,4 +1,4 @@
-package manageduserinteractors_test
+package identityinteractors_test
 
 import (
 	"errors"
@@ -8,7 +8,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
-	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/testdoubles"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 )
@@ -27,7 +26,7 @@ var digiSignService = &testdoubles.DigitalSignatureValidationServiceMock{}
 var evtDispather application.EventDispatcher = &testdoubles.LocalizedEventDispatcher{}
 
 
-var interactor manageduserinteractors.ManagedUserInteractor
+var interactor identityinteractors.ManagedUserInteractor
 
 func setup() {
 	userRepositoryStub = testdoubles.UserRepositoryStub{}
@@ -36,7 +35,7 @@ func setup() {
 	emailServiceStub := testdoubles.RequestResetPasswordEmailStub{}
 
 
-	interactor = manageduserinteractors.NewManagedUserInteractor(
+	interactor = identityinteractors.NewManagedUserInteractor(
 		evtDispather,
 		userRepositoryStub,
 		managedUserRepositoryStub,
@@ -174,7 +173,7 @@ func TestResetPasswordRequestEmailIsSent(t *testing.T) {
 	var emailServiceSpy = testdoubles.RequestResetPasswordEmailSpy{}
 	testdoubles.RequestResetPasswordEmailSpyReset()
 
-	interactor := manageduserinteractors.NewManagedUserInteractor(
+	interactor := identityinteractors.NewManagedUserInteractor(
 		evtDispather,
 		userRepositoryStub,
 		managedUserRepositoryStub,
@@ -199,7 +198,7 @@ func TestResetPasswordRequestEmailIsNotSentForUnknownEmail(t *testing.T) {
 
 	digiSignService := &testdoubles.DigitalSignatureValidationServiceMock{}
 
-	interactor := manageduserinteractors.NewManagedUserInteractor(
+	interactor := identityinteractors.NewManagedUserInteractor(
 		evtDispather,
 		userRepositoryStub,
 		managedUserRepositoryStub,

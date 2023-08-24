@@ -2,17 +2,17 @@ package events
 
 import (
 	"gitlab.com/gear5th/gear5th-app/internal/application"
-	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors/manageduserinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 )
 
 type EventHandlerRegistrar struct {
 	appEventDispatcher          application.EventDispatcher
-	verificationEmailInteractor manageduserinteractors.VerificationEmailInteractor
+	verificationEmailInteractor identityinteractors.VerificationEmailInteractor
 }
 
 func NewEventHandlerRegistrar(
 	appEventDispatcher application.EventDispatcher,
-	verificationEmailInteractor manageduserinteractors.VerificationEmailInteractor) EventHandlerRegistrar {
+	verificationEmailInteractor identityinteractors.VerificationEmailInteractor) EventHandlerRegistrar {
 	return EventHandlerRegistrar{
 		appEventDispatcher,
 		verificationEmailInteractor,

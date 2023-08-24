@@ -5,7 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-app/internal/application"
-	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors/manageduserinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 	"gitlab.com/gear5th/gear5th-app/web/controllers"
 )
@@ -24,12 +24,12 @@ type verifyEmailPresenter struct {
 }
 
 type VerifyEmailController struct {
-	interactor manageduserinteractors.ManagedUserInteractor
+	interactor identityinteractors.ManagedUserInteractor
 
 	logger application.Logger
 }
 
-func NewVerifyEmailController(interactor manageduserinteractors.ManagedUserInteractor,
+func NewVerifyEmailController(interactor identityinteractors.ManagedUserInteractor,
 	logger application.Logger) VerifyEmailController {
 	return VerifyEmailController{
 		interactor,

@@ -7,7 +7,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
-	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/web/controllers"
 )
@@ -36,11 +35,11 @@ type resetPasswordPresenter struct {
 }
 
 type ResetPasswordController struct {
-	interactor manageduserinteractors.ManagedUserInteractor
+	interactor identityinteractors.ManagedUserInteractor
 	logger     application.Logger
 }
 
-func NewResetPasswordController(interactor manageduserinteractors.ManagedUserInteractor,
+func NewResetPasswordController(interactor identityinteractors.ManagedUserInteractor,
 	logger application.Logger) ResetPasswordController {
 	return ResetPasswordController{
 		interactor,
@@ -90,7 +89,7 @@ func (c *ResetPasswordController) onPost(ctx *fiber.Ctx) error {
 		switch {
 		case errors.Is(err, application.ErrEntityNotFound):
 			presenter.ErrorMessage = "There is no user who signed up with that email. Check and try agian."
-		case errors.Is(err, manageduserinteractors.ErrInvalidToken):
+		case errors.Is(err, identityinteractors.ErrInvalidToken):
 			presenter.ErrorMessage = "We're unable to reset your password. This may be due to the link sent to your email being altered or you have entered a wrong email. Check and try again."
 		case errors.Is(err, identityinteractors.ErrEmailNotVerified):
 			presenter.ErrorMessage = "Your email has not been verified by our system. Click on a verification link sent to your email then try resetting your password again."

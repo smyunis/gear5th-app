@@ -1,4 +1,4 @@
-package manageduserinteractors
+package identityinteractors
 
 import (
 	"gitlab.com/gear5th/gear5th-app/internal/application"

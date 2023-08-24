@@ -8,7 +8,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
-	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/web/controllers"
 )
@@ -34,11 +33,11 @@ type UserSigninPresenter struct {
 }
 
 type UserSignInController struct {
-	interactor manageduserinteractors.ManagedUserInteractor
+	interactor identityinteractors.ManagedUserInteractor
 	logger     application.Logger
 }
 
-func NewUserSignInController(interactor manageduserinteractors.ManagedUserInteractor,
+func NewUserSignInController(interactor identityinteractors.ManagedUserInteractor,
 	logger application.Logger) UserSignInController {
 	return UserSignInController{
 		interactor,
@@ -76,7 +75,7 @@ func (c *UserSignInController) onPost(ctx *fiber.Ctx) error {
 			p.ErrorMessage = "Your email has not been verified yet. Click on the verification link sent to your email."
 			return c.renderSignInPage(ctx, p)
 		}
-		if errors.Is(err, manageduserinteractors.ErrAuthorization) {
+		if errors.Is(err, identityinteractors.ErrAuthorization) {
 			p.ErrorMessage = validationErrorMessage
 			return c.renderSignInPage(ctx, p)
 		}

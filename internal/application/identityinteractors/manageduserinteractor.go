@@ -1,11 +1,10 @@
-package manageduserinteractors
+package identityinteractors
 
 import (
 	"context"
 	"errors"
 
 	"gitlab.com/gear5th/gear5th-app/internal/application"
-	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 )
@@ -20,18 +19,18 @@ type ManagedUserInteractor struct {
 	eventDispatcher       application.EventDispatcher
 	userRepository        user.UserRepository
 	managedUserRepository user.ManagedUserRepository
-	tokenGenerator        identityinteractors.AccessTokenGenerator
+	tokenGenerator        AccessTokenGenerator
 	emailService          RequestPasswordResetEmailService
-	signService           identityinteractors.DigitalSignatureService
+	signService           DigitalSignatureService
 }
 
 func NewManagedUserInteractor(
 	eventDispatcher application.EventDispatcher,
 	userRepository user.UserRepository,
 	managedUserRepository user.ManagedUserRepository,
-	tokenGenerator identityinteractors.AccessTokenGenerator,
+	tokenGenerator AccessTokenGenerator,
 	emailService RequestPasswordResetEmailService,
-	signService identityinteractors.DigitalSignatureService) ManagedUserInteractor {
+	signService DigitalSignatureService) ManagedUserInteractor {
 	return ManagedUserInteractor{
 		eventDispatcher,
 		userRepository,
@@ -54,7 +53,7 @@ func (m *ManagedUserInteractor) SignIn(email user.Email, password string) (strin
 	}
 
 	if !u.IsEmailVerified() {
-		return "", identityinteractors.ErrEmailNotVerified
+		return "", ErrEmailNotVerified
 	}
 
 	return m.tokenGenerator.Generate(u.UserID())
@@ -97,7 +96,7 @@ func (m *ManagedUserInteractor) RequestResetPassword(email user.Email) error {
 	}
 
 	if !usr.IsEmailVerified() {
-		return identityinteractors.ErrEmailNotVerified
+		return ErrEmailNotVerified
 	}
 
 	token, err := m.signService.Generate(email.String())
@@ -126,7 +125,7 @@ func (m *ManagedUserInteractor) ResetPassword(email user.Email, newPassword, res
 	}
 
 	if !u.IsEmailVerified() {
-		return identityinteractors.ErrEmailNotVerified
+		return ErrEmailNotVerified
 	}
 
 	managedUser, err := m.managedUserRepository.Get(context.Background(), u.UserID())

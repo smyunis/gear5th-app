@@ -1,4 +1,4 @@
-//go:build wireinject
+/// go:build wireinject
 
 package ioc
 
@@ -6,7 +6,6 @@ import (
 	"github.com/google/wire"
 	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
-	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors/manageduserinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
@@ -49,8 +48,8 @@ var Container wire.ProviderSet = wire.NewSet(
 	// Mail
 	identityemail.NewVerifcationEmailSender,
 	identityemail.NewRequestPassordResetEmailService,
-	wire.Bind(new(manageduserinteractors.RequestPasswordResetEmailService), new(identityemail.RequestPassordResetEmailService)),
-	wire.Bind(new(manageduserinteractors.VerificationEmailService), new(identityemail.VerifcationEmailSender)),
+	wire.Bind(new(identityinteractors.RequestPasswordResetEmailService), new(identityemail.RequestPassordResetEmailService)),
+	wire.Bind(new(identityinteractors.VerificationEmailService), new(identityemail.VerifcationEmailSender)),
 
 	// Logger
 	wire.Bind(new(application.Logger), new(infrastructure.AppLogger)),
@@ -62,8 +61,8 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(application.KeyValueStore), new(rediskeyvaluestore.RedisKeyValueStore)),
 
 	//Interactors
-	manageduserinteractors.NewManagedUserInteractor,
-	manageduserinteractors.NewVerificationEmailInteractor,
+	identityinteractors.NewManagedUserInteractor,
+	identityinteractors.NewVerificationEmailInteractor,
 	publisherinteractors.NewPublisherSignUpInteractor,
 
 	//Controllers
