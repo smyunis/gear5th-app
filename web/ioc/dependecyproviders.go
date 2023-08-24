@@ -4,9 +4,9 @@ package ioc
 
 import (
 	"github.com/google/wire"
-	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/identitycontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/publishercontrollers"
+	"gitlab.com/gear5th/gear5th-app/web/events"
 )
 
 // API Controllers
@@ -37,7 +37,7 @@ func InitResetPasswordController() identitycontrollers.ResetPasswordController {
 
 // Event Handlers
 
-func InitVerifcationEmailSender() identityemail.VerifcationEmailSender {
+func InitEventsRegistrar() events.EventHandlerRegistrar {
 	wire.Build(Container)
-	return identityemail.VerifcationEmailSender{}
+	return events.EventHandlerRegistrar{}
 }

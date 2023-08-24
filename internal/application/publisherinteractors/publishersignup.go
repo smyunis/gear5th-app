@@ -10,9 +10,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
 )
 
-type VerificationEmailService interface {
-	SendMail(u user.User) error
-}
+
 
 type PublisherSignUpUnitOfWork interface {
 	Save(ctx context.Context, usr user.User, managedUser user.ManagedUser, pub publisher.Publisher) error
@@ -20,17 +18,18 @@ type PublisherSignUpUnitOfWork interface {
 }
 
 type PublisherSignUpInteractor struct {
+	eventDispatcher          application.EventDispatcher
 	unitOfWork               PublisherSignUpUnitOfWork
-	verificationEmailService VerificationEmailService
 	logger                   application.Logger
 }
 
-func NewPublisherSignUpInteractor(unitOfWork PublisherSignUpUnitOfWork,
-	verificationEmailService VerificationEmailService,
+func NewPublisherSignUpInteractor(
+	eventDispatcher application.EventDispatcher,
+	unitOfWork PublisherSignUpUnitOfWork,
 	logger application.Logger) PublisherSignUpInteractor {
 	return PublisherSignUpInteractor{
+		eventDispatcher,
 		unitOfWork,
-		verificationEmailService,
 		logger,
 	}
 }
@@ -58,12 +57,7 @@ func (i *PublisherSignUpInteractor) ManagedUserSignUp(usr user.User, managedUser
 		return fmt.Errorf("signup publisher failed : %w", err)
 	}
 
-	err = i.verificationEmailService.SendMail(usr)
-	if err != nil {
-		i.logger.Error("publisher/signup/verificationemail", err)
-	}
-
-	application.ApplicationEventDispatcher.DispatchAsync(usr.DomainEvents())
+	i.eventDispatcher.DispatchAsync(usr.DomainEvents())
 
 	return nil
 

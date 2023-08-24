@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish"
+	"gitlab.com/gear5th/gear5th-app/web/ioc"
 )
 
 func main() {
@@ -26,4 +27,6 @@ func main() {
 }
 
 func registerEventHandlers() {
+	eventsRegistrar := ioc.InitEventsRegistrar()
+	eventsRegistrar.RegisterEventHandlers()
 }

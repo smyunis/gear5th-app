@@ -24,6 +24,8 @@ var managedUserRepositoryStub user.ManagedUserRepository
 var tokenGenerator identityinteractors.AccessTokenGenerator
 var kvstore = testdoubles.KVStoreMock{}
 var digiSignService = &testdoubles.DigitalSignatureValidationServiceMock{}
+var evtDispather application.EventDispatcher = &testdoubles.LocalizedEventDispatcher{}
+
 
 var interactor manageduserinteractors.ManagedUserInteractor
 
@@ -33,7 +35,9 @@ func setup() {
 	tokenGenerator = testdoubles.JwtAccessTokenGeneratorStub{}
 	emailServiceStub := testdoubles.RequestResetPasswordEmailStub{}
 
+
 	interactor = manageduserinteractors.NewManagedUserInteractor(
+		evtDispather,
 		userRepositoryStub,
 		managedUserRepositoryStub,
 		tokenGenerator, emailServiceStub, digiSignService)
@@ -171,6 +175,7 @@ func TestResetPasswordRequestEmailIsSent(t *testing.T) {
 	testdoubles.RequestResetPasswordEmailSpyReset()
 
 	interactor := manageduserinteractors.NewManagedUserInteractor(
+		evtDispather,
 		userRepositoryStub,
 		managedUserRepositoryStub,
 		tokenGenerator, emailServiceSpy, digiSignService)
@@ -195,6 +200,7 @@ func TestResetPasswordRequestEmailIsNotSentForUnknownEmail(t *testing.T) {
 	digiSignService := &testdoubles.DigitalSignatureValidationServiceMock{}
 
 	interactor := manageduserinteractors.NewManagedUserInteractor(
+		evtDispather,
 		userRepositoryStub,
 		managedUserRepositoryStub,
 		tokenGenerator, emailServiceSpy, digiSignService)

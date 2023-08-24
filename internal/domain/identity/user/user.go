@@ -40,11 +40,7 @@ func NewUser(email Email) User {
 		signUpDate:   time.Now(),
 		domainEvents: make(shared.Events),
 	}
-	u.domainEvents.Emit("user.signedup", UserCreatedEvent{
-		UserId:          u.UserID(),
-		Email:           u.Email(),
-		IsEmailVerified: u.isEmailVerified,
-	})
+	u.domainEvents.Emit("user/signedup", u)
 	return u
 }
 

@@ -2,17 +2,28 @@ package application
 
 import "gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 
-var ApplicationEventDispatcher EventDispatcher
+
+var x EventDispatcher = appEventDispatcher
+
+type EventDispatcher interface {
+	AddHandler(eventname string, handler EventHandler)
+	DispatchAsync(events ...shared.Events)
+}
+
+var appEventDispatcher InMemoryEventDispatcher
 
 func init() {
-	ApplicationEventDispatcher = make(EventDispatcher)
+	appEventDispatcher = make(InMemoryEventDispatcher)
+}
+
+func NewAppEventDispatcher() InMemoryEventDispatcher {
+	return appEventDispatcher
 }
 
 type EventHandler func(any)
+type InMemoryEventDispatcher map[string][]EventHandler
 
-type EventDispatcher map[string][]EventHandler
-
-func (d EventDispatcher) AddHandler(eventname string, handler EventHandler) {
+func (d InMemoryEventDispatcher) AddHandler(eventname string, handler EventHandler) {
 	handlerEntries, ok := d[eventname]
 
 	if !ok {
@@ -23,7 +34,7 @@ func (d EventDispatcher) AddHandler(eventname string, handler EventHandler) {
 	}
 }
 
-func (d EventDispatcher) DispatchAsync(events ...shared.Events) {
+func (d InMemoryEventDispatcher) DispatchAsync(events ...shared.Events) {
 	for _, eventSet := range events {
 		for eventName, eventPayloads := range eventSet {
 			handlers, ok := d[eventName]
@@ -38,3 +49,4 @@ func (d EventDispatcher) DispatchAsync(events ...shared.Events) {
 		}
 	}
 }
+

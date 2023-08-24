@@ -17,6 +17,7 @@ type RequestPasswordResetEmailService interface {
 }
 
 type ManagedUserInteractor struct {
+	eventDispatcher       application.EventDispatcher
 	userRepository        user.UserRepository
 	managedUserRepository user.ManagedUserRepository
 	tokenGenerator        identityinteractors.AccessTokenGenerator
@@ -25,12 +26,14 @@ type ManagedUserInteractor struct {
 }
 
 func NewManagedUserInteractor(
+	eventDispatcher application.EventDispatcher,
 	userRepository user.UserRepository,
 	managedUserRepository user.ManagedUserRepository,
 	tokenGenerator identityinteractors.AccessTokenGenerator,
 	emailService RequestPasswordResetEmailService,
 	signService identityinteractors.DigitalSignatureService) ManagedUserInteractor {
 	return ManagedUserInteractor{
+		eventDispatcher,
 		userRepository,
 		managedUserRepository,
 		tokenGenerator,
@@ -173,11 +176,3 @@ func (m *ManagedUserInteractor) VerifyEmail(userID shared.ID, token string) erro
 
 	return nil
 }
-
-// func PasswordResetTokenStoreKey(userId string) string {
-// 	return fmt.Sprintf("identity:user:%s:passwordresettoken", userId)
-// }
-
-// func EmailVerificationTokenStoreKey(userId string) string {
-// 	return fmt.Sprintf("identity:user:%s:emailverificationtoken", userId)
-// }

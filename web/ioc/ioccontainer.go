@@ -21,6 +21,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/identitycontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/publishercontrollers"
+	"gitlab.com/gear5th/gear5th-app/web/events"
 )
 
 var Container wire.ProviderSet = wire.NewSet(
@@ -44,24 +45,25 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(identityinteractors.DigitalSignatureService), new(tokens.HS256HMACValidationService)),
 	tokens.NewJwtAccessTokenGenenrator,
 	wire.Bind(new(identityinteractors.AccessTokenGenerator), new(tokens.JwtAccessTokenGenerator)),
-	
-		// Mail
+
+	// Mail
 	identityemail.NewVerifcationEmailSender,
 	identityemail.NewRequestPassordResetEmailService,
 	wire.Bind(new(manageduserinteractors.RequestPasswordResetEmailService), new(identityemail.RequestPassordResetEmailService)),
-	wire.Bind(new(publisherinteractors.VerificationEmailService), new(identityemail.VerifcationEmailSender)),
-	
-		// Logger
+	wire.Bind(new(manageduserinteractors.VerificationEmailService), new(identityemail.VerifcationEmailSender)),
+
+	// Logger
 	wire.Bind(new(application.Logger), new(infrastructure.AppLogger)),
 	infrastructure.NewAppLogger,
-	
-		// Redis
+
+	// Redis
 	rediskeyvaluestore.NewRedisBootstrapper,
 	rediskeyvaluestore.NewRedisKeyValueStore,
 	wire.Bind(new(application.KeyValueStore), new(rediskeyvaluestore.RedisKeyValueStore)),
 
 	//Interactors
 	manageduserinteractors.NewManagedUserInteractor,
+	manageduserinteractors.NewVerificationEmailInteractor,
 	publisherinteractors.NewPublisherSignUpInteractor,
 
 	//Controllers
@@ -69,4 +71,8 @@ var Container wire.ProviderSet = wire.NewSet(
 	identitycontrollers.NewUserSignInController,
 	identitycontrollers.NewVerifyEmailController,
 	identitycontrollers.NewResetPasswordController,
-	identitycontrollers.NewRequestPasswordResetController)
+	identitycontrollers.NewRequestPasswordResetController,
+
+	application.NewAppEventDispatcher,
+	wire.Bind(new(application.EventDispatcher), new(application.InMemoryEventDispatcher)),
+	events.NewEventHandlerRegistrar)

@@ -33,7 +33,6 @@ func NewVerifcationEmailSender(config infrastructure.ConfigurationProvider,
 }
 
 func (s VerifcationEmailSender) SendMail(u user.User) error {
-	// TODO log errors that happen here
 
 	token, err := s.digitalSignService.Generate(u.UserID().String())
 	if err != nil {
