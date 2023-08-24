@@ -11,7 +11,7 @@ var homeTemplate *template.Template
 
 func init() {
 	homeTemplate = template.Must(
-		controllers.MainLayoutTemplate().ParseFiles(
+		controllers.ConsoleMainLayoutTemplate().ParseFiles(
 			"web/views/publish/home/home.html"))
 
 }

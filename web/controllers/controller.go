@@ -12,6 +12,10 @@ func MainLayoutTemplate() *template.Template {
 	return template.Must(mainTmpl.ParseGlob("web/views/publish/layouts/components/*.html"))
 }
 
+func ConsoleMainLayoutTemplate() *template.Template {
+	mainTmpl := template.Must(template.ParseFiles("web/views/publish/layouts/console-main.html"))
+	return template.Must(mainTmpl.ParseGlob("web/views/publish/layouts/components/*.html"))
+}
 
 func Render(ctx *fiber.Ctx, t *template.Template, binding any) error {
 	ctx.Set("Content-Type", "text/html")
