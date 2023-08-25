@@ -16,8 +16,7 @@ var signintemplate *template.Template
 
 func init() {
 	signintemplate = template.Must(
-		controllers.MainLayoutTemplate().ParseFiles(
-			"web/views/publish/layouts/central-card.html",
+		controllers.CardMainLayoutTemplate().ParseFiles(
 			"web/views/publish/identity/signin.html"))
 
 }
@@ -81,7 +80,7 @@ func (c *UserSignInController) onPost(ctx *fiber.Ctx) error {
 		}
 
 		c.logger.Error("identity/signin", err)
-		p.ErrorMessage = "We're unable to sign you in at the moment. Try agian later."
+		p.ErrorMessage = "We're unable to sign you in at the moment. Try again later."
 		return c.renderSignInPage(ctx, p)
 	}
 

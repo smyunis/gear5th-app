@@ -16,12 +16,10 @@ var publisherSignUpTemplate *template.Template
 var publisherSignUpSuccessTemplate *template.Template
 
 func init() {
-	publisherSignUpTemplate = template.Must(controllers.MainLayoutTemplate().ParseFiles(
-		"web/views/publish/layouts/central-card.html",
+	publisherSignUpTemplate = template.Must(controllers.CardMainLayoutTemplate().ParseFiles(
 		"web/views/publish/identity/signup.html"))
 
-	publisherSignUpSuccessTemplate = template.Must(controllers.MainLayoutTemplate().ParseFiles(
-		"web/views/publish/layouts/central-card.html",
+	publisherSignUpSuccessTemplate = template.Must(controllers.CardMainLayoutTemplate().ParseFiles(
 		"web/views/publish/identity/signup-success.html"))
 }
 
@@ -77,7 +75,7 @@ func (c *PublisherSignUpController) publisherSignUpOnPost(ctx *fiber.Ctx) error 
 	email, err := user.NewEmail(pub.Email)
 	if err != nil {
 		p.InvalidEmail = true
-		p.ErrorMessage = fmt.Sprintf("%s is not a valid email. Check and try agian.", pub.Email)
+		p.ErrorMessage = fmt.Sprintf("%s is not a valid email. Check and try again.", pub.Email)
 		return controllers.Render(ctx, publisherSignUpTemplate, p)
 	}
 
@@ -87,7 +85,7 @@ func (c *PublisherSignUpController) publisherSignUpOnPost(ctx *fiber.Ctx) error 
 		uPhoneNum, err := user.NewPhoneNumber(pub.PhoneNumber)
 		if err != nil {
 			p.InvalidPhoneNumber = true
-			p.ErrorMessage = fmt.Sprintf("%s is not a valid phone number. Check and try agian.", pub.PhoneNumber)
+			p.ErrorMessage = fmt.Sprintf("%s is not a valid phone number. Check and try again.", pub.PhoneNumber)
 			return controllers.Render(ctx, publisherSignUpTemplate, p)
 		}
 		u.SetPhoneNumber(uPhoneNum)
@@ -105,7 +103,7 @@ func (c *PublisherSignUpController) publisherSignUpOnPost(ctx *fiber.Ctx) error 
 		}
 
 		c.logger.Error("publishers/signup", err)
-		p.ErrorMessage = "We're unable to sign you up at the moment. Try agian later."
+		p.ErrorMessage = "We're unable to sign you up at the moment. Try again later."
 		return controllers.Render(ctx, publisherSignUpTemplate, p)
 	}
 

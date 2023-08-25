@@ -1,6 +1,6 @@
 {{define "title"}}Publisher sign in | gear5th{{end}}
 
-{{define "in-central-card"}}
+{{define "in-card-main"}}
 
 <div class="flex justify-between pt-9 pb-4">
     <span class="text-2xl text-darkest font-bold">Sign in</span>
@@ -12,7 +12,7 @@
 {{template "error-alert" .ErrorMessage}}
 {{end}}
 
-<form method="post" class="text-dark my-4">
+<form method="post" class="my-4">
     <div class="mb-4">
         <label class="text-xs">Email</label>
         <input type="email" name="email" id="email" value="{{.Email}}" required
@@ -23,8 +23,8 @@
         <input type="password" name="password" id="password" value="{{.Password}}" required
             class="p-2 form-input block w-full rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
     </div>
-    <div class="flex justify-between text-sm mb-4">
-        <div class="flex items-center">
+    <div class="flex flex-col sm:flex-row justify-between text-sm mb-4">
+        <div class="flex items-center max-sm:py-4">
             <input type="checkbox" name="stay-signed-in" id="stay-signed-in" checked
                 class="form-checkbox text-primary mr-1 flex-none">
             <label for="stay-signed-in">

@@ -16,13 +16,11 @@ var resetPasswordResultTemplate *template.Template
 
 func init() {
 	resetPasswordTemplate = template.Must(
-		controllers.MainLayoutTemplate().ParseFiles(
-			"web/views/publish/layouts/central-card.html",
+		controllers.CardMainLayoutTemplate().ParseFiles(
 			"web/views/publish/identity/managed/reset-password.html"))
 
 	resetPasswordResultTemplate = template.Must(
-		controllers.MainLayoutTemplate().ParseFiles(
-			"web/views/publish/layouts/central-card.html",
+		controllers.CardMainLayoutTemplate().ParseFiles(
 			"web/views/publish/identity/managed/reset-password-result.html"))
 }
 
@@ -88,7 +86,7 @@ func (c *ResetPasswordController) onPost(ctx *fiber.Ctx) error {
 	if err != nil {
 		switch {
 		case errors.Is(err, application.ErrEntityNotFound):
-			presenter.ErrorMessage = "There is no user who signed up with that email. Check and try agian."
+			presenter.ErrorMessage = "There is no user who signed up with that email. Check and try again."
 		case errors.Is(err, identityinteractors.ErrInvalidToken):
 			presenter.ErrorMessage = "We're unable to reset your password. This may be due to the link sent to your email being altered or you have entered a wrong email. Check and try again."
 		case errors.Is(err, identityinteractors.ErrEmailNotVerified):

@@ -17,13 +17,11 @@ var requestPasswordResetSuccessTemplate *template.Template
 
 func init() {
 	requestPasswordResetTemplate = template.Must(
-		controllers.MainLayoutTemplate().ParseFiles(
-			"web/views/publish/layouts/central-card.html",
+		controllers.CardMainLayoutTemplate().ParseFiles(
 			"web/views/publish/identity/managed/request-password-reset.html"))
 
 	requestPasswordResetSuccessTemplate = template.Must(
-		controllers.MainLayoutTemplate().ParseFiles(
-			"web/views/publish/layouts/central-card.html",
+		controllers.CardMainLayoutTemplate().ParseFiles(
 			"web/views/publish/identity/managed/request-password-reset-success.html"))
 }
 
@@ -64,7 +62,7 @@ func (c RequestPasswordResetController) onPost(ctx *fiber.Ctx) error {
 
 	email, err := user.NewEmail(p.Email)
 	if err != nil {
-		p.ErrorMessage = fmt.Sprintf("%s is not a valid email. Check and try agian.", p.Email)
+		p.ErrorMessage = fmt.Sprintf("%s is not a valid email. Check and try again.", p.Email)
 		return controllers.Render(ctx, requestPasswordResetTemplate, p)
 	}
 
@@ -72,7 +70,7 @@ func (c RequestPasswordResetController) onPost(ctx *fiber.Ctx) error {
 	if err != nil {
 		switch {
 		case errors.Is(err, application.ErrEntityNotFound):
-			p.ErrorMessage = "There is no user who signed up with that email. Check and try agian."
+			p.ErrorMessage = "There is no user who signed up with that email. Check and try again."
 		case errors.Is(err, identityinteractors.ErrEmailNotVerified):
 			p.ErrorMessage = "Your email has not been verified by our system. Click on a verification link sent to your email then try resetting your password again."
 		default:

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{block "title" .}}{{end}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/tailwind.dist.css">
+</head>
+
+<body class="bg-lightest text-dark font-roboto ">
+
+    <div class="h-full w-full sm:p-20">
+        <div class="w-full sm:w-[472px] mx-auto px-9 py-8 bg-white rounded-sm sm:shadow-md sm:shadow-medium">
+            <div class="w-full">
+                <img src="/assets/logo_with_title.png" alt="gear5th logo" class="mx-auto w-24 h-24 sm:w-36 sm:h-36">
+            </div>
+
+            {{block "in-card-main" .}}{{end}}
+
+        </div>
+    </div>
+
+    <footer class="w-full text-xs p-4 text-center max-sm:bg-white">
+        <span>
+            ©2023 gear5th Advertising. All rights reserved.
+        </span>
+        <a href="#" class=" underline">Terms and conditions of service</a>
+    </footer>
+</body>
+
+</html>

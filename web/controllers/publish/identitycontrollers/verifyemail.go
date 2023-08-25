@@ -14,8 +14,7 @@ var verifyEmailTemplate *template.Template
 
 func init() {
 	verifyEmailTemplate = template.Must(
-		controllers.MainLayoutTemplate().ParseFiles(
-			"web/views/publish/layouts/central-card.html",
+		controllers.CardMainLayoutTemplate().ParseFiles(
 			"web/views/publish/identity/managed/verify-email.html"))
 }
 
