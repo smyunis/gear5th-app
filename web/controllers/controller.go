@@ -7,6 +7,9 @@ import (
 	"gitlab.com/gear5th/gear5th-app/pkg/problemdetails"
 )
 
+const ActorUserID = "actor-userid"
+const AccessTokenCookieName = "gear5th-access-token"
+
 func CardMainLayoutTemplate() *template.Template {
 	mainTmpl := template.Must(template.ParseFiles("web/views/publish/layouts/card-main.html"))
 	return template.Must(mainTmpl.ParseGlob("web/views/publish/layouts/components/*.html"))

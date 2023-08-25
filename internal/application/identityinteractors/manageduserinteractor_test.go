@@ -20,11 +20,10 @@ func TestMain(m *testing.M) {
 
 var userRepositoryStub user.UserRepository
 var managedUserRepositoryStub user.ManagedUserRepository
-var tokenGenerator identityinteractors.AccessTokenGenerator
+var tokenGenerator identityinteractors.AccessTokenService
 var kvstore = testdoubles.KVStoreMock{}
 var digiSignService = &testdoubles.DigitalSignatureValidationServiceMock{}
 var evtDispather application.EventDispatcher = &testdoubles.LocalizedEventDispatcher{}
-
 
 var interactor identityinteractors.ManagedUserInteractor
 
@@ -33,7 +32,6 @@ func setup() {
 	managedUserRepositoryStub = testdoubles.ManagedUserRepositoryStub{}
 	tokenGenerator = testdoubles.JwtAccessTokenGeneratorStub{}
 	emailServiceStub := testdoubles.RequestResetPasswordEmailStub{}
-
 
 	interactor = identityinteractors.NewManagedUserInteractor(
 		evtDispather,

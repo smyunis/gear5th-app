@@ -19,7 +19,7 @@ type ManagedUserInteractor struct {
 	eventDispatcher       application.EventDispatcher
 	userRepository        user.UserRepository
 	managedUserRepository user.ManagedUserRepository
-	tokenGenerator        AccessTokenGenerator
+	tokenGenerator        AccessTokenService
 	emailService          RequestPasswordResetEmailService
 	signService           DigitalSignatureService
 }
@@ -28,7 +28,7 @@ func NewManagedUserInteractor(
 	eventDispatcher application.EventDispatcher,
 	userRepository user.UserRepository,
 	managedUserRepository user.ManagedUserRepository,
-	tokenGenerator AccessTokenGenerator,
+	tokenGenerator AccessTokenService,
 	emailService RequestPasswordResetEmailService,
 	signService DigitalSignatureService) ManagedUserInteractor {
 	return ManagedUserInteractor{
@@ -104,7 +104,10 @@ func (m *ManagedUserInteractor) RequestResetPassword(email user.Email) error {
 		return err
 	}
 
-	m.emailService.SendMail(usr, token)
+	err = m.emailService.SendMail(usr, token)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

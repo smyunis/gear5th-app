@@ -2,13 +2,15 @@ package identityinteractors
 
 import "gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 
-type AccessTokenGenerator interface {
+type AccessTokenService interface {
 	Generate(subject shared.ID) (string, error)
+	Validate(token string) bool
+	UserID(token string) (shared.ID, error)
 }
 
-type AccessTokenValidator interface {
-	Validate(token string) error
-}
+// type AccessTokenService interface {
+
+// }
 
 type DigitalSignatureService interface {
 	Generate(message string) (string, error)

@@ -21,7 +21,6 @@ func init() {
 
 }
 
-const AccessTokenCookieName = "gear5th-access-token"
 const validationErrorMessage = "That email and password combination didn't work. Try again."
 
 type UserSigninPresenter struct {
@@ -86,7 +85,7 @@ func (c *UserSignInController) onPost(ctx *fiber.Ctx) error {
 
 	if p.StaySignedIn {
 		ctx.Cookie(&fiber.Cookie{
-			Name:     AccessTokenCookieName,
+			Name:     controllers.AccessTokenCookieName,
 			Value:    token,
 			Path:     "/publish",
 			SameSite: "Lax",

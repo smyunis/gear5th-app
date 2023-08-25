@@ -30,3 +30,5 @@ func registerEventHandlers() {
 	eventsRegistrar := ioc.InitEventsRegistrar()
 	eventsRegistrar.RegisterEventHandlers()
 }
+
+

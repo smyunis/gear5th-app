@@ -1,4 +1,4 @@
-/// go:build wireinject
+//go:build wireinject
 
 package ioc
 
@@ -18,9 +18,11 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/homecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/identitycontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/publishercontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/events"
+	"gitlab.com/gear5th/gear5th-app/web/middlewares"
 )
 
 var Container wire.ProviderSet = wire.NewSet(
@@ -42,8 +44,8 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(infrastructure.ConfigurationProvider), new(infrastructure.EnvConfigurationProvider)),
 	tokens.NewHS256HMACValidationService,
 	wire.Bind(new(identityinteractors.DigitalSignatureService), new(tokens.HS256HMACValidationService)),
-	tokens.NewJwtAccessTokenGenenrator,
-	wire.Bind(new(identityinteractors.AccessTokenGenerator), new(tokens.JwtAccessTokenGenerator)),
+	tokens.NewJwtAccessTokenService,
+	wire.Bind(new(identityinteractors.AccessTokenService), new(tokens.JwtAccessTokenService)),
 
 	// Mail
 	identityemail.NewVerifcationEmailSender,
@@ -65,7 +67,11 @@ var Container wire.ProviderSet = wire.NewSet(
 	identityinteractors.NewVerificationEmailInteractor,
 	publisherinteractors.NewPublisherSignUpInteractor,
 
+	//Middlewares
+	middlewares.NewJwtAuthenticationMiddleware,
+
 	//Controllers
+	homecontrollers.NewHomeController,
 	publishercontrollers.NewPublisherSignUpController,
 	identitycontrollers.NewUserSignInController,
 	identitycontrollers.NewVerifyEmailController,

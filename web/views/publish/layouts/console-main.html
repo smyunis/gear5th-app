@@ -38,37 +38,40 @@
 
     </header>
 
+    {{$activeNav := .Nav}}
+    {{$activeNavStyles := "active-sidebarnav-item"}}
     <div class="flex">
         <nav id="sidenav"
             class="fixed hidden sm:flex flex-col justify-between mt-16 h-screen w-80 border-r py-8 border-light bg-white">
             <div>
                 <ul>
-                    <li>
-                        <a href="#" class="sidebarnav-item">
+                    <li class="">
+                        <a href="/publish/home" class="{{if eq $activeNav "home"}}{{$activeNavStyles}}{{end}} sidebarnav-item">
                             <i class="bx bx-home-alt-2 text-xl"></i>
                             <span class="px-4">Home</span>
                         </a>
                     </li>
+
                     <li>
-                        <a href="#" class="sidebarnav-item">
+                        <a href="#" class="{{if eq $activeNav "ads"}}{{$activeNavStyles}}{{end}} sidebarnav-item">
                             <i class="bx bx-grid-alt text-xl"></i>
                             <span class="px-4">Ads</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="sidebarnav-item">
+                        <a href="#" class="{{if eq $activeNav "sites"}}{{$activeNavStyles}}{{end}} sidebarnav-item">
                             <i class="bx bx-layout text-xl"></i>
                             <span class="px-4">Sites</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="sidebarnav-item">
+                        <a href="#" class="{{if eq $activeNav "payments"}}{{$activeNavStyles}}{{end}} sidebarnav-item">
                             <i class='bx bx-money text-xl'></i>
                             <span class="px-4">Payments</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="sidebarnav-item">
+                        <a href="#" class="{{if eq $activeNav "account"}}{{$activeNavStyles}}{{end}} sidebarnav-item">
                             <i class="bx bx-cog text-xl"></i>
                             <span class="px-4">Account</span>
                         </a>

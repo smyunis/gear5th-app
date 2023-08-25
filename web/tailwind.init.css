@@ -4,6 +4,9 @@
 
 @layer components {
     .sidebarnav-item {
-      @apply flex items-center h-12 w-full pl-12 text-lg hover:border-x-4 hover:border-primary hover:bg-lightest hover:font-bold;
+      @apply flex items-center h-12 w-full pl-12 text-lg  hover:font-bold hover:text-secondary; 
+    }
+    .active-sidebarnav-item {
+      @apply border-x-4 border-secondary bg-lightest font-bold text-secondary;
     }
   }

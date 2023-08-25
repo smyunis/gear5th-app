@@ -18,25 +18,34 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/homecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/identitycontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/publishercontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/events"
+	"gitlab.com/gear5th/gear5th-app/web/middlewares"
 )
 
 // Injectors from dependecyproviders.go:
 
-// API Controllers
+func InitJwtAuthenticationMiddleware() middlewares.JwtAuthenticationMiddleware {
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
+	jwtAuthenticationMiddleware := middlewares.NewJwtAuthenticationMiddleware(jwtAccessTokenService)
+	return jwtAuthenticationMiddleware
+}
+
+// Controllers
 func InitManagedUserController() identitycontrollers.UserSignInController {
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
 	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
 	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
 	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
-	jwtAccessTokenGenerator := tokens.NewJwtAccessTokenGenenrator(envConfigurationProvider)
+	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
 	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
-	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, hs256HMACValidationService)
+	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenService, requestPassordResetEmailService, hs256HMACValidationService)
 	userSignInController := identitycontrollers.NewUserSignInController(managedUserInteractor, appLogger)
 	return userSignInController
 }
@@ -61,11 +70,11 @@ func InitRequestPasswordResetController() identitycontrollers.RequestPasswordRes
 	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
 	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
-	jwtAccessTokenGenerator := tokens.NewJwtAccessTokenGenenrator(envConfigurationProvider)
+	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
 	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
-	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, hs256HMACValidationService)
+	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenService, requestPassordResetEmailService, hs256HMACValidationService)
 	requestPasswordResetController := identitycontrollers.NewRequestPasswordResetController(managedUserInteractor, appLogger)
 	return requestPasswordResetController
 }
@@ -76,11 +85,11 @@ func InitVerifyEmailController() identitycontrollers.VerifyEmailController {
 	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
 	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
-	jwtAccessTokenGenerator := tokens.NewJwtAccessTokenGenenrator(envConfigurationProvider)
+	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
 	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
-	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, hs256HMACValidationService)
+	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenService, requestPassordResetEmailService, hs256HMACValidationService)
 	verifyEmailController := identitycontrollers.NewVerifyEmailController(managedUserInteractor, appLogger)
 	return verifyEmailController
 }
@@ -91,13 +100,21 @@ func InitResetPasswordController() identitycontrollers.ResetPasswordController {
 	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
 	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
-	jwtAccessTokenGenerator := tokens.NewJwtAccessTokenGenenrator(envConfigurationProvider)
+	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
 	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
-	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenGenerator, requestPassordResetEmailService, hs256HMACValidationService)
+	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepository, mongoDBMangageUserRepository, jwtAccessTokenService, requestPassordResetEmailService, hs256HMACValidationService)
 	resetPasswordController := identitycontrollers.NewResetPasswordController(managedUserInteractor, appLogger)
 	return resetPasswordController
+}
+
+func InitHomeController() homecontrollers.HomeController {
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
+	jwtAuthenticationMiddleware := middlewares.NewJwtAuthenticationMiddleware(jwtAccessTokenService)
+	homeController := homecontrollers.NewHomeController(jwtAuthenticationMiddleware)
+	return homeController
 }
 
 func InitEventsRegistrar() events.EventHandlerRegistrar {
