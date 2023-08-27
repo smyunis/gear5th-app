@@ -8,6 +8,7 @@ import (
 	"os"
 	"testing"
 
+	"gitlab.com/gear5th/gear5th-app/internal/application/testdoubles"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/site"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
 )
@@ -65,7 +66,8 @@ func getMockFileAsHttpResponse(fileName string) (*http.Response, error) {
 }
 
 func TestCanCheckIfRecordIsInAdsTxt(t *testing.T) {
-	service := siteverification.NewAdsTxtVerificationService(httpClient)
+	logger := testdoubles.ConsoleLogger{}
+	service := siteverification.NewAdsTxtVerificationService(httpClient, logger)
 	tuts, _ := url.Parse("https://www.tutorialspoint.com/index.htm")
 	s := site.NewSite("2000970", *tuts)
 	record := site.AdsTxtRecord{

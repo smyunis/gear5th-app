@@ -1,29 +1,33 @@
 package site
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
+
 )
 
-type SiteVerificationError struct {
-	message string
-	inner   error
-}
+// type SiteVerificationError struct {
+// 	message string
+// 	inner   error
+// }
 
-func NewSiteVerificationError(message string, inner error) error {
-	return SiteVerificationError{
-		message: message,
-		inner:   inner,
-	}
-}
+// func NewSiteVerificationError(message string, inner error) error {
+// 	return SiteVerificationError{
+// 		message: message,
+// 		inner:   inner,
+// 	}
+// }
 
-func (e SiteVerificationError) Error() string {
-	return e.message
-}
+// func (e SiteVerificationError) Error() string {
+// 	return e.message
+// }
 
-func (e SiteVerificationError) Unwrap() error {
-	return e.inner
-}
+// func (e SiteVerificationError) Unwrap() error {
+// 	return e.inner
+// }
+
+var ErrSiteVerification = errors.New("site verification error")
 
 type AdsTxtRecord struct {
 	AdExchangeDomain string
@@ -50,18 +54,20 @@ func VerifySiteHostname(site *Site, source url.URL) error {
 	sourceFqdn := source.Hostname()
 
 	if siteFqdn != sourceFqdn {
-		return NewSiteVerificationError("site hostname mismatch", nil)
+		return ErrSiteVerification
 	}
 
 	site.Verify()
 	return nil
 }
 
-func GetAdsTxtRecord(s Site) string {
+
+
+func GetAdsTxtRecord(s Site) AdsTxtRecord {
 	record := AdsTxtRecord{
 		AdExchangeDomain: "gear5th.com",
 		PublisherId:      s.publisherId.String(),
 		Relation:         "DIRECT",
 	}
-	return record.String()
+	return record
 }

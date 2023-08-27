@@ -9,17 +9,21 @@ import (
 	"regexp"
 	"strings"
 
+	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/site"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
 )
 
 type AdsTxtVerificationService struct {
 	httpClient infrastructure.HTTPClient
+	logger     application.Logger
 }
 
-func NewAdsTxtVerificationService(httpClient infrastructure.HTTPClient) AdsTxtVerificationService {
+func NewAdsTxtVerificationService(httpClient infrastructure.HTTPClient,
+	logger application.Logger) AdsTxtVerificationService {
 	return AdsTxtVerificationService{
-		httpClient: httpClient,
+		httpClient,
+		logger,
 	}
 }
 
@@ -27,12 +31,12 @@ func (a *AdsTxtVerificationService) VerifyAdsTxt(s *site.Site, desiredRecord sit
 
 	adstxtBody, err := a.fetchAdsTxtContent(s)
 	if err != nil {
-		return site.NewSiteVerificationError("unable to access ads.txt from network", err)
+		return site.ErrSiteVerification
 
 	}
 
 	if !hasAdsTxtRecord(adstxtBody, desiredRecord) {
-		return site.NewSiteVerificationError("unable to find record in ads.txt", nil)
+		return site.ErrSiteVerification
 	}
 
 	s.Verify()
@@ -48,17 +52,20 @@ func (a *AdsTxtVerificationService) fetchAdsTxtContent(s *site.Site) (string, er
 
 	request, err := http.NewRequest(http.MethodGet, adstxturl, nil)
 	if err != nil {
+		a.logger.Error("site/adstxtverification", err)
 		return "", fmt.Errorf("unable to fetch ads.txt from network: %w", err)
 	}
 
 	response, err := a.httpClient.Do(request)
 	if err != nil {
+		a.logger.Error("site/adstxtverification", err)
 		return "", fmt.Errorf("unable to fetch ads.txt from network: %w", err)
 	}
 
 	defer response.Body.Close()
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
+		a.logger.Error("site/adstxtverification", err)
 		return "", fmt.Errorf("unable to parse ads.txt: %w", err)
 	}
 
@@ -66,7 +73,7 @@ func (a *AdsTxtVerificationService) fetchAdsTxtContent(s *site.Site) (string, er
 }
 
 func (*AdsTxtVerificationService) adsTxtUrl(s *site.Site) (string, error) {
-	baseUrl := s.Url().Scheme + "://" + s.Url().Host
+	baseUrl := s.URL().Scheme + "://" + s.URL().Host
 	adsTxturl, err := url.JoinPath(baseUrl, "ads.txt")
 	return adsTxturl, err
 }
