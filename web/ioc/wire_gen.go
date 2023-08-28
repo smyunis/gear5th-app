@@ -10,17 +10,21 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/siteinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/tokens"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/sitepersistence/siterepository"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/homecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/identitycontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/publishercontrollers"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/sitecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/events"
 	"gitlab.com/gear5th/gear5th-app/web/middlewares"
 )
@@ -115,6 +119,22 @@ func InitHomeController() homecontrollers.HomeController {
 	jwtAuthenticationMiddleware := middlewares.NewJwtAuthenticationMiddleware(jwtAccessTokenService)
 	homeController := homecontrollers.NewHomeController(jwtAuthenticationMiddleware)
 	return homeController
+}
+
+func InitSiteController() sitecontrollers.SiteController {
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
+	jwtAuthenticationMiddleware := middlewares.NewJwtAuthenticationMiddleware(jwtAccessTokenService)
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	mongoDBSiteRepository := siterepository.NewMongoDBSiteRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
+	appHTTPClient := infrastructure.NewAppHTTPClient()
+	adsTxtVerificationService := siteverification.NewAdsTxtVerificationService(appHTTPClient, appLogger)
+	inMemoryEventDispatcher := application.NewAppEventDispatcher()
+	siteInteractor := siteinteractors.NewSiteInteractor(mongoDBSiteRepository, mongoDBUserRepository, adsTxtVerificationService, inMemoryEventDispatcher, appLogger)
+	siteController := sitecontrollers.NewSiteController(jwtAuthenticationMiddleware, siteInteractor, appLogger)
+	return siteController
 }
 
 func InitEventsRegistrar() events.EventHandlerRegistrar {

@@ -1,0 +1,10 @@
+{{define "in-console-main"}}
+<h1>Site page</h1>
+<ul>
+    {{range .ActiveSites}}
+    <li>.SiteDomain,.IsSiteVerified</li>
+    {{else}}
+    <p>No active sites</p>
+    {{end}}
+</ul>
+{{end}}

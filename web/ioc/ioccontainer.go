@@ -7,20 +7,25 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/siteinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/site"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/tokens"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/keyvaluestore/rediskeyvaluestore"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/sitepersistence/siterepository"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/homecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/identitycontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/publishercontrollers"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/sitecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/events"
 	"gitlab.com/gear5th/gear5th-app/web/middlewares"
 )
@@ -38,14 +43,23 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(publisher.PublisherRepository), new(publisherrepository.MongoDBPublisherRepository)),
 	publishersignupunitofwork.NewMongoDBPublisherSignUpUnitOfWork,
 	wire.Bind(new(publisherinteractors.PublisherSignUpUnitOfWork), new(publishersignupunitofwork.MongoDBPublisherSignUpUnitOfWork)),
+	siterepository.NewMongoDBSiteRepository,
+	wire.Bind(new(site.SiteRepository), new(siterepository.MongoDBSiteRepository)),
+
 
 	//Infrastructures
+	infrastructure.NewAppHTTPClient,
+	wire.Bind(new(infrastructure.HTTPClient), new(infrastructure.AppHTTPClient)),
+
 	infrastructure.NewEnvConfigurationProvider,
 	wire.Bind(new(infrastructure.ConfigurationProvider), new(infrastructure.EnvConfigurationProvider)),
 	tokens.NewHS256HMACValidationService,
 	wire.Bind(new(identityinteractors.DigitalSignatureService), new(tokens.HS256HMACValidationService)),
 	tokens.NewJwtAccessTokenService,
 	wire.Bind(new(identityinteractors.AccessTokenService), new(tokens.JwtAccessTokenService)),
+	siteverification.NewAdsTxtVerificationService,
+	wire.Bind(new(site.AdsTxtVerificationService), new(siteverification.AdsTxtVerificationService)),
+
 
 	// Mail
 	identityemail.NewVerifcationEmailSender,
@@ -66,6 +80,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	identityinteractors.NewManagedUserInteractor,
 	identityinteractors.NewVerificationEmailInteractor,
 	publisherinteractors.NewPublisherSignUpInteractor,
+	siteinteractors.NewSiteInteractor,
 
 	//Middlewares
 	middlewares.NewJwtAuthenticationMiddleware,
@@ -77,6 +92,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	identitycontrollers.NewVerifyEmailController,
 	identitycontrollers.NewResetPasswordController,
 	identitycontrollers.NewRequestPasswordResetController,
+	sitecontrollers.NewSiteController,
 
 	application.NewAppEventDispatcher,
 	wire.Bind(new(application.EventDispatcher), new(application.InMemoryEventDispatcher)),

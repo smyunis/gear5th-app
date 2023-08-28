@@ -7,6 +7,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/homecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/identitycontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/publishercontrollers"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/sitecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/events"
 	"gitlab.com/gear5th/gear5th-app/web/middlewares"
 )
@@ -47,6 +48,11 @@ func InitResetPasswordController() identitycontrollers.ResetPasswordController {
 func InitHomeController() homecontrollers.HomeController {
 	wire.Build(Container)
 	return homecontrollers.HomeController{}
+}
+
+func InitSiteController() sitecontrollers.SiteController {
+	wire.Build(Container)
+	return sitecontrollers.SiteController{}
 }
 
 // Event Handlers
