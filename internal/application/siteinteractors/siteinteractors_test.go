@@ -1,6 +1,7 @@
 package siteinteractors_test
 
 import (
+	"fmt"
 	"net/url"
 	"os"
 	"testing"
@@ -23,7 +24,7 @@ func setup() {
 	logger := testdoubles.ConsoleLogger{}
 	ed := testdoubles.LocalizedEventDispatcher{}
 	siteVerifService := testdoubles.AdsTxtSiteVerificaitonStub{}
-	interactor = siteinteractors.NewSiteInteractor(siteRepository,siteVerifService,&ed,logger)
+	interactor = siteinteractors.NewSiteInteractor(siteRepository, siteVerifService, &ed, logger)
 }
 
 func TestSiteInteractor(t *testing.T) {
@@ -45,4 +46,30 @@ func TestVerifySite(t *testing.T) {
 	}
 }
 
+func TestGenerateAdsTxtRecord(t *testing.T) {
+	record, err := interactor.GenerateAdsTxtRecord(testdoubles.StubID)
+	if err != nil {
+		t.FailNow()
+	}
 
+	expectedRecord := fmt.Sprintf("gear5th.com, %s, DIRECT", testdoubles.StubID)
+
+	if record.String() != expectedRecord {
+		t.FailNow()
+	}
+
+}
+
+func TestRemoveSite(t *testing.T) {
+	err := interactor.RemoveSite(testdoubles.StubID)
+	if err != nil {
+		t.FailNow()
+	}
+}
+
+func TestGetActiveSitesForaPublisher(t *testing.T) {
+	_, err := interactor.ActiveSitesForPublisher(testdoubles.StubID)
+	if err != nil {
+		t.FailNow()
+	}
+}

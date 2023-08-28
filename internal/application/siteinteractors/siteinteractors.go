@@ -31,19 +31,18 @@ func NewSiteInteractor(siteRepository site.SiteRepository,
 
 func (i *SiteInteractor) CreateSite(publisherID shared.ID, siteURL url.URL) error {
 	s := site.NewSite(publisherID, siteURL)
-	defer i.eventDispatcher.DispatchAsync(s.DomainEvents())
 	err := i.siteRepository.Save(context.Background(), s)
 	if err != nil {
 		i.logger.Error("site/createsite", err)
 		return err
 	}
+	i.eventDispatcher.DispatchAsync(s.DomainEvents())
 
 	return nil
 }
 
 func (i *SiteInteractor) VerifySite(siteID shared.ID) error {
 	s, err := i.siteRepository.Get(context.Background(), siteID)
-	defer i.eventDispatcher.DispatchAsync(s.DomainEvents())
 
 	if err != nil {
 		if !errors.Is(err, application.ErrEntityNotFound) {
@@ -57,5 +56,31 @@ func (i *SiteInteractor) VerifySite(siteID shared.ID) error {
 		return site.ErrSiteVerification
 	}
 	i.siteRepository.Save(context.Background(), s)
+	i.eventDispatcher.DispatchAsync(s.DomainEvents())
+
 	return nil
+}
+
+func (i *SiteInteractor) GenerateAdsTxtRecord(siteID shared.ID) (site.AdsTxtRecord, error) {
+	s, err := i.siteRepository.Get(context.Background(), siteID)
+	if err != nil {
+		return site.AdsTxtRecord{}, err
+	}
+	record := site.GetAdsTxtRecord(s)
+	return record, nil
+}
+
+func (i *SiteInteractor) RemoveSite(siteID shared.ID) error {
+	s, err := i.siteRepository.Get(context.Background(), siteID)
+	if err != nil {
+		return err
+	}
+	s.Deactivate()
+	i.siteRepository.Save(context.Background(), s)
+	i.eventDispatcher.DispatchAsync(s.DomainEvents())
+	return nil
+}
+
+func (i *SiteInteractor) ActiveSitesForPublisher(publisherID shared.ID) ([]site.Site, error) {
+	return i.siteRepository.ActiveSitesForPublisher(publisherID)
 }
