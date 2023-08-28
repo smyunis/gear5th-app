@@ -21,10 +21,11 @@ var siteRepository site.SiteRepository
 
 func setup() {
 	siteRepository = testdoubles.SiteRepositoryStub{}
+	userRepo := testdoubles.UserRepositoryStub{}
 	logger := testdoubles.ConsoleLogger{}
 	ed := testdoubles.LocalizedEventDispatcher{}
 	siteVerifService := testdoubles.AdsTxtSiteVerificaitonStub{}
-	interactor = siteinteractors.NewSiteInteractor(siteRepository, siteVerifService, &ed, logger)
+	interactor = siteinteractors.NewSiteInteractor(siteRepository, userRepo, siteVerifService, &ed, logger)
 }
 
 func TestSiteInteractor(t *testing.T) {
@@ -61,13 +62,13 @@ func TestGenerateAdsTxtRecord(t *testing.T) {
 }
 
 func TestRemoveSite(t *testing.T) {
-	err := interactor.RemoveSite(testdoubles.StubID)
+	err := interactor.RemoveSite(testdoubles.StubID, testdoubles.StubID)
 	if err != nil {
 		t.FailNow()
 	}
 }
 
-func TestGetActiveSitesForaPublisher(t *testing.T) {
+func TestGetActiveSitesForPublisher(t *testing.T) {
 	_, err := interactor.ActiveSitesForPublisher(testdoubles.StubID)
 	if err != nil {
 		t.FailNow()

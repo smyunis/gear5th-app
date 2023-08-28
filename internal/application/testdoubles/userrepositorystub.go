@@ -26,6 +26,7 @@ func (UserRepositoryStub) Get(ctx context.Context, id shared.ID) (user.User, err
 	setStructField[user.User, shared.ID](u, "id", id)
 	mymail, _ := user.NewEmail("mymail@gmail.com")
 	setStructField[user.User, user.Email](u, "email", mymail)
+	setStructField[user.User, []user.UserRole](u, "roles", []user.UserRole{user.Publisher})
 	u.VerifyEmail()
 	return *u, nil
 }

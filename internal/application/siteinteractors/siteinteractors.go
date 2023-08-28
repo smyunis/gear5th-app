@@ -6,34 +6,47 @@ import (
 	"net/url"
 
 	"gitlab.com/gear5th/gear5th-app/internal/application"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/authorization"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/site"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 )
 
 type SiteInteractor struct {
 	siteRepository          site.SiteRepository
+	userRepository          user.UserRepository
 	siteVerificationService site.AdsTxtVerificationService
 	eventDispatcher         application.EventDispatcher
 	logger                  application.Logger
 }
 
 func NewSiteInteractor(siteRepository site.SiteRepository,
+	userRepository user.UserRepository,
 	siteVerificationService site.AdsTxtVerificationService,
 	eventDispatcher application.EventDispatcher,
 	logger application.Logger) SiteInteractor {
 	return SiteInteractor{
 		siteRepository,
+		userRepository,
 		siteVerificationService,
 		eventDispatcher,
 		logger,
 	}
 }
 
-func (i *SiteInteractor) CreateSite(publisherID shared.ID, siteURL url.URL) error {
-	s := site.NewSite(publisherID, siteURL)
-	err := i.siteRepository.Save(context.Background(), s)
+func (i *SiteInteractor) CreateSite(actorUserID shared.ID, siteURL url.URL) error {
+	u, err := i.userRepository.Get(context.Background(), actorUserID)
 	if err != nil {
-		i.logger.Error("site/createsite", err)
+		return err
+	}
+
+	if !authorization.CanCreateSite(u) {
+		return application.ErrAuthorization
+	}
+
+	s := site.NewSite(actorUserID, siteURL)
+	err = i.siteRepository.Save(context.Background(), s)
+	if err != nil {
 		return err
 	}
 	i.eventDispatcher.DispatchAsync(s.DomainEvents())
@@ -70,11 +83,20 @@ func (i *SiteInteractor) GenerateAdsTxtRecord(siteID shared.ID) (site.AdsTxtReco
 	return record, nil
 }
 
-func (i *SiteInteractor) RemoveSite(siteID shared.ID) error {
+func (i *SiteInteractor) RemoveSite(actorUserID shared.ID, siteID shared.ID) error {
+	u, err := i.userRepository.Get(context.Background(), actorUserID)
+	if err != nil {
+		return err
+	}
 	s, err := i.siteRepository.Get(context.Background(), siteID)
 	if err != nil {
 		return err
 	}
+
+	if !authorization.CanRemoveSite(u, s) {
+		return application.ErrAuthorization
+	}
+
 	s.Deactivate()
 	i.siteRepository.Save(context.Background(), s)
 	i.eventDispatcher.DispatchAsync(s.DomainEvents())
