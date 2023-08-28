@@ -25,14 +25,14 @@ func NewJwtAuthenticationMiddleware(
 func (m *JwtAuthenticationMiddleware) Authentication(ctx *fiber.Ctx) error {
 	accessToken := ctx.Cookies(controllers.AccessTokenCookieName, "")
 	if accessToken == "" {
-		return ctx.Redirect("/publish/identity/signin", fiber.StatusUnauthorized)
+		return ctx.Redirect("/publish/identity/signin")
 	}
 	if !m.accessTokenService.Validate(accessToken) {
-		return ctx.Redirect("/publish/identity/signin", fiber.StatusUnauthorized)
+		return ctx.Redirect("/publish/identity/signin")
 	}
 	actorUserID, err := m.accessTokenService.UserID(accessToken)
 	if err != nil {
-		return ctx.Redirect("/publish/identity/signin", fiber.StatusUnauthorized)
+		return ctx.Redirect("/publish/identity/signin")
 	}
 	ctx.Locals(controllers.ActorUserID, shared.ID(actorUserID))
 	return ctx.Next()

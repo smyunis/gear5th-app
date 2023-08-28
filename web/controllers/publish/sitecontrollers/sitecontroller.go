@@ -16,7 +16,7 @@ var siteTemplate *template.Template
 func init() {
 	siteTemplate = template.Must(
 		controllers.ConsoleMainLayoutTemplate().ParseFiles(
-			"web/views/publish/sites/site.html"))
+			"web/views/publish/sites/sites.html"))
 }
 
 type sitePresenterActiveSite struct {
@@ -28,7 +28,6 @@ type sitePresenter struct {
 	Nav          string
 	ActiveSites  []sitePresenterActiveSite
 	ErrorMessage string
-	InfoMessage  string
 }
 
 type SiteController struct {
@@ -48,8 +47,8 @@ func NewSiteController(authMiddleware middlewares.JwtAuthenticationMiddleware,
 }
 
 func (c *SiteController) AddRoutes(router *fiber.Router) {
-	(*router).Use("/site", c.authMiddleware.Authentication)
-	(*router).Add(fiber.MethodGet, "/site", c.onGet)
+	(*router).Use("/sites", c.authMiddleware.Authentication)
+	(*router).Add(fiber.MethodGet, "/sites", c.onGet)
 }
 
 func (c *SiteController) onGet(ctx *fiber.Ctx) error {
@@ -62,7 +61,6 @@ func (c *SiteController) onGet(ctx *fiber.Ctx) error {
 		if errors.Is(err, application.ErrEntityNotFound) {
 			p := sitePresenter{
 				Nav:         "sites",
-				InfoMessage: "You have no sites registered",
 				ActiveSites: make([]sitePresenterActiveSite, 0),
 			}
 			return controllers.Render(ctx, siteTemplate, p)

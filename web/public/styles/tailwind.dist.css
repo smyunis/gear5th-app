@@ -1227,6 +1227,18 @@ select {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.hover\:opacity-75:hover {
+  opacity: 0.75;
+}
+
+.hover\:opacity-90:hover {
+  opacity: 0.9;
+}
+
+.hover\:opacity-95:hover {
+  opacity: 0.95;
+}
+
 .focus\:border-darkest:focus {
   --tw-border-opacity: 1;
   border-color: rgb(51 20 38 / var(--tw-border-opacity));

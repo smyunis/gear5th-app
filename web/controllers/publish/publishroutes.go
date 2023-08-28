@@ -15,7 +15,6 @@ func Routes(app *fiber.App) {
 	publisherSignUpController := ioc.InitPublisherSignUpController()
 	publisherSignUpController.AddRoutes(&publishRouter)
 
-	//TODO get from DI
 	homeController := ioc.InitHomeController()
 	homeController.AddRoutes(&publishRouter)
 
@@ -27,4 +26,7 @@ func Routes(app *fiber.App) {
 
 	resetPasswordController := ioc.InitResetPasswordController()
 	resetPasswordController.AddRoutes(&publishRouter)
+
+	siteController := ioc.InitSiteController()
+	siteController.AddRoutes(&publishRouter)
 }
