@@ -1,5 +1,5 @@
 {{define "in-console-main"}}
-<div class="flex flex-col p-8 mb-8 border  border-light rounded-sm">
+<div class="flex flex-col p-8 mb-8 border  border-medium rounded-sm">
     <div class="pb-6">
         <h2 class="text-2xl text-darkest font-bold pb-2">Sites</h2>
         <p class="">
@@ -16,7 +16,7 @@
         </a>
     </div>
 </div>
-<div class="p-8 mb-8 border border-light rounded-sm">
+<div class="p-8 mb-8 border border-medium rounded-sm">
     <h3 class="text-darkest font-semibold text-lg py-4">
         Active sites
     </h3>
@@ -74,7 +74,6 @@
 
 <script>
     function openRemoveSiteDialog(siteID) {
-        console.log(siteID)
         let dialog = document.getElementById("remove-site-dialog-" + siteID)
         dialog.showModal()
     }
