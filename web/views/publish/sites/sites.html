@@ -1,10 +1,58 @@
 {{define "in-console-main"}}
-<h1>Site page</h1>
-<ul>
-    {{range .ActiveSites}}
-    <li>.SiteDomain,.IsSiteVerified</li>
-    {{else}}
-    <p>No active sites</p>
-    {{end}}
-</ul>
+<div class="flex flex-col p-8 mb-8 border  border-light rounded-sm">
+    <div class="pb-6">
+        <h2 class="text-2xl text-darkest font-bold pb-2">Sites</h2>
+        <p class="">
+            Add sites that you will be displaying ads in. Sites need to be verified before they could display ads
+            and get monetized. Check out our
+            <a href="#" class="text-secondary underline font-bold">verification guide</a> to learn more.
+        </p>
+    </div>
+    <div class="self-end">
+        <a href="/publish/sites/create-site">
+            <button type="button" class="h-10 mr-4 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+                New site
+            </button>
+        </a>
+    </div>
+</div>
+<div class="p-8 mb-8 border border-light rounded-sm">
+    <h3 class="text-darkest font-semibold text-lg py-4">
+        Active sites
+    </h3>
+    <ul>
+        {{range .ActiveSites}}
+        <li class="p-2 flex justify-between border-b border-light">
+            <span class="hover:text-secondary">
+                <a href="{{.SiteURL}}" target="_blank">
+                    {{.SiteDomain}}<i class='bx bx-link-external text-xs align-top px-1'></i>
+                </a>
+            </span>
+            {{if .IsSiteVerified}}
+            <span class="text-xs p-1 text-green-900 bg-green-200 rounded-md">
+                <i class='bx bx-check-circle align-middle'></i>
+                Verified</span>
+            {{else}}
+            <span class="text-xs p-1 text-red-900 bg-red-200 rounded-md">
+                <i class='bx bx-x-circle align-middle'></i>
+                Unverified</span>
+            {{end}}
+            <span class="">
+                <a href="/publish/sites/verify-site-prompt/{{.SiteID}}?site-domain={{.SiteDomain}}" title="verify site"
+                    class="mr-4">
+                    <i class='text-primary bx bx-code-alt align- hover:text-secondary'></i>
+                </a>
+                <a href="/publish/sites/remove/{{.SiteID}}" title="remove site">
+                    <i class='text-primary bx bx-trash align-middle hover:text-secondary'></i>
+                </a>
+            </span>
+        </li>
+        {{else}}
+        <p>
+            You have No active sites registered. Add a new site to get started.
+        </p>
+
+        {{end}}
+    </ul>
+</div>
 {{end}}

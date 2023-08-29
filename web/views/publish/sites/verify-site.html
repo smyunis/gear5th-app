@@ -1,0 +1,18 @@
+{{define "in-console-main"}}
+<div class="pb-8">
+    <h2 class="text-darkest text-2xl font-bold">Verify site</h2>
+</div>
+<p class="">{{.SiteDomain}}</p>
+
+<a href="/publish/sites/verify-site/{{.SiteID}}">
+    <button type="submit" class="h-10 mr-4 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+       Continue
+    </button>
+</a>
+
+<a href="/publish/sites">
+    <button type="button" class="h-10 text-primary border-2 border-primary bg-white px-4 py-2 rounded-sm hover:text-white hover:bg-primary hover:opacity-95">
+        Cancel
+    </button>
+</a>
+{{end}}

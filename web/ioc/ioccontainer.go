@@ -93,6 +93,8 @@ var Container wire.ProviderSet = wire.NewSet(
 	identitycontrollers.NewResetPasswordController,
 	identitycontrollers.NewRequestPasswordResetController,
 	sitecontrollers.NewSiteController,
+	sitecontrollers.NewCreateSiteController,
+	sitecontrollers.NewVerifySiteController,
 
 	application.NewAppEventDispatcher,
 	wire.Bind(new(application.EventDispatcher), new(application.InMemoryEventDispatcher)),

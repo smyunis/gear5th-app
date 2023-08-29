@@ -137,6 +137,38 @@ func InitSiteController() sitecontrollers.SiteController {
 	return siteController
 }
 
+func InitCreateSiteController() sitecontrollers.CreateSiteController {
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
+	jwtAuthenticationMiddleware := middlewares.NewJwtAuthenticationMiddleware(jwtAccessTokenService)
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	mongoDBSiteRepository := siterepository.NewMongoDBSiteRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
+	appHTTPClient := infrastructure.NewAppHTTPClient()
+	adsTxtVerificationService := siteverification.NewAdsTxtVerificationService(appHTTPClient, appLogger)
+	inMemoryEventDispatcher := application.NewAppEventDispatcher()
+	siteInteractor := siteinteractors.NewSiteInteractor(mongoDBSiteRepository, mongoDBUserRepository, adsTxtVerificationService, inMemoryEventDispatcher, appLogger)
+	createSiteController := sitecontrollers.NewCreateSiteController(jwtAuthenticationMiddleware, siteInteractor, appLogger)
+	return createSiteController
+}
+
+func InitVerifySiteController() sitecontrollers.VerifySiteController {
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
+	jwtAuthenticationMiddleware := middlewares.NewJwtAuthenticationMiddleware(jwtAccessTokenService)
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	mongoDBSiteRepository := siterepository.NewMongoDBSiteRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
+	appHTTPClient := infrastructure.NewAppHTTPClient()
+	adsTxtVerificationService := siteverification.NewAdsTxtVerificationService(appHTTPClient, appLogger)
+	inMemoryEventDispatcher := application.NewAppEventDispatcher()
+	siteInteractor := siteinteractors.NewSiteInteractor(mongoDBSiteRepository, mongoDBUserRepository, adsTxtVerificationService, inMemoryEventDispatcher, appLogger)
+	verifySiteController := sitecontrollers.NewVerifySiteController(jwtAuthenticationMiddleware, siteInteractor, appLogger)
+	return verifySiteController
+}
+
 func InitEventsRegistrar() events.EventHandlerRegistrar {
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
 	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()

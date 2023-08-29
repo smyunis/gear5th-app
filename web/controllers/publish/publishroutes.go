@@ -29,4 +29,11 @@ func Routes(app *fiber.App) {
 
 	siteController := ioc.InitSiteController()
 	siteController.AddRoutes(&publishRouter)
+
+	createSiteController := ioc.InitCreateSiteController()
+	createSiteController.AddRoutes(&publishRouter)
+
+	verifySiteController := ioc.InitVerifySiteController()
+	verifySiteController.AddRoutes(&publishRouter)
+
 }

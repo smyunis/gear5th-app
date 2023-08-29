@@ -55,6 +55,16 @@ func InitSiteController() sitecontrollers.SiteController {
 	return sitecontrollers.SiteController{}
 }
 
+func InitCreateSiteController() sitecontrollers.CreateSiteController {
+	wire.Build(Container)
+	return sitecontrollers.CreateSiteController{}
+}
+
+func InitVerifySiteController() sitecontrollers.VerifySiteController {
+	wire.Build(Container)
+	return sitecontrollers.VerifySiteController{}
+}
+
 // Event Handlers
 
 func InitEventsRegistrar() events.EventHandlerRegistrar {

@@ -27,19 +27,16 @@ func NewAdsTxtVerificationService(httpClient infrastructure.HTTPClient,
 	}
 }
 
-func (a AdsTxtVerificationService) VerifyAdsTxt(s *site.Site, desiredRecord site.AdsTxtRecord) error {
+func (a AdsTxtVerificationService) VerifyAdsTxt(s site.Site, desiredRecord site.AdsTxtRecord) error {
 
-	adstxtBody, err := a.fetchAdsTxtContent(s)
+	adstxtBody, err := a.fetchAdsTxtContent(&s)
 	if err != nil {
-		return site.ErrSiteVerification
-
+		return err
 	}
 
 	if !hasAdsTxtRecord(adstxtBody, desiredRecord) {
 		return site.ErrSiteVerification
 	}
-
-	s.Verify()
 
 	return nil
 }

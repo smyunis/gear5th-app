@@ -1,0 +1,27 @@
+{{define "in-console-main"}}
+<div class="pb-8">
+    <h2 class="text-darkest text-2xl font-bold">New site</h2>
+    <p>Please make sure to only add sites you own</p>
+</div>
+{{if .ErrorMessage}}
+{{template "error-alert" .ErrorMessage}}
+{{end}}
+<form method="post">
+    <div class="mb-4">
+        <label class="text-xs">Site URL</label>
+        <input type="url" name="url" id="url" value="{{.SiteURL}}" required 
+        class="p-2 w-96 form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+    <div class="flex items-center">
+        <button type="submit" class="h-10 mr-4 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+            Add site
+        </button>
+        <a href="/publish/sites">
+            <button type="button" class="h-10 text-primary border-2 border-primary bg-white px-4 py-2 rounded-sm hover:text-white hover:bg-primary hover:opacity-95">
+                Cancel
+            </button>
+        </a>
+        
+    </div>
+</form>
+{{end}}

@@ -76,7 +76,7 @@ func TestCanCheckIfRecordIsInAdsTxt(t *testing.T) {
 		Relation:         "DIRECT",
 	}
 
-	err := service.VerifyAdsTxt(&s, record)
+	err := service.VerifyAdsTxt(s, record)
 
 	if err != nil {
 		t.Fatalf(err.Error())

@@ -64,10 +64,11 @@ func (i *SiteInteractor) VerifySite(siteID shared.ID) error {
 		return err
 	}
 	adsTxtRecord := site.GetAdsTxtRecord(s)
-	err = i.siteVerificationService.VerifyAdsTxt(&s, adsTxtRecord)
+	err = i.siteVerificationService.VerifyAdsTxt(s, adsTxtRecord)
 	if err != nil {
 		return site.ErrSiteVerification
 	}
+	s.Verify()
 	i.siteRepository.Save(context.Background(), s)
 	i.eventDispatcher.DispatchAsync(s.DomainEvents())
 

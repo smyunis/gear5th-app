@@ -46,7 +46,7 @@ func (a AdsTxtRecord) String() string {
 }
 
 type AdsTxtVerificationService interface {
-	VerifyAdsTxt(site *Site, record AdsTxtRecord) error
+	VerifyAdsTxt(site Site, record AdsTxtRecord) error
 }
 
 func VerifySiteHostname(site *Site, source url.URL) error {
