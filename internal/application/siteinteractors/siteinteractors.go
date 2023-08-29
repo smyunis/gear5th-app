@@ -34,6 +34,10 @@ func NewSiteInteractor(siteRepository site.SiteRepository,
 	}
 }
 
+func (i *SiteInteractor) Site(siteID shared.ID) (site.Site, error) {
+	return i.siteRepository.Get(context.Background(), siteID)
+}
+
 func (i *SiteInteractor) CreateSite(actorUserID shared.ID, siteURL url.URL) error {
 	u, err := i.userRepository.Get(context.Background(), actorUserID)
 	if err != nil {

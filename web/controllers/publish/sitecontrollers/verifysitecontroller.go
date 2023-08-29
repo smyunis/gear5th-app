@@ -1,6 +1,7 @@
 package sitecontrollers
 
 import (
+	"errors"
 	"html/template"
 
 	"github.com/gofiber/fiber/v2"
@@ -56,15 +57,31 @@ func (c *VerifySiteController) AddRoutes(router *fiber.Router) {
 
 func (c *VerifySiteController) verifyPrompt(ctx *fiber.Ctx) error {
 	siteID := ctx.Params("siteId", "")
-	siteDomain := ctx.Query("site-domain", "")
-	if siteID == "" || siteDomain == "" {
+	if siteID == "" {
 		return ctx.Redirect("/pages/error.html")
 	}
 
+	s, err := c.interactor.Site(shared.ID(siteID))
+	if err != nil {
+		if !errors.Is(err, application.ErrEntityNotFound) {
+			c.logger.Error("site/getverifyprompt", err)
+		}
+		return ctx.Redirect("/pages/error.html")
+	}
+
+	siteURL := s.URL()
+	adsTxtRecord, err := c.interactor.GenerateAdsTxtRecord(shared.ID(siteID))
+	if err != nil {
+		if !errors.Is(err, application.ErrEntityNotFound) {
+			c.logger.Error("site/getverifyprompt", err)
+		}
+		return ctx.Redirect("/pages/error.html")
+	}
 	p := &verifyitePresenter{
-		Nav:        "sites",
-		SiteID:     siteID,
-		SiteDomain: siteDomain,
+		Nav:              "sites",
+		SiteID:           siteID,
+		SiteDomain:       siteURL.String(),
+		SiteAdsTxtRecord: adsTxtRecord.String(),
 	}
 	return controllers.Render(ctx, verifySiteTemplate, p)
 }

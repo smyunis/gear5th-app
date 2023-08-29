@@ -29,11 +29,11 @@
                 </a>
             </span>
             {{if .IsSiteVerified}}
-            <span class="text-xs p-1 text-green-900 bg-green-200 rounded-md">
+            <span class="text-xs p-1 text-green-900 border border-green-900 rounded-md">
                 <i class='bx bx-check-circle align-middle'></i>
                 Verified</span>
             {{else}}
-            <span class="text-xs p-1 text-red-900 bg-red-200 rounded-md">
+            <span class="text-xs p-1 text-red-900 border border-red-900 rounded-md">
                 <i class='bx bx-x-circle align-middle'></i>
                 Unverified</span>
             {{end}}
@@ -42,17 +42,46 @@
                     class="mr-4">
                     <i class='text-primary bx bx-code-alt align- hover:text-secondary'></i>
                 </a>
-                <a href="/publish/sites/remove/{{.SiteID}}" title="remove site">
+                <button id="remove-site-btn" onclick="openRemoveSiteDialog({{.SiteID}})" type="button"
+                    title="remove site">
                     <i class='text-primary bx bx-trash align-middle hover:text-secondary'></i>
-                </a>
+                </button>
             </span>
         </li>
+        <dialog class="p-16 rounded-sm shadow-md" id="remove-site-dialog-{{.SiteID}}">
+            <h2 class="text-darkest text-xl font-bold">Are you sure you want to remove this site?</h2>
+            <p class="text-dark">{{.SiteDomain}}</p>
+            <div class="flex items-center gap-4 mt-8">
+                <a href="/publish/sites/remove/{{.SiteID}}">
+                    <button class="h-10 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+                        Remove site
+                    </button>
+                </a>
+                <button onclick="closeRemoveSiteDialog({{.SiteID}})"
+                    class="h-10 text-primary border-2 border-primary bg-white px-4 py-2 rounded-sm hover:text-white hover:bg-primary hover:opacity-95">
+                    Cancel
+                </button>
+            </div>
+        </dialog>
         {{else}}
         <p>
             You have No active sites registered. Add a new site to get started.
         </p>
-
         {{end}}
+
     </ul>
 </div>
+
+<script>
+    function openRemoveSiteDialog(siteID) {
+        console.log(siteID)
+        let dialog = document.getElementById("remove-site-dialog-" + siteID)
+        dialog.showModal()
+    }
+    function closeRemoveSiteDialog(siteID) {
+        let dialog = document.getElementById("remove-site-dialog-" + siteID)
+        dialog.close()
+    }
+</script>
+
 {{end}}

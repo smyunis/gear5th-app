@@ -1,11 +1,14 @@
 {{define "in-console-main"}}
-<div class="pb-8">
+<div class="pb-4">
     <h2 class="text-darkest text-2xl font-bold">Verify site</h2>
 </div>
 
 {{if .VerificationSuccessful}}
 <div>
-    <h2 class="text-darkest text-lg font-bold py-4">Site verified</h2>
+    <h2 class="text-green-900 text-lg font-bold py-4">
+        <i class='bx bx-check-circle mr-1 align-middle'></i>
+        Site verified
+    </h2>
     <a href="/publish/sites" class="inline-block mx-auto py-8">
         <button type="button" class="h-10 mr-4 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
             Go back
@@ -14,7 +17,9 @@
 </div>
 {{else}}
 <div>
-    <h2 class="text-darkest text-lg font-bold py-4">Site verification failed</h2>
+    <h2 class="text-red-900 text-lg font-bold py-4">
+        <i class='bx bx-x-circle mr-1 align-middle'></i>Site verification failed
+    </h2>
     <p>We're unable to verify your site. Please check your ads.txt file throughly and make sure its publicly accessible
         then try again.</p>
 </div>
