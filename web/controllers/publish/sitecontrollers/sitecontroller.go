@@ -80,7 +80,7 @@ func (c *SiteController) onGet(ctx *fiber.Ctx) error {
 	for _, s := range activeSites {
 		siteURL := s.URL()
 		siteDomain := siteURL.Hostname()
-		adsTxtRecord, err := c.interactor.GenerateAdsTxtRecord(s.SiteID())
+		adsTxtRecord, err := c.interactor.GenerateAdsTxtRecord(s.ID())
 		if err != nil {
 			p := sitePresenter{
 				Nav:          "sites",
@@ -89,7 +89,7 @@ func (c *SiteController) onGet(ctx *fiber.Ctx) error {
 			return controllers.Render(ctx, siteTemplate, p)
 		}
 		sites = append(sites, sitePresenterActiveSite{
-			SiteID:           string(s.SiteID()),
+			SiteID:           string(s.ID()),
 			SiteDomain:       siteDomain,
 			IsSiteVerified:   s.IsVerified(),
 			SiteAdsTxtRecord: adsTxtRecord.String(),

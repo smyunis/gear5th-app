@@ -26,8 +26,8 @@ func GenerateIntegrationHTMLSnippet(s site.Site, slot adslot.AdSlot) (string, er
 	var htmlStringBuilder strings.Builder
 	p := htmlSippetPresenter{
 		userID:   s.PublisherId().String(),
-		siteID:   s.SiteID().String(),
-		adSlotID: slot.AdSlotID().String(),
+		siteID:   s.ID().String(),
+		adSlotID: slot.ID().String(),
 	}
 	err := adSlotHTMLTemplate.ExecuteTemplate(&htmlStringBuilder, "adslot-integration-snippet", p)
 	if err != nil {
@@ -35,7 +35,6 @@ func GenerateIntegrationHTMLSnippet(s site.Site, slot adslot.AdSlot) (string, er
 	}
 	return htmlStringBuilder.String(), nil
 }
-
 
 func CanServeAdPiece(s site.Site, slot adslot.AdSlot) bool {
 	return s.CanServeAdPiece() && !slot.IsDeactivated()

@@ -16,12 +16,43 @@ const (
 	Box
 )
 
+type Dimentions struct {
+	Width  int
+	Height int
+}
+
+func (t AdSlotType) Dimentions() Dimentions {
+	switch t {
+	case Horizontal:
+		return Dimentions{
+			Width:  728,
+			Height: 90,
+		}
+	case Vertical:
+		return Dimentions{
+			Width:  160,
+			Height: 600,
+		}
+	case Box:
+		return Dimentions{
+			Width:  300,
+			Height: 250,
+		}
+	default:
+		return Dimentions{
+			Width:  0,
+			Height: 0,
+		}
+	}
+}
+
 type AdSlot struct {
 	id            shared.ID
-	name          string
 	siteID        shared.ID
+	name          string
 	slotType      AdSlotType
 	isDeactivated bool
+	events        shared.Events
 }
 
 func NewAdSlot(siteID shared.ID, name string, slotType AdSlotType) AdSlot {
@@ -30,10 +61,27 @@ func NewAdSlot(siteID shared.ID, name string, slotType AdSlotType) AdSlot {
 		siteID:   siteID,
 		name:     name,
 		slotType: slotType,
+		events:   make(shared.Events),
 	}
 }
 
-func (s *AdSlot) AdSlotID() shared.ID {
+func ReconstituteAdSlot(
+	id shared.ID,
+	siteID shared.ID,
+	name string,
+	slotType AdSlotType,
+	isDeactivated bool) AdSlot {
+	return AdSlot{
+		id,
+		siteID,
+		name,
+		slotType,
+		isDeactivated,
+		make(shared.Events),
+	}
+}
+
+func (s *AdSlot) ID() shared.ID {
 	return s.id
 }
 
@@ -61,4 +109,6 @@ func (s *AdSlot) Deactivate() {
 	s.isDeactivated = true
 }
 
-
+func (s *AdSlot) DomainEvents() shared.Events {
+	return s.events
+}

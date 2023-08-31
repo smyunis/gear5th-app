@@ -98,7 +98,7 @@ func (i *SiteInteractor) RemoveSite(actorUserID shared.ID, siteID shared.ID) err
 		return err
 	}
 
-	if !authorization.CanRemoveSite(u, s) {
+	if !authorization.CanModifySite(u, s) {
 		return application.ErrAuthorization
 	}
 

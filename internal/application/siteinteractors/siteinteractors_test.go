@@ -8,7 +8,6 @@ import (
 
 	"gitlab.com/gear5th/gear5th-app/internal/application/siteinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/testdoubles"
-	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/site"
 )
 
 func TestMain(m *testing.M) {
@@ -17,10 +16,9 @@ func TestMain(m *testing.M) {
 }
 
 var interactor siteinteractors.SiteInteractor
-var siteRepository site.SiteRepository
 
 func setup() {
-	siteRepository = testdoubles.SiteRepositoryStub{}
+	siteRepository := testdoubles.SiteRepositoryStub{}
 	userRepo := testdoubles.UserRepositoryStub{}
 	logger := testdoubles.ConsoleLogger{}
 	ed := testdoubles.LocalizedEventDispatcher{}

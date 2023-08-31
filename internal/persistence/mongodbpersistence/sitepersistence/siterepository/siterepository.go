@@ -46,7 +46,7 @@ func (r MongoDBSiteRepository) Get(ctx context.Context, id shared.ID) (site.Site
 }
 
 func (r MongoDBSiteRepository) Save(ctx context.Context, e site.Site) error {
-	id := e.SiteID().String()
+	id := e.ID().String()
 	sites := r.db.Collection("sites")
 
 	var dbEntry = mapSiteToM(e)
@@ -65,7 +65,7 @@ func (r MongoDBSiteRepository) ActiveSitesForPublisher(publisherID shared.ID) ([
 	if err != nil {
 		return []site.Site{}, err
 	}
-	
+
 	activeSites := make([]site.Site, 0)
 	for cursor.Next(context.Background()) {
 		var res bson.M
@@ -99,7 +99,7 @@ func mapSiteToM(s site.Site) bson.M {
 
 	siteURL := s.URL()
 	var dbEntry = bson.M{
-		"_id":                 s.SiteID().String(),
+		"_id":                 s.ID().String(),
 		"url":                 siteURL.String(),
 		"isVerified":          s.IsVerified(),
 		"publisherId":         s.PublisherId().String(),

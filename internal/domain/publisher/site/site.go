@@ -60,7 +60,7 @@ func ReconstituteSite(
 	}
 }
 
-func (s *Site) SiteID() shared.ID {
+func (s *Site) ID() shared.ID {
 	return s.id
 }
 
