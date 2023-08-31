@@ -104,6 +104,50 @@ func (i *AdSlotInteractor) GetIntegrationHTMLSnippet(adSlotID shared.ID) (string
 	return siteadslotservices.GenerateIntegrationHTMLSnippet(s, slot)
 }
 
-func (i *AdSlotInteractor) ActiveAdSlotsForSite(siteID shared.ID) ([]adslot.AdSlot, error) {
-	return i.adslotRepository.ActiveAdSlotsForSite(siteID)
+type SiteAdSlots map[string][]adslot.AdSlot
+
+func (i *AdSlotInteractor) ActiveAdSlotsForPublisher(publisherID shared.ID) (SiteAdSlots, error) {
+	siteAdSlots := make(SiteAdSlots)
+	activeSites, err := i.siteRepository.ActiveSitesForPublisher(publisherID)
+	if err != nil {
+		return siteAdSlots, err
+	}
+	for _, activeSite := range activeSites {
+		slots, err := i.adslotRepository.ActiveAdSlotsForSite(activeSite.ID())
+		if err != nil {
+			return siteAdSlots, err
+		}
+		siteAdSlots[activeSite.SiteDomain()] = slots
+	}
+	return siteAdSlots, nil
+}
+
+func (i *AdSlotInteractor) DeactivateAdSlot(actorUserID shared.ID, adSlotID shared.ID) error {
+	u, err := i.userRepository.Get(context.Background(), actorUserID)
+	if err != nil {
+		return err
+	}
+
+	slot, err := i.adslotRepository.Get(context.Background(), adSlotID)
+	if err != nil {
+		return err
+	}
+
+	s, err := i.siteRepository.Get(context.Background(), slot.SiteID())
+	if err != nil {
+		return err
+	}
+
+	if !authorization.CanModifyAdSlot(u, s, slot) {
+		return application.ErrAuthorization
+	}
+
+	slot.Deactivate()
+
+	err = i.adslotRepository.Save(context.Background(), slot)
+	if err != nil {
+		return err
+	}
+	i.eventDispatcher.DispatchAsync(slot.DomainEvents())
+	return nil
 }

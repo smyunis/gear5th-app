@@ -80,6 +80,10 @@ func (s *Site) URL() url.URL {
 	return s.url
 }
 
+func (s *Site) SiteDomain() string {
+	return s.url.Hostname()
+}
+
 func (s *Site) AddAdSlot(name string, adSlotType adslot.AdSlotType) adslot.AdSlot {
 	return adslot.NewAdSlot(s.id, name, adSlotType)
 }

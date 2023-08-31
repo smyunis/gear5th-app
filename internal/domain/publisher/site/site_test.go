@@ -122,6 +122,15 @@ func TestDemonetizeForTimePeriod(t *testing.T) {
 	}
 }
 
+func TestGetSiteDomain(t *testing.T) {
+	s := newSite()
+	domain := s.SiteDomain()
+	if domain != "dev.to" {
+		t.Fatal(domain)
+	}
+
+}
+
 func newSite() site.Site {
 	siteUrl, _ := url.Parse("https://dev.to/tooljet/build-an-aws-s3-browser-with-tooljet-56d4")
 	publisherId := shared.NewID()

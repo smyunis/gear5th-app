@@ -5,10 +5,12 @@ package ioc
 import (
 	"github.com/google/wire"
 	"gitlab.com/gear5th/gear5th-app/internal/application"
+	"gitlab.com/gear5th/gear5th-app/internal/application/adslotinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/siteinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/adslot"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/site"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
@@ -17,11 +19,13 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/adslotpersistence/adslotrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/sitepersistence/siterepository"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/adslotcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/homecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/identitycontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/publishercontrollers"
@@ -45,6 +49,9 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(publisherinteractors.PublisherSignUpUnitOfWork), new(publishersignupunitofwork.MongoDBPublisherSignUpUnitOfWork)),
 	siterepository.NewMongoDBSiteRepository,
 	wire.Bind(new(site.SiteRepository), new(siterepository.MongoDBSiteRepository)),
+	adslotrepository.NewMongoDBAdSlotRepository,
+	wire.Bind(new(adslot.AdSlotRepository), new(adslotrepository.MongoDBAdSlotRepository)),
+
 
 
 	//Infrastructures
@@ -81,6 +88,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	identityinteractors.NewVerificationEmailInteractor,
 	publisherinteractors.NewPublisherSignUpInteractor,
 	siteinteractors.NewSiteInteractor,
+	adslotinteractors.NewAdSlotInteractor,
 
 	//Middlewares
 	middlewares.NewJwtAuthenticationMiddleware,
@@ -95,6 +103,8 @@ var Container wire.ProviderSet = wire.NewSet(
 	sitecontrollers.NewSiteController,
 	sitecontrollers.NewCreateSiteController,
 	sitecontrollers.NewVerifySiteController,
+	adslotcontrollers.NewAdSlotController,
+	adslotcontrollers.NewCreateAdSlotController,
 
 	application.NewAppEventDispatcher,
 	wire.Bind(new(application.EventDispatcher), new(application.InMemoryEventDispatcher)),

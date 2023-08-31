@@ -36,4 +36,10 @@ func Routes(app *fiber.App) {
 	verifySiteController := ioc.InitVerifySiteController()
 	verifySiteController.AddRoutes(&publishRouter)
 
+	adSlotController := ioc.InitAdSlotController()
+	adSlotController.AddRoutes(&publishRouter)
+
+	createAdSlotController := ioc.InitCreateAdSlotController()
+	createAdSlotController.AddRoutes(&publishRouter)
+
 }

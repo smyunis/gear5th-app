@@ -101,7 +101,7 @@ func mapAdSlotToM(s adslot.AdSlot) bson.M {
 		"_id":           s.ID().String(),
 		"siteId":        s.SiteID().String(),
 		"name":          s.Name(),
-		"adSlotType":    s.Type(),
+		"adSlotType":    s.AdSlotType(),
 		"isDeactivated": s.IsDeactivated(),
 	}
 }

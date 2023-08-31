@@ -16,6 +16,19 @@ const (
 	Box
 )
 
+func (t AdSlotType) String() string {
+	switch t {
+	case Horizontal:
+		return "Horizontal"
+	case Vertical:
+		return "Vertical"
+	case Box:
+		return "Box"
+	default:
+		return ""
+	}
+}
+
 type Dimentions struct {
 	Width  int
 	Height int
@@ -93,7 +106,7 @@ func (s *AdSlot) SetName(name string) {
 	s.name = name
 }
 
-func (s *AdSlot) Type() AdSlotType {
+func (s *AdSlot) AdSlotType() AdSlotType {
 	return s.slotType
 }
 

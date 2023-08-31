@@ -4,6 +4,7 @@ package ioc
 
 import (
 	"github.com/google/wire"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/adslotcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/homecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/identitycontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/publishercontrollers"
@@ -63,6 +64,16 @@ func InitCreateSiteController() sitecontrollers.CreateSiteController {
 func InitVerifySiteController() sitecontrollers.VerifySiteController {
 	wire.Build(Container)
 	return sitecontrollers.VerifySiteController{}
+}
+
+func InitAdSlotController() adslotcontrollers.AdSlotController {
+	wire.Build(Container)
+	return adslotcontrollers.AdSlotController{}
+}
+
+func InitCreateAdSlotController() adslotcontrollers.CreateAdSlotController {
+	wire.Build(Container)
+	return adslotcontrollers.CreateAdSlotController{}
 }
 
 // Event Handlers

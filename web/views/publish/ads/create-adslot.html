@@ -1,0 +1,58 @@
+{{define "in-console-main"}}
+<div class="pb-8">
+    <h2 class="text-darkest text-2xl font-bold">New Ad slot</h2>
+    <p>Create ad slot that will be displaying ads in your site</p>
+</div>
+{{if eq (len .Sites) 0}}
+<div class="sm:w-96 w-full">
+    {{template "error-alert" "You must have a site registered before you can add ad slots"}}
+</div>
+{{end}}
+<form method="post">
+    <div class="mb-4">
+        <label class="block text-xs">Site</label>
+        <select name="adslot-site-id" {{if eq (len .Sites) 0}}disabled{{end}}
+            class="form-select max-sm:w-full w-96 p-2 rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+            {{range .Sites}}
+            <option value="{{.SiteID}}">{{.SiteDomain}}</option>
+            {{end}}
+        </select>
+    </div>
+    <div class="mb-8">
+        <label class="text-xs">Ad slot name</label>
+        <input type="text" name="adslot-name" value="{{.AdSlotName}}" required
+            class="p-2 sm:w-96 w-full form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+
+    <div class="mt-4">
+        <p class="text-xs">Ad slot type</p>
+        <div class="flex max-sm:justify-between sm:gap-8">
+            <div class="mb-4 p-4">
+                <input type="radio" name="adslot-type" value="horizontal" required class="form-radio text-primary">
+                <label>Horizontal <span class="text-xs">(728x90 px)</span></label>
+            </div>
+            <div class="mb-4 p-4">
+                <input type="radio" name="adslot-type" value="vertical" required class="form-radio text-primary">
+                <label>Vertical <span class="text-xs">(160x600 px)</span></label>
+            </div>
+            <div class="mb-4 p-4">
+                <input type="radio" name="adslot-type" value="box" required class="form-radio text-primary">
+                <label>Box <span class="text-xs">(300x250 px)</span></label>
+            </div>
+        </div>
+    </div>
+    <div class="flex items-center">
+        <button type="submit" class="h-10 mr-4 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+            Add ad slot
+        </button>
+        <a href="/publish/ads">
+            <button type="button"
+                class="h-10 text-primary border-2 border-primary bg-white px-4 py-2 rounded-sm hover:text-white hover:bg-primary hover:opacity-95">
+                Cancel
+            </button>
+        </a>
+
+    </div>
+
+</form>
+{{end}}
