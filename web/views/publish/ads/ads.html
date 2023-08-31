@@ -21,49 +21,51 @@
     </h3>
     <div>
         {{range $siteDomain, $siteSlots := .AdSlots}}
-        {{if ne (len $siteSlots) 0}}
-        <p class="font-bold text-darkest">{{$siteDomain}}</p>
-        <ul>
-            {{range $siteSlots}}
-            <li class="p-2 flex justify-between border-b border-light">
-                <span>
-                    {{.Name}}
-                </span>
-                <span>
-                    {{.AdSlotType}}
-                    <span class="text-xs"> ({{.SlotDimentions}} px)</span>
-                </span>
-                <span class="">
-                    <a href="/publish/ads/integration-snippet/{{.AdSlotID}}" title="integration code snippet"
-                        class="mr-4">
-                        <i class='text-primary bx bx-code-alt align- hover:text-secondary'></i>
-                    </a>
-                    <a href="/publish/ads/edit-adslot/{{.AdSlotID}}" title="edit ad slot" class="mr-4">
-                        <i class='text-primary bx bx-edit-alt align- hover:text-secondary'></i>
-                    </a>
-                    <button type="button" id="remove-adslot-btn" onclick="openRemoveAdSlotDialog({{.AdSlotID}})"
-                        title="remove ad slot">
-                        <i class='text-primary bx bx-trash align-middle hover:text-secondary'></i>
-                    </button>
-                </span>
-            </li>
-            <dialog class="p-16 rounded-sm shadow-md" id="remove-adslot-dialog-{{.AdSlotID}}">
-                <h2 class="text-darkest text-xl font-bold">Are you sure you want to remove this ad slot?</h2>
-                <p class="text-dark">{{.Name}}</p>
-                <div class="flex items-center gap-4 mt-8">
-                    <a href="/publish/ads/remove-adslot/{{.AdSlotID}}">
-                        <button class="h-10 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
-                            Remove ad slot
+        <div class="mb-8">
+            {{if ne (len $siteSlots) 0}}
+            <p class="font-bold text-darkest">{{$siteDomain}}</p>
+            <ul>
+                {{range $siteSlots}}
+                <li class="p-2 flex justify-between border-b border-light">
+                    <span>
+                        {{.Name}}
+                    </span>
+                    <span>
+                        {{.AdSlotType}}
+                        <span class="text-xs"> ({{.SlotDimentions}} px)</span>
+                    </span>
+                    <span class="">
+                        <a href="/publish/ads/integration-snippet/{{.AdSlotID}}" title="integration code snippet"
+                            class="mr-4">
+                            <i class='text-primary bx bx-code-alt align- hover:text-secondary'></i>
+                        </a>
+                        <a href="/publish/ads/edit-adslot/{{.AdSlotID}}" title="edit ad slot" class="mr-4">
+                            <i class='text-primary bx bx-edit-alt align- hover:text-secondary'></i>
+                        </a>
+                        <button type="button" id="remove-adslot-btn" onclick="openRemoveAdSlotDialog({{.AdSlotID}})"
+                            title="remove ad slot">
+                            <i class='text-primary bx bx-trash align-middle hover:text-secondary'></i>
                         </button>
-                    </a>
-                    <button onclick="closeRemoveAdSlotDialog({{.AdSlotID}})"
-                        class="h-10 text-primary border-2 border-primary bg-white px-4 py-2 rounded-sm hover:text-white hover:bg-primary hover:opacity-95">
-                        Cancel
-                    </button>
-                </div>
-            </dialog>
-            {{end}}
-        </ul>
+                    </span>
+                </li>
+                <dialog class="p-16 rounded-sm shadow-md" id="remove-adslot-dialog-{{.AdSlotID}}">
+                    <h2 class="text-darkest text-xl font-bold">Are you sure you want to remove this ad slot?</h2>
+                    <p class="text-dark">{{.Name}}</p>
+                    <div class="flex items-center gap-4 mt-8">
+                        <a href="/publish/ads/remove-adslot/{{.AdSlotID}}">
+                            <button class="h-10 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+                                Remove ad slot
+                            </button>
+                        </a>
+                        <button onclick="closeRemoveAdSlotDialog({{.AdSlotID}})"
+                            class="h-10 text-primary border-2 border-primary bg-white px-4 py-2 rounded-sm hover:text-white hover:bg-primary hover:opacity-95">
+                            Cancel
+                        </button>
+                    </div>
+                </dialog>
+                {{end}}
+            </ul>
+        </div>
         {{end}}
 
         {{else}}
@@ -74,12 +76,12 @@
 </div>
 
 <script>
-    function openRemoveAdSlotDialog(siteID) {
-        let dialog = document.getElementById("remove-adslot-dialog-" + siteID)
+    function openRemoveAdSlotDialog(adSlotID) {
+        let dialog = document.getElementById("remove-adslot-dialog-" + adSlotID)
         dialog.showModal()
     }
-    function closeRemoveAdSlotDialog(siteID) {
-        let dialog = document.getElementById("remove-adslot-dialog-" + siteID)
+    function closeRemoveAdSlotDialog(adSlotID) {
+        let dialog = document.getElementById("remove-adslot-dialog-" + adSlotID)
         dialog.close()
     }
 </script>

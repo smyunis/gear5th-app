@@ -1358,6 +1358,11 @@ select {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.shadow-medium {
+  --tw-shadow-color: #a8879a;
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
 .hover\:bg-primary:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(84 3 51 / var(--tw-bg-opacity));
