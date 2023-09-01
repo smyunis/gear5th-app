@@ -11,23 +11,27 @@ import (
 var adSlotHTMLTemplate *template.Template
 
 type htmlSippetPresenter struct {
-	userID   string
-	siteID   string
-	adSlotID string
+	UserID   string
+	SiteID   string
+	AdSlotID string
+	Width    int
+	Height   int
 }
 
 func init() {
 	//TODO generate html
-	tmpl := `<iframe>{{.}}</iframe>`
+	tmpl := `<iframe width="{{.Width}}" height="{{.Height}}">{{.}}</iframe>`
 	adSlotHTMLTemplate = template.Must(template.New("adslot-integration-snippet").Parse(tmpl))
 }
 
 func GenerateIntegrationHTMLSnippet(s site.Site, slot adslot.AdSlot) (string, error) {
 	var htmlStringBuilder strings.Builder
 	p := htmlSippetPresenter{
-		userID:   s.PublisherId().String(),
-		siteID:   s.ID().String(),
-		adSlotID: slot.ID().String(),
+		UserID:   s.PublisherId().String(),
+		SiteID:   s.ID().String(),
+		AdSlotID: slot.ID().String(),
+		Width: slot.AdSlotType().Dimentions().Width,
+		Height: slot.AdSlotType().Dimentions().Height,
 	}
 	err := adSlotHTMLTemplate.ExecuteTemplate(&htmlStringBuilder, "adslot-integration-snippet", p)
 	if err != nil {

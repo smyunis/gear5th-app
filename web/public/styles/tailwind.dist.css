@@ -869,6 +869,10 @@ select {
   color: rgb(231 54 54 / var(--tw-text-opacity));
 }
 
+.visible {
+  visibility: visible;
+}
+
 .fixed {
   position: fixed;
 }

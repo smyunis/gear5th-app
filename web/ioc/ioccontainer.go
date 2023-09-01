@@ -106,6 +106,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	adslotcontrollers.NewAdSlotController,
 	adslotcontrollers.NewCreateAdSlotController,
 	adslotcontrollers.NewEditAdSlotController,
+	adslotcontrollers.NewAdSlotIntegrationSnippetController,
 
 	application.NewAppEventDispatcher,
 	wire.Bind(new(application.EventDispatcher), new(application.InMemoryEventDispatcher)),
