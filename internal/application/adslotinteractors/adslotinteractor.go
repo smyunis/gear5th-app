@@ -151,3 +151,7 @@ func (i *AdSlotInteractor) DeactivateAdSlot(actorUserID shared.ID, adSlotID shar
 	i.eventDispatcher.DispatchAsync(slot.DomainEvents())
 	return nil
 }
+
+func (i *AdSlotInteractor) AdSlot(adSlotID shared.ID) (adslot.AdSlot, error) {
+	return i.adslotRepository.Get(context.Background(), adSlotID)
+}

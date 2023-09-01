@@ -205,6 +205,21 @@ func InitCreateAdSlotController() adslotcontrollers.CreateAdSlotController {
 	return createAdSlotController
 }
 
+func InitEditAdSlotController() adslotcontrollers.EditAdSlotController {
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
+	jwtAuthenticationMiddleware := middlewares.NewJwtAuthenticationMiddleware(jwtAccessTokenService)
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	mongoDBSiteRepository := siterepository.NewMongoDBSiteRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
+	mongoDBAdSlotRepository := adslotrepository.NewMongoDBAdSlotRepository(mongoDBStoreBootstrap, appLogger)
+	inMemoryEventDispatcher := application.NewAppEventDispatcher()
+	adSlotInteractor := adslotinteractors.NewAdSlotInteractor(mongoDBSiteRepository, mongoDBUserRepository, mongoDBAdSlotRepository, inMemoryEventDispatcher)
+	editAdSlotController := adslotcontrollers.NewEditAdSlotController(jwtAuthenticationMiddleware, adSlotInteractor, appLogger)
+	return editAdSlotController
+}
+
 func InitEventsRegistrar() events.EventHandlerRegistrar {
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
 	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()

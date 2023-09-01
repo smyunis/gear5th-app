@@ -22,8 +22,8 @@
     <div>
         {{range $siteDomain, $siteSlots := .AdSlots}}
         <div class="mb-8">
-            {{if ne (len $siteSlots) 0}}
             <p class="font-bold text-darkest">{{$siteDomain}}</p>
+            {{if ne (len $siteSlots) 0}}
             <ul>
                 {{range $siteSlots}}
                 <li class="p-2 flex justify-between border-b border-light">
@@ -65,8 +65,11 @@
                 </dialog>
                 {{end}}
             </ul>
+            {{else}}
+            <p>You do not have any ad slots for this site. Add a new ad slot to get started.</p>
+            {{end}}
         </div>
-        {{end}}
+        
 
         {{else}}
         <p>You dont't have any sites registered. Go to <a href="/publish/sites"

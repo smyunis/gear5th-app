@@ -76,6 +76,11 @@ func InitCreateAdSlotController() adslotcontrollers.CreateAdSlotController {
 	return adslotcontrollers.CreateAdSlotController{}
 }
 
+func InitEditAdSlotController() adslotcontrollers.EditAdSlotController {
+	wire.Build(Container)
+	return adslotcontrollers.EditAdSlotController{}
+}
+
 // Event Handlers
 
 func InitEventsRegistrar() events.EventHandlerRegistrar {

@@ -1,6 +1,10 @@
 package adslot
 
-import "gitlab.com/gear5th/gear5th-app/internal/domain/shared"
+import (
+	"fmt"
+
+	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
+)
 
 type AdSlotRepository interface {
 	shared.EntityRepository[AdSlot]
@@ -32,6 +36,10 @@ func (t AdSlotType) String() string {
 type Dimentions struct {
 	Width  int
 	Height int
+}
+
+func (d Dimentions) String() string {
+	return fmt.Sprintf("%dx%d", d.Width, d.Height)
 }
 
 func (t AdSlotType) Dimentions() Dimentions {

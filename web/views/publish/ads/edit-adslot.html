@@ -1,0 +1,39 @@
+{{define "in-console-main"}}
+<div class="pb-8">
+    <h2 class="text-darkest text-2xl font-bold">Edit Ad slot</h2>
+    <p>You will not be able to modify ad slot type because it would break existing integrations. If you
+        wish for a new
+        ad slot type, create a new ad slot.</p>
+</div>
+
+{{if .ErrorMessage}}
+{{template "error-alert" .ErrorMessage }}
+{{end}}
+
+<form method="post" class="py-4">
+    <div>
+        <p class="text-xs">Ad slot type</p>
+        <p class="py-2 font-bold">{{.AdSlotType}} <span class="text-xs"> ({{.AdSlotTypeDimentions}} px)</span></p>
+    </div>
+
+    <div class="mb-8">
+        <label class="text-xs">Ad slot name</label>
+        <input type="text" name="adslot-name" value="{{.AdSlotName}}" required
+            class="p-2 sm:w-96 w-full form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+
+    <div class="flex items-center">
+        <button type="submit" class="h-10 mr-4 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+            Change name
+        </button>
+        <a href="/publish/ads">
+            <button type="button"
+                class="h-10 text-primary border-2 border-primary bg-white px-4 py-2 rounded-sm hover:text-white hover:bg-primary hover:opacity-95">
+                Cancel
+            </button>
+        </a>
+
+    </div>
+
+</form>
+{{end}}

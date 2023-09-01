@@ -42,4 +42,8 @@ func Routes(app *fiber.App) {
 	createAdSlotController := ioc.InitCreateAdSlotController()
 	createAdSlotController.AddRoutes(&publishRouter)
 
+	editAdSlotController := ioc.InitEditAdSlotController()
+	editAdSlotController.AddRoutes(&publishRouter)
+	
+
 }
