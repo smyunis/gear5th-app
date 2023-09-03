@@ -51,10 +51,10 @@ func (r MongoDBMangageUserRepository) Get(ctx context.Context, id shared.ID) (us
 
 func (r MongoDBMangageUserRepository) Save(ctx context.Context, u user.ManagedUser) error {
 	managedUsers := r.db.Collection("managedUsers")
-
+	name := u.Name()
 	mu := bson.M{
 		"_id":            u.UserID().String(),
-		"name":           u.Name().FullName(),
+		"name":           name.FullName(),
 		"hashedPassword": u.HashedPassword(),
 	}
 

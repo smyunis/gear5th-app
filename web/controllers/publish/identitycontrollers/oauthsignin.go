@@ -52,7 +52,7 @@ func (c *OAuthSignInController) onPost(ctx *fiber.Ctx) error {
 
 	token, err := c.interactor.SignIn(p.Credential)
 	if err != nil {
-		if errors.Is(err, identityinteractors.ErrAuthorization) {
+		if errors.Is(err, application.ErrAuthorization) {
 			p.ErrorMessage = "We're unable to sign you in. Make sure you have signed up before attempting to sign in."
 			return controllers.Render(ctx, signintemplate, p)
 		}

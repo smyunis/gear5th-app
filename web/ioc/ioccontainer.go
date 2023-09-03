@@ -27,6 +27,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/sitepersistence/siterepository"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/accountcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/adslotcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/homecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/identitycontrollers"
@@ -92,6 +93,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	identityinteractors.NewManagedUserInteractor,
 	identityinteractors.NewVerificationEmailInteractor,
 	identityinteractors.NewOAuthUserInteractor,
+	identityinteractors.NewUserAccountInteractor,
 	publisherinteractors.NewPublisherSignUpInteractor,
 	siteinteractors.NewSiteInteractor,
 	adslotinteractors.NewAdSlotInteractor,
@@ -114,6 +116,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	adslotcontrollers.NewCreateAdSlotController,
 	adslotcontrollers.NewEditAdSlotController,
 	adslotcontrollers.NewAdSlotIntegrationSnippetController,
+	accountcontrollers.NewAccountController,
 
 	application.NewAppEventDispatcher,
 	wire.Bind(new(application.EventDispatcher), new(application.InMemoryEventDispatcher)),

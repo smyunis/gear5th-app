@@ -73,7 +73,7 @@ func (c *UserSignInController) onPost(ctx *fiber.Ctx) error {
 			p.ErrorMessage = "Your email has not been verified yet. Click on the verification link sent to your email."
 			return c.renderSignInPage(ctx, p)
 		}
-		if errors.Is(err, identityinteractors.ErrAuthorization) {
+		if errors.Is(err, application.ErrAuthorization) {
 			p.ErrorMessage = validationErrorMessage
 			return c.renderSignInPage(ctx, p)
 		}
@@ -93,6 +93,13 @@ func (c *UserSignInController) onPost(ctx *fiber.Ctx) error {
 			// Secure: true, //TODO Must be set in production once TLS is setup
 		})
 	}
+	ctx.Cookie(&fiber.Cookie{
+		Name:     controllers.AccessTokenCookieName,
+		Value:    token,
+		Path:     "/publish",
+		SameSite: "Lax",
+		// Secure: true, //TODO Must be set in production once TLS is setup
+	})
 
 	return ctx.Redirect("/publish/home")
 }

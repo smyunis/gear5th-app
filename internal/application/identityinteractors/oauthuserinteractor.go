@@ -1,6 +1,7 @@
 package identityinteractors
 
 import (
+	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 )
 
@@ -24,12 +25,12 @@ func NewOAuthUserInteractor(
 func (i *OAuthUserInteractor) SignIn(credential string) (string, error) {
 	userDetails, err := i.googleOAuthService.ValidateToken(credential)
 	if err != nil {
-		return "", ErrAuthorization
+		return "", application.ErrAuthorization
 	}
 
 	oauthUser, err := i.oAuthUserRepository.UserWithAccountID(userDetails.AccountID)
 	if err != nil {
-		return "", ErrAuthorization
+		return "",  application.ErrAuthorization
 	}
 
 	return i.tokenGenerator.Generate(oauthUser.UserID())

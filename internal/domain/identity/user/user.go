@@ -76,7 +76,6 @@ func (u *User) AsManagedUser(name PersonName, password string) ManagedUser {
 
 func (u *User) AsOAuthUser(userAccountID string, provider OAuthProvider) OAuthUser {
 	u.authenticationMethod = OAuth
-	u.isEmailVerified = true
 	return OAuthUser{
 		userID:        u.id,
 		userAccountID: userAccountID,

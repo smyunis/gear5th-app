@@ -25,6 +25,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/sitepersistence/siterepository"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/accountcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/adslotcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/homecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/identitycontrollers"
@@ -249,6 +250,19 @@ func InitAdSlotIntegrationSnippetController() adslotcontrollers.AdSlotIntegratio
 	adSlotInteractor := adslotinteractors.NewAdSlotInteractor(mongoDBSiteRepository, mongoDBUserRepository, mongoDBAdSlotRepository, inMemoryEventDispatcher)
 	adSlotIntegrationSnippetController := adslotcontrollers.NewAdSlotIntegrationSnippetController(jwtAuthenticationMiddleware, adSlotInteractor, appLogger)
 	return adSlotIntegrationSnippetController
+}
+
+func InitAccountController() accountcontrollers.AccountController {
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
+	jwtAuthenticationMiddleware := middlewares.NewJwtAuthenticationMiddleware(jwtAccessTokenService)
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
+	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
+	userAccountInteractor := identityinteractors.NewUserAccountInteractor(mongoDBUserRepository, mongoDBMangageUserRepository)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	accountController := accountcontrollers.NewAccountController(jwtAuthenticationMiddleware, userAccountInteractor, appLogger)
+	return accountController
 }
 
 func InitEventsRegistrar() events.EventHandlerRegistrar {

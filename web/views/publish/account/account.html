@@ -1,0 +1,55 @@
+{{define "title"}}Account | gear5th{{end}}
+
+{{define "in-console-main"}}
+<div class="pb-6">
+    <h2 class="text-2xl text-darkest font-bold pb-2">Account</h2>
+    <p class="pb-4">You are signed in as <span class="font-bold text-lg">{{.Email}}</span></p>
+    <p class="text-yellow-700 text-xs">
+        <i class='bx bx-error align-middle'></i>
+        You will not be able to modify your email since its intrinsically tied to your account.
+    </p>
+</div>
+
+{{if .ErrorMessage}}
+{{template "error-alert" .ErrorMessage}}
+{{end}}
+
+<form method="post">
+    {{if .IsManagedUser}}
+    <div class="flex max-sm:justify-between sm:gap-2 max-w-full">
+
+        <div class="mb-4 flex-shrink pr-4">
+            <label for="first-name" class="text-xs">First name</label>
+            <input type="text" name="first-name" id="first-name" value="{{.FirstName}}" required
+                class=" p-2 w-full form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+        </div>
+        <div class="mb-4 ">
+            <label for="last-name" class="text-xs">Last name</label>
+            <input type="text" name="last-name" id="last-name" value="{{.LastName}}" required
+                class="p-2 w-full form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+        </div>
+
+    </div>
+    {{end}}
+
+    <div class="mb-4">
+        <label for="phone-number" class="text-xs">Phone number</label>
+        <input type="tel" name="phone-number" id="phone-number" value="{{.PhoneNumber}}" size="30" maxlength="24"
+            class="text-medium p-2 form-input block  rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+
+    <input type="hidden" name="email" value="{{.Email}}">
+
+    <div class="my-8 flex items-center">
+        <button type="submit" class="h-10 mr-4 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+            Save profile
+        </button>
+        {{if .IsManagedUser}}
+        <a href="/publish/account/change-password" class="text-secondary underline hover:font-bold px-8">
+            Change password
+        </a>
+        {{end}}
+    </div>
+
+</form>
+{{end}}

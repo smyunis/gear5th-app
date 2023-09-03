@@ -44,6 +44,10 @@ func (m *ManagedUser) Name() PersonName {
 	return m.name
 }
 
+func (m *ManagedUser) SetName(name PersonName)  {
+	 m.name = name
+}
+
 func (m *ManagedUser) UserID() shared.ID {
 	return m.userId
 }

@@ -4,6 +4,7 @@ package ioc
 
 import (
 	"github.com/google/wire"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/accountcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/adslotcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/homecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/identitycontrollers"
@@ -89,6 +90,11 @@ func InitEditAdSlotController() adslotcontrollers.EditAdSlotController {
 func InitAdSlotIntegrationSnippetController() adslotcontrollers.AdSlotIntegrationSnippetController {
 	wire.Build(Container)
 	return adslotcontrollers.AdSlotIntegrationSnippetController{}
+}
+
+func InitAccountController() accountcontrollers.AccountController {
+	wire.Build(Container)
+	return accountcontrollers.AccountController{}
 }
 
 // Event Handlers

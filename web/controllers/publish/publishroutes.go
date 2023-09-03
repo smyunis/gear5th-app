@@ -51,4 +51,7 @@ func Routes(app *fiber.App) {
 	oauthUserSigninController := ioc.InitOAuthSignInController()
 	oauthUserSigninController.AddRoutes(&publishRouter)
 
+	accountcontroller := ioc.InitAccountController()
+	accountcontroller.AddRoutes(&publishRouter)
+
 }
