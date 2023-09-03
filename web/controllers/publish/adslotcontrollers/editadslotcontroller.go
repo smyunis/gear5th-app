@@ -20,7 +20,6 @@ func init() {
 }
 
 type editAdSlotPresenter struct {
-	Nav                  string
 	AdSlotName           string `form:"adslot-name"`
 	AdSlotType           string
 	AdSlotTypeDimentions string
@@ -61,7 +60,6 @@ func (c *EditAdSlotController) editAdSlotOnGet(ctx *fiber.Ctx) error {
 	}
 
 	p := editAdSlotPresenter{
-		Nav:                  "ads",
 		AdSlotName:           slot.Name(),
 		AdSlotType:           slot.AdSlotType().String(),
 		AdSlotTypeDimentions: slot.AdSlotType().Dimentions().String(),
@@ -80,7 +78,6 @@ func (c *EditAdSlotController) editAdSlotOnPost(ctx *fiber.Ctx) error {
 	}
 
 	p := &editAdSlotPresenter{
-		Nav: "ads",
 	}
 	err = ctx.BodyParser(p)
 	if err != nil {

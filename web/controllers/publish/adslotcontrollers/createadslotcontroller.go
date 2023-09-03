@@ -28,7 +28,6 @@ type createAdSlotSitesPresenter struct {
 }
 
 type createAdSlotPresenter struct {
-	Nav          string
 	AdSlotName   string `form:"adslot-name"`
 	SlotType     string `form:"adslot-type"`
 	SiteID       string `form:"adslot-site-id"`
@@ -71,7 +70,6 @@ func (c *CreateAdSlotController) createAdSlotOnGet(ctx *fiber.Ctx) error {
 	if err != nil {
 		if errors.Is(err, application.ErrEntityNotFound) {
 			p := createAdSlotPresenter{
-				Nav:          "ads",
 				ErrorMessage: "You have no sites registered. You must register a site first so you can add ad slots to it.",
 			}
 			return controllers.Render(ctx, createAdSlotTemplate, p)
@@ -90,7 +88,6 @@ func (c *CreateAdSlotController) createAdSlotOnGet(ctx *fiber.Ctx) error {
 	}
 
 	p := createAdSlotPresenter{
-		Nav:   "ads",
 		Sites: sites,
 	}
 	return controllers.Render(ctx, createAdSlotTemplate, p)

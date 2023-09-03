@@ -17,7 +17,6 @@ func init() {
 }
 
 type homePresenter struct {
-	Nav string
 }
 
 type HomeController struct {
@@ -40,7 +39,6 @@ func (c *HomeController) onGet(ctx *fiber.Ctx) error {
 	// actorUserID := ctx.Locals(controllers.ActorUserID).(shared.ID)
 
 	p := homePresenter{
-		Nav: "home",
 	}
 
 	return controllers.Render(ctx, homeTemplate, p)

@@ -25,7 +25,6 @@ func init() {
 }
 
 type verifyitePresenter struct {
-	Nav                    string
 	ErrorMessage           string
 	SiteAdsTxtRecord       string
 	SiteID                 string
@@ -78,7 +77,6 @@ func (c *VerifySiteController) verifyPrompt(ctx *fiber.Ctx) error {
 		return ctx.Redirect("/pages/error.html")
 	}
 	p := &verifyitePresenter{
-		Nav:              "sites",
 		SiteID:           siteID,
 		SiteDomain:       siteURL.String(),
 		SiteAdsTxtRecord: adsTxtRecord.String(),
@@ -93,7 +91,6 @@ func (c *VerifySiteController) verifySite(ctx *fiber.Ctx) error {
 	}
 
 	p := &verifyitePresenter{
-		Nav: "sites",
 	}
 
 	err := c.interactor.VerifySite(shared.ID(siteID))

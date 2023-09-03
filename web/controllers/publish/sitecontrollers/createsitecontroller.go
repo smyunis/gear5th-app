@@ -20,7 +20,6 @@ func init() {
 }
 
 type createSitePresenter struct {
-	Nav          string
 	ErrorMessage string
 	SiteURL      string `form:"url"`
 }
@@ -48,7 +47,7 @@ func (c *CreateSiteController) AddRoutes(router *fiber.Router) {
 }
 
 func (c *CreateSiteController) createSiteonGet(ctx *fiber.Ctx) error {
-	return controllers.Render(ctx, createSiteTemplate, createSitePresenter{Nav: "sites"})
+	return controllers.Render(ctx, createSiteTemplate, nil)
 }
 
 func (c *CreateSiteController) createSiteonPost(ctx *fiber.Ctx) error {
@@ -57,7 +56,6 @@ func (c *CreateSiteController) createSiteonPost(ctx *fiber.Ctx) error {
 		return ctx.Redirect("/pages/error.html")
 	}
 	p := &createSitePresenter{
-		Nav: "sites",
 	}
 	err = ctx.BodyParser(p)
 	if err != nil {

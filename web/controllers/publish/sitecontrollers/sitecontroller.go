@@ -28,7 +28,6 @@ type sitePresenterActiveSite struct {
 	SiteURL          string
 }
 type sitePresenter struct {
-	Nav          string
 	ActiveSites  []sitePresenterActiveSite
 	ErrorMessage string
 }
@@ -64,13 +63,11 @@ func (c *SiteController) onGet(ctx *fiber.Ctx) error {
 	if err != nil {
 		if errors.Is(err, application.ErrEntityNotFound) {
 			p := sitePresenter{
-				Nav:         "sites",
 				ActiveSites: make([]sitePresenterActiveSite, 0),
 			}
 			return controllers.Render(ctx, siteTemplate, p)
 		}
 		p := sitePresenter{
-			Nav:          "sites",
 			ErrorMessage: "We're unable to get your sites at the moment. Try again later.",
 		}
 		c.logger.Error("site/activesitesforpublisher", err)
@@ -83,7 +80,6 @@ func (c *SiteController) onGet(ctx *fiber.Ctx) error {
 		adsTxtRecord, err := c.interactor.GenerateAdsTxtRecord(s.ID())
 		if err != nil {
 			p := sitePresenter{
-				Nav:          "sites",
 				ErrorMessage: "We're unable to get your sites at the moment. Try again later.",
 			}
 			return controllers.Render(ctx, siteTemplate, p)
@@ -97,7 +93,6 @@ func (c *SiteController) onGet(ctx *fiber.Ctx) error {
 		})
 	}
 	p := sitePresenter{
-		Nav:         "sites",
 		ActiveSites: sites,
 	}
 	return controllers.Render(ctx, siteTemplate, p)

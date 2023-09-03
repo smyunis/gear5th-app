@@ -20,7 +20,6 @@ func init() {
 }
 
 type adSlotIntegrationSnippetPresenter struct {
-	Nav         string
 	HTMLSnippet string
 }
 
@@ -58,7 +57,6 @@ func (c *AdSlotIntegrationSnippetController) integrationSnippetOnGet(ctx *fiber.
 	}
 
 	p := adSlotIntegrationSnippetPresenter{
-		Nav:         "ads",
 		HTMLSnippet: snippet,
 	}
 

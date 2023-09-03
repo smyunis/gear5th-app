@@ -29,7 +29,6 @@ type adSlotsForSitePresenter struct {
 }
 
 type adSlotPresenter struct {
-	Nav          string
 	ErrorMessage string
 	AdSlots      map[string][]adSlotsForSitePresenter
 }
@@ -65,13 +64,11 @@ func (c *AdSlotController) adsPageOnGet(ctx *fiber.Ctx) error {
 	if err != nil {
 		if errors.Is(err, application.ErrEntityNotFound) {
 			p := adSlotPresenter{
-				Nav:          "ads",
 				ErrorMessage: "There are no ad slots registred for any of your sites",
 			}
 			return controllers.Render(ctx, adsTemplate, p)
 		}
 		p := adSlotPresenter{
-			Nav:          "ads",
 			ErrorMessage: "We're unable to get your ad slots for site at the moment. Try again later.",
 		}
 		c.logger.Error("adslot/activesitesforpublisher", err)
@@ -93,7 +90,6 @@ func (c *AdSlotController) adsPageOnGet(ctx *fiber.Ctx) error {
 	}
 
 	p := adSlotPresenter{
-		Nav:     "ads",
 		AdSlots: adSlots,
 	}
 	return controllers.Render(ctx, adsTemplate, p)

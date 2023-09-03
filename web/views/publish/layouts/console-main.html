@@ -38,42 +38,37 @@
 
     </header>
 
-    {{$activeNav := .Nav}}
-    {{$activeNavStyles := "active-sidebarnav-item"}}
     <div class="flex">
         <nav id="sidenav"
             class="fixed hidden sm:flex flex-col justify-between mt-16 h-screen w-80 border-r py-8 border-light bg-white">
             <div>
                 <ul>
-                    <li class="">
-                        <a href="/publish/home" class="{{if eq $activeNav "home"}}{{$activeNavStyles}}{{end}}
-                            sidebarnav-item">
+                    <li>
+                        <a id="nav-home" href="/publish/home" class="sidebarnav-item">
                             <i class="bx bx-home-alt-2 text-xl"></i>
                             <span class="px-4">Home</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/publish/sites" class="{{if eq $activeNav "sites"}}{{$activeNavStyles}}{{end}}
-                            sidebarnav-item">
+                        <a id="nav-sites" href="/publish/sites" class="sidebarnav-item">
                             <i class="bx bx-layout text-xl"></i>
                             <span class="px-4">Sites</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/publish/ads" class="{{if eq $activeNav "ads"}}{{$activeNavStyles}}{{end}}
-                            sidebarnav-item">
+                        <a id="nav-ads" href="/publish/ads" class="sidebarnav-item">
                             <i class="bx bx-grid-alt text-xl"></i>
                             <span class="px-4">Ads</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="{{if eq $activeNav "payments"}}{{$activeNavStyles}}{{end}} sidebarnav-item">
+                        <a id="nav-payments" href="#" class="sidebarnav-item">
                             <i class='bx bx-money text-xl'></i>
                             <span class="px-4">Payments</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="{{if eq $activeNav "account"}}{{$activeNavStyles}}{{end}} sidebarnav-item">
+                        <a id="nav-account" href="#" class="sidebarnav-item">
                             <i class="bx bx-cog text-xl"></i>
                             <span class="px-4">Account</span>
                         </a>
@@ -101,6 +96,28 @@
         function sidenavOpen() {
             let sidenav = document.getElementById("sidenav")
             sidenav.classList.toggle("hidden")
+        }
+
+        let sitePath = window.location.pathname
+
+        switch (true) {
+            case sitePath.includes("/home"):
+                document.querySelector("#nav-home").classList.add("active-sidebarnav-item")
+                break;
+            case sitePath.includes("/sites"):
+                document.querySelector("#nav-sites").classList.add("active-sidebarnav-item")
+                break;
+            case sitePath.includes("/ads"):
+                document.querySelector("#nav-ads").classList.add("active-sidebarnav-item")
+                break;
+            case sitePath.includes("/payments"):
+                document.querySelector("#nav-payments").classList.add("active-sidebarnav-item")
+                break;
+            case sitePath.includes("/account"):
+                document.querySelector("#nav-account").classList.add("active-sidebarnav-item")
+                break;
+            default:
+                break;
         }
     </script>
 
