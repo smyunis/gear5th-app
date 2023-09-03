@@ -1,6 +1,10 @@
 package testdoubles
 
-import "strings"
+import (
+	"strings"
+
+	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
+)
 
 type DigitalSignatureValidationServiceMock struct {
 	msg string
@@ -18,5 +22,15 @@ func (m *DigitalSignatureValidationServiceMock) Validate(hmacMessage string) boo
 }
 
 func (m *DigitalSignatureValidationServiceMock) GetMessage(message string) (string, error) {
-	return strings.Split(message, " ")[0],nil
+	return strings.Split(message, " ")[0], nil
+}
+
+type GoogleOAuthServiceStub struct{}
+
+func (GoogleOAuthServiceStub) ValidateToken(identityToken string) (user.GoogleOAuthUserDetails, error) {
+	return user.GoogleOAuthUserDetails{
+		"Salman Yunis",
+		StubID,
+		"doni793doni793@gmail.com",
+	}, nil
 }

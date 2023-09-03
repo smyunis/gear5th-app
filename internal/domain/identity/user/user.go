@@ -74,12 +74,13 @@ func (u *User) AsManagedUser(name PersonName, password string) ManagedUser {
 	return managedUser
 }
 
-func (u *User) AsOAuthUser(userIdentifier string, provider OAuthProvider) OAuthUser {
+func (u *User) AsOAuthUser(userAccountID string, provider OAuthProvider) OAuthUser {
 	u.authenticationMethod = OAuth
+	u.isEmailVerified = true
 	return OAuthUser{
-		userId:         u.id,
-		userIdentifier: userIdentifier,
-		oauthProvider:  provider,
+		userID:        u.id,
+		userAccountID: userAccountID,
+		oauthProvider: provider,
 	}
 }
 

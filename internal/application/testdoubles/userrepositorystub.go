@@ -78,3 +78,20 @@ func setStructField[T, V any](struc *T, field string, value V) {
 	structField = reflect.NewAt(structField.Type(), unsafe.Pointer(structField.UnsafeAddr())).Elem()
 	structField.Set(reflect.ValueOf(value))
 }
+
+type OAuthUserRepositoryStub struct{}
+
+// UserWithAccountIdentifier implements user.OAuthUserRepository.
+func (OAuthUserRepositoryStub) UserWithAccountIdentifier(accountID string) (user.OAuthUser, error) {
+	return user.ReconstituteOAuthUser(shared.NewID(), accountID, user.GoogleOAuth), nil
+}
+
+// Get implements user.OAuthUserRepository.
+func (OAuthUserRepositoryStub) Get(ctx context.Context, id shared.ID) (user.OAuthUser, error) {
+	return user.ReconstituteOAuthUser(id, "xxx-yyy", user.GoogleOAuth), nil
+}
+
+// Save implements user.OAuthUserRepository.
+func (OAuthUserRepositoryStub) Save(ctx context.Context, e user.OAuthUser) error {
+	return nil
+}

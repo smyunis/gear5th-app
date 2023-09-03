@@ -1,33 +1,31 @@
 package googleoauth
 
 import (
-	"fmt"
+	"context"
 
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
-	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
+	"google.golang.org/api/idtoken"
 )
 
 type GoogleOAuthServiceImpl struct {
-	httpClient infrastructure.HTTPClient
 }
 
-func NewGoogleOAuthService(httpClient infrastructure.HTTPClient) GoogleOAuthServiceImpl {
+func NewGoogleOAuthService() GoogleOAuthServiceImpl {
 	return GoogleOAuthServiceImpl{
-		httpClient: httpClient,
 	}
 }
 
-func (g *GoogleOAuthServiceImpl) UserDetails(u user.OAuthUser) user.GoogleOAuthUserDetails {
-	// TODO Fetch user details from google apis
-	return user.GoogleOAuthUserDetails{}
-}
-
-func (g *GoogleOAuthServiceImpl) ValidateUser(u *user.User, identityToken string) error {
-	// TODO validate user token using google apis
-
-	if u.AuthenticationMethod() != user.OAuth {
-		return fmt.Errorf("user is not signed up with google oauth")
+func (g GoogleOAuthServiceImpl) ValidateToken(identityToken string) (user.GoogleOAuthUserDetails, error) {
+	claims, err := idtoken.Validate(context.Background(), identityToken, "")
+	if err != nil {
+		return user.GoogleOAuthUserDetails{}, err
 	}
 
-	return nil
+	details := user.GoogleOAuthUserDetails{
+		Fullname: claims.Claims["name"].(string),
+		AccountID: claims.Subject,
+		Email: claims.Claims["email"].(string),
+	}
+
+	return details, nil
 }

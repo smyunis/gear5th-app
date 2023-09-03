@@ -26,6 +26,11 @@ func InitManagedUserController() identitycontrollers.UserSignInController {
 	return identitycontrollers.UserSignInController{}
 }
 
+func InitOAuthSignInController() identitycontrollers.OAuthSignInController {
+	wire.Build(Container)
+	return identitycontrollers.OAuthSignInController{}
+}
+
 func InitPublisherSignUpController() publishercontrollers.PublisherSignUpController {
 	wire.Build(Container)
 	return publishercontrollers.PublisherSignUpController{}

@@ -13,12 +13,14 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/siteinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/googleoauth"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/tokens"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/adslotpersistence/adslotrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/oauthuserrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
@@ -57,16 +59,30 @@ func InitManagedUserController() identitycontrollers.UserSignInController {
 	return userSignInController
 }
 
+func InitOAuthSignInController() identitycontrollers.OAuthSignInController {
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	mongoDBOAuthUserRepository := oauthuserrepository.NewMongoDBOAuthUserRepository(mongoDBStoreBootstrap)
+	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
+	googleOAuthServiceImpl := googleoauth.NewGoogleOAuthService()
+	oAuthUserInteractor := identityinteractors.NewOAuthUserInteractor(mongoDBOAuthUserRepository, jwtAccessTokenService, googleOAuthServiceImpl)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	oAuthSignInController := identitycontrollers.NewOAuthSignInController(oAuthUserInteractor, appLogger)
+	return oAuthSignInController
+}
+
 func InitPublisherSignUpController() publishercontrollers.PublisherSignUpController {
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
 	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
 	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
 	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
+	mongoDBOAuthUserRepository := oauthuserrepository.NewMongoDBOAuthUserRepository(mongoDBStoreBootstrap)
 	mongoDBPublisherRepository := publisherrepository.NewMongoDBPublisherRepository(mongoDBStoreBootstrap)
-	mongoDBPublisherSignUpUnitOfWork := publishersignupunitofwork.NewMongoDBPublisherSignUpUnitOfWork(mongoDBStoreBootstrap, mongoDBUserRepository, mongoDBMangageUserRepository, mongoDBPublisherRepository)
+	mongoDBPublisherSignUpUnitOfWork := publishersignupunitofwork.NewMongoDBPublisherSignUpUnitOfWork(mongoDBStoreBootstrap, mongoDBUserRepository, mongoDBMangageUserRepository, mongoDBOAuthUserRepository, mongoDBPublisherRepository)
+	googleOAuthServiceImpl := googleoauth.NewGoogleOAuthService()
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
-	publisherSignUpInteractor := publisherinteractors.NewPublisherSignUpInteractor(inMemoryEventDispatcher, mongoDBPublisherSignUpUnitOfWork, appLogger)
+	publisherSignUpInteractor := publisherinteractors.NewPublisherSignUpInteractor(inMemoryEventDispatcher, mongoDBPublisherSignUpUnitOfWork, googleOAuthServiceImpl, appLogger)
 	publisherSignUpController := publishercontrollers.NewPublisherSignUpController(publisherSignUpInteractor, appLogger)
 	return publisherSignUpController
 }

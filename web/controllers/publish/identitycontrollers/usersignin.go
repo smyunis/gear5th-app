@@ -23,7 +23,7 @@ func init() {
 
 const validationErrorMessage = "That email and password combination didn't work. Try again."
 
-type UserSigninPresenter struct {
+type userSigninPresenter struct {
 	Email        string `form:"email"`
 	Password     string `form:"password"`
 	StaySignedIn bool   `form:"stay-signed-in"`
@@ -49,11 +49,11 @@ func (c *UserSignInController) AddRoutes(router *fiber.Router) {
 }
 
 func (*UserSignInController) onGet(ctx *fiber.Ctx) error {
-	return controllers.Render(ctx, signintemplate, &UserSigninPresenter{})
+	return controllers.Render(ctx, signintemplate, &userSigninPresenter{})
 }
 
 func (c *UserSignInController) onPost(ctx *fiber.Ctx) error {
-	p := &UserSigninPresenter{}
+	p := &userSigninPresenter{}
 	err := ctx.BodyParser(p)
 
 	if err != nil {
@@ -97,6 +97,6 @@ func (c *UserSignInController) onPost(ctx *fiber.Ctx) error {
 	return ctx.Redirect("/publish/home")
 }
 
-func (*UserSignInController) renderSignInPage(ctx *fiber.Ctx, p *UserSigninPresenter) error {
+func (*UserSignInController) renderSignInPage(ctx *fiber.Ctx, p *userSigninPresenter) error {
 	return controllers.Render(ctx, signintemplate, p)
 }

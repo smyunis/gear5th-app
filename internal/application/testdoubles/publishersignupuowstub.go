@@ -9,9 +9,15 @@ import (
 
 type PublisherSignUpUnitOfWorkStub struct{}
 
+// SaveOAuthUser implements publisherinteractors.PublisherSignUpUnitOfWork.
+func (PublisherSignUpUnitOfWorkStub) SaveOAuthUser(ctx context.Context, usr user.User, oauthUser user.OAuthUser, pub publisher.Publisher) error {
+	return nil
+}
+
 func NewPublisherSignUpUnitOfWorkStub() PublisherSignUpUnitOfWorkStub {
 	return PublisherSignUpUnitOfWorkStub{}
 }
+
 
 func (p PublisherSignUpUnitOfWorkStub) Save(ctx context.Context, usr user.User, managedUser user.ManagedUser, pub publisher.Publisher) error {
 	return nil

@@ -48,4 +48,7 @@ func Routes(app *fiber.App) {
 	adSlotIntegrationSnippetController := ioc.InitAdSlotIntegrationSnippetController()
 	adSlotIntegrationSnippetController.AddRoutes(&publishRouter)
 
+	oauthUserSigninController := ioc.InitOAuthSignInController()
+	oauthUserSigninController.AddRoutes(&publishRouter)
+
 }

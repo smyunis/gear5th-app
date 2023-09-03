@@ -25,7 +25,8 @@ func setup() {
 	// pubRepoStub := testdoubles.PublisherRepositoryStub{}
 	pubSignupUnitOfWork := testdoubles.PublisherSignUpUnitOfWorkStub{}
 	consoleLogger := testdoubles.ConsoleLogger{}
-	interactor = publisherinteractors.NewPublisherSignUpInteractor(evtDispather, pubSignupUnitOfWork, consoleLogger)
+	gStub := testdoubles.GoogleOAuthServiceStub{}
+	interactor = publisherinteractors.NewPublisherSignUpInteractor(evtDispather, pubSignupUnitOfWork, gStub,consoleLogger)
 }
 
 func teardown() {

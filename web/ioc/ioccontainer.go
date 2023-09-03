@@ -14,6 +14,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/site"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/googleoauth"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/tokens"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/keyvaluestore/rediskeyvaluestore"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
@@ -21,6 +22,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/adslotpersistence/adslotrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/oauthuserrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
@@ -51,7 +53,8 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(site.SiteRepository), new(siterepository.MongoDBSiteRepository)),
 	adslotrepository.NewMongoDBAdSlotRepository,
 	wire.Bind(new(adslot.AdSlotRepository), new(adslotrepository.MongoDBAdSlotRepository)),
-
+	oauthuserrepository.NewMongoDBOAuthUserRepository,
+	wire.Bind(new(user.OAuthUserRepository), new(oauthuserrepository.MongoDBOAuthUserRepository)),
 
 
 	//Infrastructures
@@ -67,6 +70,8 @@ var Container wire.ProviderSet = wire.NewSet(
 	siteverification.NewAdsTxtVerificationService,
 	wire.Bind(new(site.AdsTxtVerificationService), new(siteverification.AdsTxtVerificationService)),
 
+	googleoauth.NewGoogleOAuthService,
+	wire.Bind(new(user.GoogleOAuthService), new(googleoauth.GoogleOAuthServiceImpl)),
 
 	// Mail
 	identityemail.NewVerifcationEmailSender,
@@ -86,6 +91,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	//Interactors
 	identityinteractors.NewManagedUserInteractor,
 	identityinteractors.NewVerificationEmailInteractor,
+	identityinteractors.NewOAuthUserInteractor,
 	publisherinteractors.NewPublisherSignUpInteractor,
 	siteinteractors.NewSiteInteractor,
 	adslotinteractors.NewAdSlotInteractor,
@@ -100,6 +106,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	identitycontrollers.NewVerifyEmailController,
 	identitycontrollers.NewResetPasswordController,
 	identitycontrollers.NewRequestPasswordResetController,
+	identitycontrollers.NewOAuthSignInController,
 	sitecontrollers.NewSiteController,
 	sitecontrollers.NewCreateSiteController,
 	sitecontrollers.NewVerifySiteController,

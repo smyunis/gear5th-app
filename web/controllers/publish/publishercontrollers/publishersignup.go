@@ -50,6 +50,7 @@ func NewPublisherSignUpController(interactor publisherinteractors.PublisherSignU
 func (c *PublisherSignUpController) AddRoutes(router *fiber.Router) {
 	(*router).Add(fiber.MethodGet, "/identity/signup", c.publisherSignUpOnGet)
 	(*router).Add(fiber.MethodPost, "/identity/signup", c.publisherSignUpOnPost)
+	(*router).Add(fiber.MethodPost, "/identity/oauth/signup", c.oauthUserPublisherSignUp)
 }
 
 func (c *PublisherSignUpController) publisherSignUpOnGet(ctx *fiber.Ctx) error {
@@ -107,5 +108,25 @@ func (c *PublisherSignUpController) publisherSignUpOnPost(ctx *fiber.Ctx) error 
 		return controllers.Render(ctx, publisherSignUpTemplate, p)
 	}
 
+	return controllers.Render(ctx, publisherSignUpSuccessTemplate, nil)
+}
+
+type oAuthSignUpPresenter struct {
+	ClientID   string `form:"clientId"`
+	Credential string `form:"credential"`
+	SelectBy   string `form:"select_by"`
+	CSRFToken  string `form:"g_csrf_token"`
+}
+
+func (c *PublisherSignUpController) oauthUserPublisherSignUp(ctx *fiber.Ctx) error {
+	p := &oAuthSignUpPresenter{}
+	err := ctx.BodyParser(p)
+	if err != nil {
+		return ctx.Redirect("/pages/error.html")
+	}
+	err = c.interactor.OAuthUserSignUp(p.Credential)
+	if err != nil {
+		return ctx.Redirect("/pages/error.html")
+	}
 	return controllers.Render(ctx, publisherSignUpSuccessTemplate, nil)
 }
