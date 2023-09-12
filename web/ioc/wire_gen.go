@@ -8,23 +8,21 @@ package ioc
 
 import (
 	"gitlab.com/gear5th/gear5th-app/internal/application"
-	"gitlab.com/gear5th/gear5th-app/internal/application/adslotinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
-	"gitlab.com/gear5th/gear5th-app/internal/application/siteinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/googleoauth"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/tokens"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
-	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/adslotpersistence/adslotrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/oauthuserrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/adslotrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
-	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/sitepersistence/siterepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/siterepository"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/accountcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/adslotcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/homecontrollers"
@@ -152,7 +150,7 @@ func InitSiteController() sitecontrollers.SiteController {
 	appHTTPClient := infrastructure.NewAppHTTPClient()
 	adsTxtVerificationService := siteverification.NewAdsTxtVerificationService(appHTTPClient, appLogger)
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
-	siteInteractor := siteinteractors.NewSiteInteractor(mongoDBSiteRepository, mongoDBUserRepository, adsTxtVerificationService, inMemoryEventDispatcher, appLogger)
+	siteInteractor := publisherinteractors.NewSiteInteractor(mongoDBSiteRepository, mongoDBUserRepository, adsTxtVerificationService, inMemoryEventDispatcher, appLogger)
 	siteController := sitecontrollers.NewSiteController(jwtAuthenticationMiddleware, siteInteractor, appLogger)
 	return siteController
 }
@@ -168,7 +166,7 @@ func InitCreateSiteController() sitecontrollers.CreateSiteController {
 	appHTTPClient := infrastructure.NewAppHTTPClient()
 	adsTxtVerificationService := siteverification.NewAdsTxtVerificationService(appHTTPClient, appLogger)
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
-	siteInteractor := siteinteractors.NewSiteInteractor(mongoDBSiteRepository, mongoDBUserRepository, adsTxtVerificationService, inMemoryEventDispatcher, appLogger)
+	siteInteractor := publisherinteractors.NewSiteInteractor(mongoDBSiteRepository, mongoDBUserRepository, adsTxtVerificationService, inMemoryEventDispatcher, appLogger)
 	createSiteController := sitecontrollers.NewCreateSiteController(jwtAuthenticationMiddleware, siteInteractor, appLogger)
 	return createSiteController
 }
@@ -184,7 +182,7 @@ func InitVerifySiteController() sitecontrollers.VerifySiteController {
 	appHTTPClient := infrastructure.NewAppHTTPClient()
 	adsTxtVerificationService := siteverification.NewAdsTxtVerificationService(appHTTPClient, appLogger)
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
-	siteInteractor := siteinteractors.NewSiteInteractor(mongoDBSiteRepository, mongoDBUserRepository, adsTxtVerificationService, inMemoryEventDispatcher, appLogger)
+	siteInteractor := publisherinteractors.NewSiteInteractor(mongoDBSiteRepository, mongoDBUserRepository, adsTxtVerificationService, inMemoryEventDispatcher, appLogger)
 	verifySiteController := sitecontrollers.NewVerifySiteController(jwtAuthenticationMiddleware, siteInteractor, appLogger)
 	return verifySiteController
 }
@@ -199,7 +197,7 @@ func InitAdSlotController() adslotcontrollers.AdSlotController {
 	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
 	mongoDBAdSlotRepository := adslotrepository.NewMongoDBAdSlotRepository(mongoDBStoreBootstrap, appLogger)
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
-	adSlotInteractor := adslotinteractors.NewAdSlotInteractor(mongoDBSiteRepository, mongoDBUserRepository, mongoDBAdSlotRepository, inMemoryEventDispatcher)
+	adSlotInteractor := publisherinteractors.NewAdSlotInteractor(mongoDBSiteRepository, mongoDBUserRepository, mongoDBAdSlotRepository, inMemoryEventDispatcher)
 	adSlotController := adslotcontrollers.NewAdSlotController(jwtAuthenticationMiddleware, adSlotInteractor, appLogger)
 	return adSlotController
 }
@@ -214,10 +212,10 @@ func InitCreateAdSlotController() adslotcontrollers.CreateAdSlotController {
 	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
 	mongoDBAdSlotRepository := adslotrepository.NewMongoDBAdSlotRepository(mongoDBStoreBootstrap, appLogger)
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
-	adSlotInteractor := adslotinteractors.NewAdSlotInteractor(mongoDBSiteRepository, mongoDBUserRepository, mongoDBAdSlotRepository, inMemoryEventDispatcher)
+	adSlotInteractor := publisherinteractors.NewAdSlotInteractor(mongoDBSiteRepository, mongoDBUserRepository, mongoDBAdSlotRepository, inMemoryEventDispatcher)
 	appHTTPClient := infrastructure.NewAppHTTPClient()
 	adsTxtVerificationService := siteverification.NewAdsTxtVerificationService(appHTTPClient, appLogger)
-	siteInteractor := siteinteractors.NewSiteInteractor(mongoDBSiteRepository, mongoDBUserRepository, adsTxtVerificationService, inMemoryEventDispatcher, appLogger)
+	siteInteractor := publisherinteractors.NewSiteInteractor(mongoDBSiteRepository, mongoDBUserRepository, adsTxtVerificationService, inMemoryEventDispatcher, appLogger)
 	createAdSlotController := adslotcontrollers.NewCreateAdSlotController(jwtAuthenticationMiddleware, adSlotInteractor, siteInteractor, appLogger)
 	return createAdSlotController
 }
@@ -232,7 +230,7 @@ func InitEditAdSlotController() adslotcontrollers.EditAdSlotController {
 	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
 	mongoDBAdSlotRepository := adslotrepository.NewMongoDBAdSlotRepository(mongoDBStoreBootstrap, appLogger)
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
-	adSlotInteractor := adslotinteractors.NewAdSlotInteractor(mongoDBSiteRepository, mongoDBUserRepository, mongoDBAdSlotRepository, inMemoryEventDispatcher)
+	adSlotInteractor := publisherinteractors.NewAdSlotInteractor(mongoDBSiteRepository, mongoDBUserRepository, mongoDBAdSlotRepository, inMemoryEventDispatcher)
 	editAdSlotController := adslotcontrollers.NewEditAdSlotController(jwtAuthenticationMiddleware, adSlotInteractor, appLogger)
 	return editAdSlotController
 }
@@ -247,7 +245,7 @@ func InitAdSlotIntegrationSnippetController() adslotcontrollers.AdSlotIntegratio
 	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
 	mongoDBAdSlotRepository := adslotrepository.NewMongoDBAdSlotRepository(mongoDBStoreBootstrap, appLogger)
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
-	adSlotInteractor := adslotinteractors.NewAdSlotInteractor(mongoDBSiteRepository, mongoDBUserRepository, mongoDBAdSlotRepository, inMemoryEventDispatcher)
+	adSlotInteractor := publisherinteractors.NewAdSlotInteractor(mongoDBSiteRepository, mongoDBUserRepository, mongoDBAdSlotRepository, inMemoryEventDispatcher)
 	adSlotIntegrationSnippetController := adslotcontrollers.NewAdSlotIntegrationSnippetController(jwtAuthenticationMiddleware, adSlotInteractor, appLogger)
 	return adSlotIntegrationSnippetController
 }

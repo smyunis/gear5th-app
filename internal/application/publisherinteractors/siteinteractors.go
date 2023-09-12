@@ -1,4 +1,4 @@
-package siteinteractors
+package publisherinteractors
 
 import (
 	"context"

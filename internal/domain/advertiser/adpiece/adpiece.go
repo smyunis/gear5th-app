@@ -14,21 +14,21 @@ type AdPieceRepository interface {
 
 type AdPiece struct {
 	ID            shared.ID
+	Events        shared.Events
 	CampaignID    shared.ID
 	SlotType      adslot.AdSlotType
 	Resource      string
-	Description   string
 	Ref           *url.URL
 	IsDeactivated bool
 }
 
-func NewAdPiece(campaignID shared.ID, slot adslot.AdSlotType, ref *url.URL, desc, resource string) AdPiece {
+func NewAdPiece(campaignID shared.ID, slot adslot.AdSlotType, ref *url.URL, resource string) AdPiece {
 	return AdPiece{
-		ID:          shared.NewID(),
-		CampaignID:  campaignID,
-		SlotType:    slot,
-		Resource:    resource,
-		Ref:         ref,
-		Description: desc,
+		ID:         shared.NewID(),
+		Events:     make(shared.Events),
+		CampaignID: campaignID,
+		SlotType:   slot,
+		Resource:   resource,
+		Ref:        ref,
 	}
 }

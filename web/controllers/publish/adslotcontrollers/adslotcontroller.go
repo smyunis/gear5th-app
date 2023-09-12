@@ -7,7 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-app/internal/application"
-	"gitlab.com/gear5th/gear5th-app/internal/application/adslotinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 	"gitlab.com/gear5th/gear5th-app/web/controllers"
 	"gitlab.com/gear5th/gear5th-app/web/middlewares"
@@ -35,12 +35,12 @@ type adSlotPresenter struct {
 
 type AdSlotController struct {
 	authMiddleware   middlewares.JwtAuthenticationMiddleware
-	adSlotInteractor adslotinteractors.AdSlotInteractor
+	adSlotInteractor publisherinteractors.AdSlotInteractor
 	logger           application.Logger
 }
 
 func NewAdSlotController(authMiddleware middlewares.JwtAuthenticationMiddleware,
-	adSlotsInteractor adslotinteractors.AdSlotInteractor,
+	adSlotsInteractor publisherinteractors.AdSlotInteractor,
 	logger application.Logger) AdSlotController {
 	return AdSlotController{
 		authMiddleware,

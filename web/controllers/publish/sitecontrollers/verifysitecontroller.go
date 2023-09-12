@@ -6,7 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-app/internal/application"
-	"gitlab.com/gear5th/gear5th-app/internal/application/siteinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 	"gitlab.com/gear5th/gear5th-app/web/controllers"
 	"gitlab.com/gear5th/gear5th-app/web/middlewares"
@@ -34,12 +34,12 @@ type verifyitePresenter struct {
 
 type VerifySiteController struct {
 	authMiddleware middlewares.JwtAuthenticationMiddleware
-	interactor     siteinteractors.SiteInteractor
+	interactor     publisherinteractors.SiteInteractor
 	logger         application.Logger
 }
 
 func NewVerifySiteController(authMiddleware middlewares.JwtAuthenticationMiddleware,
-	interactor siteinteractors.SiteInteractor,
+	interactor publisherinteractors.SiteInteractor,
 	logger application.Logger) VerifySiteController {
 	return VerifySiteController{
 		authMiddleware,

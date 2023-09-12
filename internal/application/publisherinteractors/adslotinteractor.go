@@ -1,4 +1,4 @@
-package adslotinteractors
+package publisherinteractors
 
 import (
 	"context"

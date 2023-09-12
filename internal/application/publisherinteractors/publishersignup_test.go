@@ -1,7 +1,6 @@
 package publisherinteractors_test
 
 import (
-	"os"
 	"testing"
 
 	"gitlab.com/gear5th/gear5th-app/internal/application"
@@ -10,26 +9,14 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 )
 
-func TestMain(m *testing.M) {
-	setup()
-	os.Exit(m.Run())
-	teardown()
-}
+var publisherInteractor publisherinteractors.PublisherSignUpInteractor
 
-var evtDispather application.EventDispatcher = &testdoubles.LocalizedEventDispatcher{}
-var interactor publisherinteractors.PublisherSignUpInteractor
-
-func setup() {
-	// userRepositoryStub := testdoubles.UserRepositoryStub{}
-	// managedUserRepositoryStub := testdoubles.ManagedUserRepositoryStub{}
-	// pubRepoStub := testdoubles.PublisherRepositoryStub{}
+func publisherTestSetup() {
+	var evtDispather application.EventDispatcher = &testdoubles.LocalizedEventDispatcher{}
 	pubSignupUnitOfWork := testdoubles.PublisherSignUpUnitOfWorkStub{}
 	consoleLogger := testdoubles.ConsoleLogger{}
 	gStub := testdoubles.GoogleOAuthServiceStub{}
-	interactor = publisherinteractors.NewPublisherSignUpInteractor(evtDispather, pubSignupUnitOfWork, gStub,consoleLogger)
-}
-
-func teardown() {
+	publisherInteractor = publisherinteractors.NewPublisherSignUpInteractor(evtDispather, pubSignupUnitOfWork, gStub, consoleLogger)
 }
 
 func TestPublisherManagedUserSignUp(t *testing.T) {
@@ -37,5 +24,5 @@ func TestPublisherManagedUserSignUp(t *testing.T) {
 	usr := user.NewUser(email)
 	manageduser := usr.AsManagedUser(user.NewPersonNameWithFullName("Son Goku"), "gokuisking")
 
-	_ = interactor.ManagedUserSignUp(usr, manageduser)
+	_ = publisherInteractor.ManagedUserSignUp(usr, manageduser)
 }

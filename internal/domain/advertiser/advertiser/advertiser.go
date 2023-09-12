@@ -4,24 +4,21 @@ import (
 	"time"
 
 	"gitlab.com/gear5th/gear5th-app/internal/domain/advertiser/campaign"
-	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 )
 
 type Advertiser struct {
-	ID    shared.ID
+	UserID    shared.ID
 	Name  string
-	Email user.Email
 }
 
-func NewAdvertiser(name string, email user.Email) Advertiser {
+func NewAdvertiser(name string) Advertiser {
 	return Advertiser{
-		ID:    shared.NewID(),
+		UserID:    shared.NewID(),
 		Name:  name,
-		Email: email,
 	}
 }
 
 func (a *Advertiser) StartCampaign(name string, start, end time.Time) campaign.Campaign {
-	return campaign.NewCampaign(name, a.ID, start, end)
+	return campaign.NewCampaign(name, a.UserID, start, end)
 }

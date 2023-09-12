@@ -6,8 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-app/internal/application"
-	"gitlab.com/gear5th/gear5th-app/internal/application/adslotinteractors"
-	"gitlab.com/gear5th/gear5th-app/internal/application/siteinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/adslot"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 	"gitlab.com/gear5th/gear5th-app/web/controllers"
@@ -37,14 +36,14 @@ type createAdSlotPresenter struct {
 
 type CreateAdSlotController struct {
 	authMiddleware   middlewares.JwtAuthenticationMiddleware
-	adSlotInteractor adslotinteractors.AdSlotInteractor
-	sitesInteractor  siteinteractors.SiteInteractor
+	adSlotInteractor publisherinteractors.AdSlotInteractor
+	sitesInteractor  publisherinteractors.SiteInteractor
 	logger           application.Logger
 }
 
 func NewCreateAdSlotController(authMiddleware middlewares.JwtAuthenticationMiddleware,
-	adSlotsInteractor adslotinteractors.AdSlotInteractor,
-	sitesInteractor siteinteractors.SiteInteractor,
+	adSlotsInteractor publisherinteractors.AdSlotInteractor,
+	sitesInteractor publisherinteractors.SiteInteractor,
 	logger application.Logger) CreateAdSlotController {
 	return CreateAdSlotController{
 		authMiddleware,
@@ -104,7 +103,7 @@ func (c *CreateAdSlotController) createAdSlotOnPost(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Redirect("/pages/error.html")
 	}
-	
+
 	err = c.adSlotInteractor.CreateAdSlotForSite(publisherID, shared.ID(p.SiteID), p.AdSlotName, adSlotType(p.SlotType))
 	if err != nil {
 		p.ErrorMessage = "We're unable to create your ad slot at the moment. Try agian later."

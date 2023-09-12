@@ -1,10 +1,8 @@
 package advertiserinteractors
 
 type AdPieceInteractor struct {
-
 }
 
-func (i *AdPieceInteractor) VerifyAdPieceResource()  {
-	
-}
+func (i *AdPieceInteractor) DeactivateAdPiece() {
 
+}
