@@ -1,4 +1,4 @@
-/// go:embed db
+//go:build db
 
 package campaignrepository_test
 

@@ -87,13 +87,11 @@ func (r MongoDBCampaignRepository) CampaignsForAdvertiser(advertiserID shared.ID
 	return activeCampaigns, nil
 }
 
-// RunningCampaigns implements campaign.CampaignRepository.
-// db.campaigns.find({start:{$lt:ISODate()},end:{$gt:ISODate()},isPreempted:false})
 func (r MongoDBCampaignRepository) RunningCampaigns() ([]campaign.Campaign, error) {
 	now := time.Now()
 	campaigns := r.db.Collection("campaigns")
-	cursor, err := campaigns.Find(context.Background(), 
-	bson.D{{"start", bson.M{"$lt":now}},{"end", bson.M{"$gt":now}}, {"isPreempted", false}})
+	cursor, err := campaigns.Find(context.Background(),
+		bson.D{{"start", bson.M{"$lt": now}}, {"end", bson.M{"$gt": now}}, {"isPreempted", false}})
 	if err != nil {
 		return []campaign.Campaign{}, err
 	}
