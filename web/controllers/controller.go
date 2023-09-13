@@ -9,6 +9,7 @@ import (
 
 const ActorUserID = "actor-userid"
 const AccessTokenCookieName = "gear5th-access-token"
+const AdvertiserToken = "advertiser-token"
 
 func CardMainLayoutTemplate() *template.Template {
 	mainTmpl := template.Must(template.ParseFiles("web/views/publish/layouts/card-main.html"))
@@ -18,6 +19,11 @@ func CardMainLayoutTemplate() *template.Template {
 func ConsoleMainLayoutTemplate() *template.Template {
 	mainTmpl := template.Must(template.ParseFiles("web/views/publish/layouts/console-main.html"))
 	return template.Must(mainTmpl.ParseGlob("web/views/publish/layouts/components/*.html"))
+}
+
+func AdvertiserMainLayoutTemplate() *template.Template {
+	mainTmpl := template.Must(template.ParseFiles("web/views/advertiser/layouts/main.html"))
+	return template.Must(mainTmpl.ParseGlob("web/views/components/*.html"))
 }
 
 func Render(ctx *fiber.Ctx, t *template.Template, binding any) error {

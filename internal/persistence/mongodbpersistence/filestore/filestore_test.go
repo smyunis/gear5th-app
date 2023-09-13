@@ -28,7 +28,7 @@ func setup() {
 }
 
 func TestSaveFile(t *testing.T) {
-	testImg, err := os.Open("testdata/luffy.jpg")
+	testImg, err := os.Open("testdata/v.png")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -42,7 +42,7 @@ func TestSaveFile(t *testing.T) {
 }
 
 func TestDownloadSavedFile(t *testing.T) {
-	testImg, err := os.Open("testdata/luffy.jpg")
+	testImg, err := os.Open("testdata/b.jpg")
 	if err != nil {
 		t.Fatal(err)
 	}

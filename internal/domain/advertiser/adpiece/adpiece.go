@@ -13,22 +13,29 @@ type AdPieceRepository interface {
 }
 
 type AdPiece struct {
-	ID            shared.ID
-	Events        shared.Events
-	CampaignID    shared.ID
-	SlotType      adslot.AdSlotType
-	Resource      string
-	Ref           *url.URL
-	IsDeactivated bool
+	ID               shared.ID
+	Events           shared.Events
+	CampaignID       shared.ID
+	SlotType         adslot.AdSlotType
+	Resource         string
+	ResourceMIMEType string
+	Ref              *url.URL
+	IsDeactivated    bool
 }
 
-func NewAdPiece(campaignID shared.ID, slot adslot.AdSlotType, ref *url.URL, resource string) AdPiece {
+func NewAdPiece(campaignID shared.ID, slot adslot.AdSlotType, ref *url.URL, resource string, resourceMIME string) AdPiece {
 	return AdPiece{
-		ID:         shared.NewID(),
-		Events:     make(shared.Events),
-		CampaignID: campaignID,
-		SlotType:   slot,
-		Resource:   resource,
-		Ref:        ref,
+		ID:               shared.NewID(),
+		Events:           make(shared.Events),
+		CampaignID:       campaignID,
+		SlotType:         slot,
+		Resource:         resource,
+		Ref:              ref,
+		ResourceMIMEType: resourceMIME,
 	}
+}
+
+func (a *AdPiece) Deactivate() {
+	a.IsDeactivated = true
+	a.Events.Emit("adpiece/deactivated", a)
 }

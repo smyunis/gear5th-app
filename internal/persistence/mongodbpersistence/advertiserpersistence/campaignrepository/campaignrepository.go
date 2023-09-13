@@ -39,7 +39,7 @@ func (r MongoDBCampaignRepository) Get(ctx context.Context, id shared.ID) (campa
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return campaign.Campaign{}, application.ErrEntityNotFound
 		}
-		r.logger.Error("campaignrepository/get", err)
+		r.logger.Error("campaign/persistence/get", err)
 		return campaign.Campaign{}, err
 	}
 	s := mapMToCampaign(res)
@@ -53,7 +53,7 @@ func (r MongoDBCampaignRepository) Save(ctx context.Context, e campaign.Campaign
 	updateOptions := options.Update().SetUpsert(true)
 	_, err := campaigns.UpdateByID(ctx, id, bson.D{{"$set", dbEntry}}, updateOptions)
 	if err != nil {
-		r.logger.Error("campaignrepository/save", err)
+		r.logger.Error("campaign/persistence/save", err)
 		return err
 	}
 	return nil

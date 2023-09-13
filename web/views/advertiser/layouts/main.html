@@ -4,34 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error | gear5th</title>
+    <title>{{block "title" .}}{{end}}</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="/styles/tailwind.dist.css">
 </head>
 
 <body class="bg-lightest text-dark font-roboto ">
 
     <div class="h-full w-full sm:p-20">
-        <div class="w-full sm:w-[472px] mx-auto px-9 py-8 bg-white rounded-sm sm:shadow-md sm:shadow-medium">
+        <div class="w-full sm:w-4/5 mx-auto px-9 py-8 bg-white rounded-sm sm:shadow-md sm:shadow-medium">
             <div class="w-full">
                 <img src="/assets/logo_with_title.png" alt="gear5th logo" class="mx-auto w-24 h-24 sm:w-36 sm:h-36">
             </div>
 
-            <div>
-                <h2 class="text-darkest text-2xl font-bold py-4">Oh oh!</h2>
-                <p class="">
-                    It seems the our system malfunctioned. We will be sure to fix it as soon a possible.
-                    Thank you for your continued support.
-                </p>
-                <!-- <a href="/publish/home" class="inline-block mx-auto py-8">
-                    <button type="button" class="h-10 mr-4 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
-                        Back to home
-                    </button>
-                </a> -->
-            </div>
+            {{block "in-main" .}}{{end}}
 
         </div>
     </div>
@@ -43,7 +33,5 @@
         <a href="#" class=" underline">Terms and conditions of service</a>
     </footer>
 </body>
-
-
 
 </html>

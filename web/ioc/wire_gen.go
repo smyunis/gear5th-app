@@ -8,6 +8,7 @@ package ioc
 
 import (
 	"gitlab.com/gear5th/gear5th-app/internal/application"
+	"gitlab.com/gear5th/gear5th-app/internal/application/advertiserinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
@@ -16,6 +17,9 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/adpiecerepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/campaignrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/filestore"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/oauthuserrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
@@ -23,6 +27,8 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/siterepository"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/adpiececontrollers"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/campaigncontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/accountcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/adslotcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/homecontrollers"
@@ -42,7 +48,6 @@ func InitJwtAuthenticationMiddleware() middlewares.JwtAuthenticationMiddleware {
 	return jwtAuthenticationMiddleware
 }
 
-// Controllers
 func InitManagedUserController() identitycontrollers.UserSignInController {
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
 	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
@@ -261,6 +266,39 @@ func InitAccountController() accountcontrollers.AccountController {
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
 	accountController := accountcontrollers.NewAccountController(jwtAuthenticationMiddleware, userAccountInteractor, appLogger)
 	return accountController
+}
+
+func InitAdPieceController() adpiececontrollers.AdPieceController {
+	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
+	advertiserRefferalMiddleware := middlewares.NewAdvertiserRefferalMiddleware(hs256HMACValidationService)
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	mongoDBAdPieceRepository := adpiecerepository.NewMongoDBAdPieceRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBCampaignRepository := campaignrepository.NewMongoDBCampaignRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
+	inMemoryEventDispatcher := application.NewAppEventDispatcher()
+	adPieceInteractor := advertiserinteractors.NewAdPieceInteractor(mongoDBAdPieceRepository, mongoDBCampaignRepository, mongoDBUserRepository, inMemoryEventDispatcher)
+	mongoDBGridFSFileStore := filestore.NewMongoDBGridFSFileStore(mongoDBStoreBootstrap)
+	campaignInteractor := advertiserinteractors.NewCampaignInteractor(mongoDBCampaignRepository, mongoDBUserRepository, mongoDBAdPieceRepository, mongoDBGridFSFileStore, inMemoryEventDispatcher)
+	adPieceController := adpiececontrollers.NewAdPieceController(advertiserRefferalMiddleware, adPieceInteractor, campaignInteractor, mongoDBGridFSFileStore, appLogger)
+	return adPieceController
+}
+
+func InitCampaignController() campaigncontrollers.CampaignController {
+	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
+	advertiserRefferalMiddleware := middlewares.NewAdvertiserRefferalMiddleware(hs256HMACValidationService)
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	mongoDBCampaignRepository := campaignrepository.NewMongoDBCampaignRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
+	mongoDBAdPieceRepository := adpiecerepository.NewMongoDBAdPieceRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBGridFSFileStore := filestore.NewMongoDBGridFSFileStore(mongoDBStoreBootstrap)
+	inMemoryEventDispatcher := application.NewAppEventDispatcher()
+	campaignInteractor := advertiserinteractors.NewCampaignInteractor(mongoDBCampaignRepository, mongoDBUserRepository, mongoDBAdPieceRepository, mongoDBGridFSFileStore, inMemoryEventDispatcher)
+	campaignController := campaigncontrollers.NewCampaignController(advertiserRefferalMiddleware, campaignInteractor, mongoDBGridFSFileStore, appLogger)
+	return campaignController
 }
 
 func InitEventsRegistrar() events.EventHandlerRegistrar {

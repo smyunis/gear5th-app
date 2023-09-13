@@ -51,8 +51,13 @@ func (c *Campaign) IsQuitted() bool {
 	return c.End.Sub(c.Start) > c.RunDuration && c.IsPreempted
 }
 
-func (c *Campaign) AddAdPiece(slot adslot.AdSlotType, ref *url.URL, resource string) adpiece.AdPiece {
-	ad := adpiece.NewAdPiece(c.ID, slot, ref, resource)
+func (c *Campaign) AddAdPiece(slot adslot.AdSlotType, ref *url.URL, resource string, resourceMIME string) adpiece.AdPiece {
+	ad := adpiece.NewAdPiece(c.ID, slot, ref, resource, resourceMIME)
 	c.Events.Emit("campaign/adpieceadded", c)
 	return ad
+}
+
+func (c *Campaign) IsRunning() bool {
+	now := time.Now()
+	return (!c.IsQuitted()) && c.Start.Before(now) && c.End.After(now)
 }

@@ -4,6 +4,8 @@ package ioc
 
 import (
 	"github.com/google/wire"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/adpiececontrollers"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/campaigncontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/accountcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/adslotcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/homecontrollers"
@@ -22,6 +24,7 @@ func InitJwtAuthenticationMiddleware() middlewares.JwtAuthenticationMiddleware {
 }
 
 // Controllers
+
 func InitManagedUserController() identitycontrollers.UserSignInController {
 	wire.Build(Container)
 	return identitycontrollers.UserSignInController{}
@@ -95,6 +98,16 @@ func InitAdSlotIntegrationSnippetController() adslotcontrollers.AdSlotIntegratio
 func InitAccountController() accountcontrollers.AccountController {
 	wire.Build(Container)
 	return accountcontrollers.AccountController{}
+}
+
+func InitAdPieceController() adpiececontrollers.AdPieceController {
+	wire.Build(Container)
+	return adpiececontrollers.AdPieceController{}
+}
+
+func InitCampaignController() campaigncontrollers.CampaignController {
+	wire.Build(Container)
+	return campaigncontrollers.CampaignController{}
 }
 
 // Event Handlers

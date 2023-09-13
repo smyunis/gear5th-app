@@ -38,6 +38,19 @@ func NewCampaignInteractor(
 	}
 }
 
+func (i *CampaignInteractor) Campaign(campaignID shared.ID) (campaign.Campaign, error) {
+	return i.campaignRepository.Get(context.Background(), campaignID)
+}
+
+func (i *CampaignInteractor) Advertiser(advertiserID shared.ID) (user.User, error) {
+	u, err := i.userRepository.Get(context.Background(), advertiserID)
+	if err != nil {
+		return user.User{}, err
+	}
+
+	return u, nil
+}
+
 func (i *CampaignInteractor) StartCampaign(actorID shared.ID, name string, start, end time.Time) error {
 
 	actor, err := i.userRepository.Get(context.Background(), actorID)
@@ -87,8 +100,7 @@ func (i *CampaignInteractor) QuitCampaign(actorID shared.ID, campaignID shared.I
 }
 
 func (i *CampaignInteractor) AddAdPiece(actorID shared.ID, campaignID shared.ID,
-	slot adslot.AdSlotType, ref *url.URL, resource io.Reader) error {
-
+	slot adslot.AdSlotType, ref *url.URL, resourceMIME string, resource io.Reader) error {
 
 	actor, err := i.userRepository.Get(context.Background(), actorID)
 	if err != nil {
@@ -109,7 +121,7 @@ func (i *CampaignInteractor) AddAdPiece(actorID shared.ID, campaignID shared.ID,
 		return err
 	}
 
-	adPiece := c.AddAdPiece(slot, ref, resourceID)
+	adPiece := c.AddAdPiece(slot, ref, resourceID, resourceMIME)
 
 	err = i.adPieceRepository.Save(context.Background(), adPiece)
 	if err != nil {
@@ -121,4 +133,6 @@ func (i *CampaignInteractor) AddAdPiece(actorID shared.ID, campaignID shared.ID,
 	return nil
 }
 
-
+func (i *CampaignInteractor) CampaignsForAdvertiser(advertiserID shared.ID) ([]campaign.Campaign, error) {
+	return i.campaignRepository.CampaignsForAdvertiser(advertiserID)
+}

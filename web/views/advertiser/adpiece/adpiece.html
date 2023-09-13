@@ -1,0 +1,82 @@
+{{define "title"}}Advertiser | gear5th{{end}}
+
+{{define "in-main"}}
+<a href="/advertiser/campaign?token={{.Token}}" class="text-secondary underline">
+    <i class='bx bx-arrow-back '></i>
+    Back
+</a>
+<div>
+    <div class="pt-9 pb-2">
+        <span class="text-2xl text-darkest font-bold">Your ad pieces</span>
+    </div>
+    <p>{{.Campaign.Name}}</p>
+</div>
+<ul>
+    {{range .AdPieces}}
+    <li class="py-4 flex gap-8 border-b border-light p-2">
+        <div class="flex flex-col sm:w-[200px]">
+
+            <div class="max-w-[200px] max-h-[200px]">
+                <img src="/advertiser/adpiece/{{.ID}}/resource" alt="adpiece image"
+                    class="w-full h-full object-contain">
+            </div>
+
+            <div class="flex justify-center gap-4 pt-2 text-lg border border-light">
+                <a target="_blank" href="/advertiser/adpiece/{{.ID}}/resource" title="view ad piece image"
+                    class="text-primary hover:text-secondary">
+                    <i class='bx bx-image-alt'></i>
+                </a>
+
+                <button id="remove-site-btn" onclick="openRemoveAdPieceDialog({{.ID}})" type="button"
+                    title="remove ad piece" class="underline  text-primary hover:text-secondary">
+                    <i class='bx bx-trash'></i>
+                </button>
+            </div>
+        </div>
+        <div class="flex flex-col gap-4">
+            <div>
+                <p class="text-xs">Ad piece type</p>
+                <span class="text-darkest font-bold">{{.SlotType.String}}</span>
+                <span class="text-sm text-medium">{{.SlotType.Dimentions.String}} px</span>
+            </div>
+            <div>
+                <p class="text-xs">Referral link</p>
+                <a href="{{.Ref.String}}" target="_blank" class="text-secondary underline">
+                    {{.Ref.String}}
+                    <i class='bx bx-link-external text-xs'></i>
+                </a>
+            </div>
+
+        </div>
+    </li>
+    <dialog class="p-16 rounded-sm shadow-md" id="remove-adpiece-dialog-{{.ID}}">
+        <h2 class="text-darkest text-xl font-bold">Are you sure you want to remove this ad piece?</h2>
+        <div class="flex items-center gap-4 mt-8">
+            <a href="/advertiser/adpiece/{{.ID}}/remove?campaignId={{$.Campaign.ID}}&token={{$.Token}}">
+                <button class="h-10 text-white bg-red-700 px-4 py-2 rounded-sm hover:opacity-95">
+                    <i class='bx bx-trash'></i>
+                    Remove ad piece
+                </button>
+            </a>
+            <button onclick="closeRemoveAdPieceDialog({{.ID}})"
+                class="h-10 text-primary border-2 border-primary bg-white px-4 py-2 rounded-sm hover:text-white hover:bg-primary hover:opacity-95">
+                Cancel
+            </button>
+        </div>
+    </dialog>
+    {{else}}
+    <p class="py-8">You don't have any ad pieces for this campaign. Add new to get started.</p>
+    {{end}}
+</ul>
+
+<script>
+    function openRemoveAdPieceDialog(siteID) {
+        let dialog = document.getElementById("remove-adpiece-dialog-" + siteID)
+        dialog.showModal()
+    }
+    function closeRemoveAdPieceDialog(siteID) {
+        let dialog = document.getElementById("remove-adpiece-dialog-" + siteID)
+        dialog.close()
+    }
+</script>
+{{end}}

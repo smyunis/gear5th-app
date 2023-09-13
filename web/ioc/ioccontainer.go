@@ -5,8 +5,11 @@ package ioc
 import (
 	"github.com/google/wire"
 	"gitlab.com/gear5th/gear5th-app/internal/application"
+	"gitlab.com/gear5th/gear5th-app/internal/application/advertiserinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/advertiser/adpiece"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/advertiser/campaign"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/adslot"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
@@ -18,14 +21,18 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
-	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/adslotrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/adpiecerepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/campaignrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/filestore"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/oauthuserrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/adslotrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/siterepository"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/adpiececontrollers"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/campaigncontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/accountcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/adslotcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/homecontrollers"
@@ -57,6 +64,10 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(user.OAuthUserRepository), new(oauthuserrepository.MongoDBOAuthUserRepository)),
 	filestore.NewMongoDBGridFSFileStore,
 	wire.Bind(new(application.FileStore), new(filestore.MongoDBGridFSFileStore)),
+	campaignrepository.NewMongoDBCampaignRepository,
+	wire.Bind(new(campaign.CampaignRepository), new(campaignrepository.MongoDBCampaignRepository)),
+	adpiecerepository.NewMongoDBAdPieceRepository,
+	wire.Bind(new(adpiece.AdPieceRepository), new(adpiecerepository.MongoDBAdPieceRepository)),
 
 	//Infrastructures
 	infrastructure.NewAppHTTPClient,
@@ -101,9 +112,12 @@ var Container wire.ProviderSet = wire.NewSet(
 	publisherinteractors.NewPublisherSignUpInteractor,
 	publisherinteractors.NewSiteInteractor,
 	publisherinteractors.NewAdSlotInteractor,
+	advertiserinteractors.NewAdPieceInteractor,
+	advertiserinteractors.NewCampaignInteractor,
 
 	//Middlewares
 	middlewares.NewJwtAuthenticationMiddleware,
+	middlewares.NewAdvertiserRefferalMiddleware,
 
 	//Controllers
 	homecontrollers.NewHomeController,
@@ -121,6 +135,8 @@ var Container wire.ProviderSet = wire.NewSet(
 	adslotcontrollers.NewEditAdSlotController,
 	adslotcontrollers.NewAdSlotIntegrationSnippetController,
 	accountcontrollers.NewAccountController,
+	adpiececontrollers.NewAdPieceController,
+	campaigncontrollers.NewCampaignController,
 
 	application.NewAppEventDispatcher,
 	wire.Bind(new(application.EventDispatcher), new(application.InMemoryEventDispatcher)),

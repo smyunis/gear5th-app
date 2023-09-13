@@ -20,7 +20,7 @@ func setup() {
 }
 
 func TestCanGenerateSignature(t *testing.T) {
-	msg := "mymesagethatIwanttosign"
+	msg := "01HA4GNAXY6DKN506Z4HXM8DTY"
 	sign, err := hservice.Generate(msg)
 	if err != nil {
 		t.FailNow()
