@@ -137,6 +137,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	accountcontrollers.NewAccountController,
 	adpiececontrollers.NewAdPieceController,
 	campaigncontrollers.NewCampaignController,
+	adpiececontrollers.NewAddAdPieceController,
 
 	application.NewAppEventDispatcher,
 	wire.Bind(new(application.EventDispatcher), new(application.InMemoryEventDispatcher)),

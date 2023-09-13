@@ -12,6 +12,9 @@ func Routes(app *fiber.App) {
 	adPieceController := ioc.InitAdPieceController()
 	adPieceController.AddRoutes(&route)
 
+	addAdPieceController := ioc.InitAddAdPieceController()
+	addAdPieceController.AddRoutes(&route)
+
 	campaignController := ioc.InitCampaignController()
 	campaignController.AddRoutes(&route)
 

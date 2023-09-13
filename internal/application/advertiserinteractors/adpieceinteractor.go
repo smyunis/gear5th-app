@@ -2,7 +2,6 @@ package advertiserinteractors
 
 import (
 	"context"
-	"net/url"
 
 	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/advertiser/adpiece"
@@ -30,6 +29,7 @@ func NewAdPieceInteractor(adPieceRepository adpiece.AdPieceRepository,
 		eventDispatcher,
 	}
 }
+
 
 func (i *AdPieceInteractor) DeactivateAdPiece(actorID shared.ID, adPieceID shared.ID) error {
 
@@ -61,15 +61,6 @@ func (i *AdPieceInteractor) DeactivateAdPiece(actorID shared.ID, adPieceID share
 
 	i.eventDispatcher.DispatchAsync(a.Events)
 	return nil
-}
-
-func (i *AdPieceInteractor) ResourceURL(adPieceID shared.ID) (*url.URL, error) {
-	_, err := i.adPieceRepository.Get(context.Background(), adPieceID)
-	if err != nil {
-		return nil, err
-	}
-
-	return nil, nil
 }
 
 func (i *AdPieceInteractor) ActiveAdPiecesForCampaign(campaignID shared.ID) ([]adpiece.AdPiece, error) {

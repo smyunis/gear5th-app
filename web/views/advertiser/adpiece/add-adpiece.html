@@ -1,0 +1,54 @@
+{{define "title"}}Advertiser | gear5th{{end}}
+
+{{define "in-main"}}
+<div>
+    <a href="/advertiser/campaign?token={{.Token}}" class="text-secondary underline">
+        <i class='bx bx-arrow-back '></i>
+        Back
+    </a>
+    <div class="pt-9 pb-2">
+        <span class="text-2xl text-darkest font-bold">Add a new ad piece to your campaign</span>
+    </div>
+    <p>{{.Campaign.Name}}</p>
+</div>
+<form method="post">
+    <div class="mt-4">
+        <p class="text-xs">Ad slot type</p>
+        <div class="flex max-sm:justify-between sm:gap-8">
+            <div class="mb-4 p-4">
+                <input type="radio" name="adslot-type" value="horizontal" required class="form-radio text-primary">
+                <label>Horizontal <span class="text-xs text-medium">728x90 px</span></label>
+            </div>
+            <div class="mb-4 p-4">
+                <input type="radio" name="adslot-type" value="vertical" required class="form-radio text-primary">
+                <label>Vertical <span class="text-xs text-medium">160x600 px</span></label>
+            </div>
+            <div class="mb-4 p-4">
+                <input type="radio" name="adslot-type" value="box" required class="form-radio text-primary">
+                <label>Box <span class="text-xs text-medium">300x250 px</span></label>
+            </div>
+        </div>
+    </div>
+    <div class="mb-4">
+        <label for="resource" class="text-xs">Resource</label>
+        <input type="file" name="resource" id="resource" accept="image/png,image/jpeg" required
+            class="p-2 form-input block w-full rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+    <div class="mb-4">
+        <label for="ref" class="text-xs">Referral link</label>
+        <input type="url" name="ref" id="ref" value="{{.Ref}}" required
+            class="p-2 form-input block w-full rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+    <div class="flex items-center my-8">
+        <button type="submit" class="h-10 mr-4 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+            Add ad piece
+        </button>
+        <a href="/advertiser/adpiece?campaignId={{.Campaign.ID}}&token={{.Token}}">
+            <button type="button"
+                class="h-10 text-primary border-2 border-primary bg-white px-4 py-2 rounded-sm hover:text-white hover:bg-primary hover:opacity-95">
+                Cancel
+            </button>
+        </a>
+    </div>
+</form>
+{{end}}

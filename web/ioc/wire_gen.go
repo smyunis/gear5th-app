@@ -285,6 +285,23 @@ func InitAdPieceController() adpiececontrollers.AdPieceController {
 	return adPieceController
 }
 
+func InitAddAdPieceController() adpiececontrollers.AddAdPieceController {
+	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
+	advertiserRefferalMiddleware := middlewares.NewAdvertiserRefferalMiddleware(hs256HMACValidationService)
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	mongoDBAdPieceRepository := adpiecerepository.NewMongoDBAdPieceRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBCampaignRepository := campaignrepository.NewMongoDBCampaignRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBUserRepository := userrepository.NewMongoDBUserRepository(mongoDBStoreBootstrap)
+	inMemoryEventDispatcher := application.NewAppEventDispatcher()
+	adPieceInteractor := advertiserinteractors.NewAdPieceInteractor(mongoDBAdPieceRepository, mongoDBCampaignRepository, mongoDBUserRepository, inMemoryEventDispatcher)
+	mongoDBGridFSFileStore := filestore.NewMongoDBGridFSFileStore(mongoDBStoreBootstrap)
+	campaignInteractor := advertiserinteractors.NewCampaignInteractor(mongoDBCampaignRepository, mongoDBUserRepository, mongoDBAdPieceRepository, mongoDBGridFSFileStore, inMemoryEventDispatcher)
+	addAdPieceController := adpiececontrollers.NewAddAdPieceController(advertiserRefferalMiddleware, adPieceInteractor, campaignInteractor, mongoDBGridFSFileStore, appLogger)
+	return addAdPieceController
+}
+
 func InitCampaignController() campaigncontrollers.CampaignController {
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
 	advertiserRefferalMiddleware := middlewares.NewAdvertiserRefferalMiddleware(hs256HMACValidationService)

@@ -5,6 +5,22 @@
     <i class='bx bx-arrow-back '></i>
     Back
 </a>
+<div class="flex flex-col my-8">
+    <div class="pb-6">
+        <h2 class="text-2xl text-darkest font-bold pb-2">Add new ad piece for your campaign</h2>
+        <p>
+            {{.Campaign.Name}}
+        </p>
+    </div>
+    <div class="self-end">
+        <a href="/advertiser/adpiece/add-adpiece?campaignId={{.Campaign.ID}}&token={{.Token}}">
+            <button type="button" class="h-10 mr-4 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+                <i class='bx bx-plus-circle align-middle'></i>
+                New ad piece
+            </button>
+        </a>
+    </div>
+</div>
 <div>
     <div class="pt-9 pb-2">
         <span class="text-2xl text-darkest font-bold">Your ad pieces</span>

@@ -105,10 +105,17 @@ func InitAdPieceController() adpiececontrollers.AdPieceController {
 	return adpiececontrollers.AdPieceController{}
 }
 
+func InitAddAdPieceController() adpiececontrollers.AddAdPieceController {
+	wire.Build(Container)
+	return adpiececontrollers.AddAdPieceController{}
+}
+
 func InitCampaignController() campaigncontrollers.CampaignController {
 	wire.Build(Container)
 	return campaigncontrollers.CampaignController{}
 }
+
+
 
 // Event Handlers
 
