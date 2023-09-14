@@ -2,6 +2,8 @@ package campaigncontrollers
 
 import (
 	"html/template"
+	"math"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-app/internal/application"
@@ -20,11 +22,12 @@ func init() {
 }
 
 type advertiserCampigns struct {
-	ID        string
-	Name      string
-	Start     string
-	End       string
-	IsRunning bool
+	ID            string
+	Name          string
+	Start         string
+	End           string
+	IsRunning     bool
+	RemainingDays int
 }
 
 type campaignPresenter struct {
@@ -82,12 +85,17 @@ func (c *CampaignController) campaignOnGet(ctx *fiber.Ctx) error {
 
 	advertiserCamps := make([]advertiserCampigns, 0)
 	for _, camp := range campaigns {
+		remDays := int(math.Round(camp.End.Sub(time.Now()).Hours() / 24))
+		if remDays < 0 {
+			remDays = 0
+		}
 		advertiserCamps = append(advertiserCamps, advertiserCampigns{
-			ID:        camp.ID.String(),
-			Name:      camp.Name,
-			Start:     camp.Start.Format("02-Jan-2006"),
-			End:       camp.End.Format("02-Jan-2006"),
-			IsRunning: camp.IsRunning(),
+			ID:            camp.ID.String(),
+			Name:          camp.Name,
+			Start:         camp.Start.Format("02-Jan-2006"),
+			End:           camp.End.Format("02-Jan-2006"),
+			RemainingDays: remDays,
+			IsRunning:     camp.IsRunning(),
 		})
 	}
 
