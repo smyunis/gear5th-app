@@ -1,7 +1,9 @@
 package adpiececontrollers
 
 import (
+	"fmt"
 	"html/template"
+	"net/url"
 
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-app/internal/application"
@@ -84,9 +86,52 @@ func (c *AddAdPieceController) addAdPiecesOnGet(ctx *fiber.Ctx) error {
 }
 
 func (c *AddAdPieceController) addAdPiecesOnPost(ctx *fiber.Ctx) error {
+	actorID, err := c.advertiserRefferal.ActorUserID(ctx)
+	if err != nil {
+		return ctx.Redirect("/pages/error.html")
+	}
+	campaignID := ctx.Query("campaignId", "")
+	if campaignID == "" {
+		return ctx.Redirect("/pages/error.html")
+	}
+	token, err := c.advertiserRefferal.AdvertiserToken(ctx)
+	if err != nil {
+		return ctx.Redirect("/pages/error.html")
+	}
 
-	return controllers.Render(ctx, addAdPiecesTemplate, nil)
+	p := &addAdPiecesPresenter{}
+	err = ctx.BodyParser(p)
+	if err != nil {
+		p.ErrorMessage = "One or more invalid inputs. Check and try again"
+		return controllers.Render(ctx, addAdPiecesTemplate, p)
+	}
 
+	resource, err := ctx.FormFile("resource")
+	if err != nil {
+		p.ErrorMessage = "Unable to upload resource image. Check and try again."
+		return controllers.Render(ctx, addAdPiecesTemplate, p)
+	}
+	resourceMIME := resource.Header.Get("Content-Type")
+	resourceReader, err := resource.Open()
+	if err != nil {
+		p.ErrorMessage = "Unable to upload resource image. Check and try again."
+		return controllers.Render(ctx, addAdPiecesTemplate, p)
+	}
+
+	refLink, err := url.Parse(p.Ref)
+	if err != nil {
+		refLink, _ = url.Parse("#")
+	}
+	err = c.campaignInteractor.AddAdPiece(
+		actorID, shared.ID(campaignID), adSlotType(p.SlotType), refLink, resourceMIME, resourceReader)
+
+	if err != nil {
+		c.logger.Error("adpiece/addadpiece", err)
+		p.ErrorMessage = "We're unable to add a new adpiece at at the moment. Try again later."
+		return controllers.Render(ctx, addAdPiecesTemplate, p)
+	}
+
+	return ctx.Redirect(fmt.Sprintf("/advertiser/adpiece?campaignId=%s&token=%s", campaignID, token))
 }
 
 func adSlotType(slotType string) adslot.AdSlotType {

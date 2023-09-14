@@ -11,7 +11,10 @@
     </div>
     <p>{{.Campaign.Name}}</p>
 </div>
-<form method="post">
+{{if .ErrorMessage}}
+{{template "error-alert" .ErrorMessage}}
+{{end}}
+<form method="post" enctype="multipart/form-data">
     <div class="mt-4">
         <p class="text-xs">Ad slot type</p>
         <div class="flex max-sm:justify-between sm:gap-8">
@@ -36,7 +39,7 @@
     </div>
     <div class="mb-4">
         <label for="ref" class="text-xs">Referral link</label>
-        <input type="url" name="ref" id="ref" value="{{.Ref}}" required
+        <input type="url" name="ref" id="ref" value="{{.Ref}}"
             class="p-2 form-input block w-full rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
     </div>
     <div class="flex items-center my-8">
