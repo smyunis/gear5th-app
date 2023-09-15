@@ -10,14 +10,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 )
 
-func TestCanGenerateHTML(t *testing.T) {
-	s := newSite()
-	slot := s.AddAdSlot("adslotx", adslot.Box)
-	_, err := siteadslotservices.GenerateIntegrationHTMLSnippet(s, slot)
-	if err != nil {
-		t.FailNow()
-	}
-}
+
 
 func TestCanServeAdPiece(t *testing.T) {
 	s := newSite()

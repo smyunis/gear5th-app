@@ -13,20 +13,23 @@ import (
 )
 
 type AdSlotInteractor struct {
-	siteRepository   site.SiteRepository
-	userRepository   user.UserRepository
-	adslotRepository adslot.AdSlotRepository
-	eventDispatcher  application.EventDispatcher
+	siteRepository    site.SiteRepository
+	userRepository    user.UserRepository
+	adslotRepository  adslot.AdSlotRepository
+	adSlotHTMLService siteadslotservices.AdSlotHTMLSnippetService
+	eventDispatcher   application.EventDispatcher
 }
 
 func NewAdSlotInteractor(siteRepository site.SiteRepository,
 	userRepository user.UserRepository,
 	adslotRepository adslot.AdSlotRepository,
+	adSlotHTMLService siteadslotservices.AdSlotHTMLSnippetService,
 	eventDispatcher application.EventDispatcher) AdSlotInteractor {
 	return AdSlotInteractor{
 		siteRepository,
 		userRepository,
 		adslotRepository,
+		adSlotHTMLService,
 		eventDispatcher,
 	}
 }
@@ -101,7 +104,7 @@ func (i *AdSlotInteractor) GetIntegrationHTMLSnippet(adSlotID shared.ID) (string
 		return "", err
 	}
 
-	return siteadslotservices.GenerateIntegrationHTMLSnippet(s, slot)
+	return i.adSlotHTMLService.GenerateHTML(s, slot)
 }
 
 type SiteAdSlots map[string][]adslot.AdSlot

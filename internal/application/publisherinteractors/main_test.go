@@ -6,7 +6,6 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	adSlotTestSetup()
 	publisherTestSetup()
 	siteTestSetup()
 	os.Exit(m.Run())

@@ -11,6 +11,8 @@ type AdSlotRepository interface {
 	ActiveAdSlotsForSite(siteID shared.ID) ([]AdSlot, error)
 }
 
+
+
 type AdSlotType int
 
 const (

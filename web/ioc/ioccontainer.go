@@ -15,7 +15,9 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/adslot"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/site"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/siteadslotservices"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/adslothtml"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/googleoauth"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/tokens"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/keyvaluestore/fastcachekeyvaluestore"
@@ -84,6 +86,9 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(application.AccessTokenService), new(tokens.JwtAccessTokenService)),
 	siteverification.NewAdsTxtVerificationService,
 	wire.Bind(new(site.AdsTxtVerificationService), new(siteverification.AdsTxtVerificationService)),
+	adslothtml.NewAdSlotHTMLSnippetService,
+	wire.Bind(new(siteadslotservices.AdSlotHTMLSnippetService), new(adslothtml.AdSlotHTMLSnippetService)),
+
 
 	googleoauth.NewGoogleOAuthService,
 	wire.Bind(new(user.GoogleOAuthService), new(googleoauth.GoogleOAuthServiceImpl)),
