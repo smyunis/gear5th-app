@@ -15,6 +15,6 @@ func CanCreateSite(actor user.User) bool {
 }
 
 func CanModifyAdSlot(actor user.User, s site.Site, slot adslot.AdSlot) bool {
-	return actor.HasRole(user.Publisher) && (s.ID() == slot.SiteID()) &&
+	return actor.HasRole(user.Publisher) && (s.ID() == slot.SiteID) &&
 		(s.PublisherId() == actor.UserID())
 }

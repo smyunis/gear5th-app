@@ -80,10 +80,10 @@ func (c *AdSlotController) adsPageOnGet(ctx *fiber.Ctx) error {
 		adSlotsForSite := make([]adSlotsForSitePresenter, 0)
 		for _, slot := range siteSlots {
 			adSlotsForSite = append(adSlotsForSite, adSlotsForSitePresenter{
-				AdSlotID:       slot.ID().String(),
-				Name:           slot.Name(),
-				AdSlotType:     slot.AdSlotType().String(),
-				SlotDimentions: fmt.Sprintf("%dx%d", slot.AdSlotType().Dimentions().Width, slot.AdSlotType().Dimentions().Height),
+				AdSlotID:       slot.ID.String(),
+				Name:           slot.Name,
+				AdSlotType:     slot.SlotType.String(),
+				SlotDimentions: fmt.Sprintf("%dx%d", slot.SlotType.Dimentions().Width, slot.SlotType.Dimentions().Height),
 			})
 		}
 		adSlots[siteDomain] = adSlotsForSite

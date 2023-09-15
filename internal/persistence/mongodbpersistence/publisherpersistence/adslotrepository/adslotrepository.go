@@ -46,7 +46,7 @@ func (r MongoDBAdSlotRepository) Get(ctx context.Context, id shared.ID) (adslot.
 }
 
 func (r MongoDBAdSlotRepository) Save(ctx context.Context, e adslot.AdSlot) error {
-	id := e.ID().String()
+	id := e.ID.String()
 	adSlots := r.db.Collection("adSlots")
 	var dbEntry = mapAdSlotToM(e)
 	updateOptions := options.Update().SetUpsert(true)
@@ -98,10 +98,10 @@ func mapMToAdSlot(res primitive.M) adslot.AdSlot {
 
 func mapAdSlotToM(s adslot.AdSlot) bson.M {
 	return bson.M{
-		"_id":           s.ID().String(),
-		"siteId":        s.SiteID().String(),
-		"name":          s.Name(),
-		"adSlotType":    s.AdSlotType(),
-		"isDeactivated": s.IsDeactivated(),
+		"_id":           s.ID.String(),
+		"siteId":        s.SiteID.String(),
+		"name":          s.Name,
+		"adSlotType":    s.SlotType,
+		"isDeactivated": s.IsDeactivated,
 	}
 }

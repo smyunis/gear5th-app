@@ -83,21 +83,21 @@ func (t AdSlotType) Dimentions() Dimentions {
 }
 
 type AdSlot struct {
-	id            shared.ID
-	siteID        shared.ID
-	name          string
-	slotType      AdSlotType
-	isDeactivated bool
-	events        shared.Events
+	ID            shared.ID
+	SiteID        shared.ID
+	Name          string
+	SlotType      AdSlotType
+	IsDeactivated bool
+	Events        shared.Events
 }
 
 func NewAdSlot(siteID shared.ID, name string, slotType AdSlotType) AdSlot {
 	return AdSlot{
-		id:       shared.NewID(),
-		siteID:   siteID,
-		name:     name,
-		slotType: slotType,
-		events:   make(shared.Events),
+		ID:       shared.NewID(),
+		SiteID:   siteID,
+		Name:     name,
+		SlotType: slotType,
+		Events:   make(shared.Events),
 	}
 }
 
@@ -117,34 +117,7 @@ func ReconstituteAdSlot(
 	}
 }
 
-func (s *AdSlot) ID() shared.ID {
-	return s.id
-}
-
-func (s *AdSlot) Name() string {
-	return s.name
-}
-
-func (s *AdSlot) SetName(name string) {
-	s.name = name
-}
-
-func (s *AdSlot) AdSlotType() AdSlotType {
-	return s.slotType
-}
-
-func (s *AdSlot) SiteID() shared.ID {
-	return s.siteID
-}
-
-func (s *AdSlot) IsDeactivated() bool {
-	return s.isDeactivated
-}
-
 func (s *AdSlot) Deactivate() {
-	s.isDeactivated = true
+	s.IsDeactivated = true
 }
 
-func (s *AdSlot) DomainEvents() shared.Events {
-	return s.events
-}

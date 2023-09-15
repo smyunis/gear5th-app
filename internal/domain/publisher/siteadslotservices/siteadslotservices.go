@@ -10,5 +10,5 @@ type AdSlotHTMLSnippetService interface {
 }
 
 func CanServeAdPiece(s site.Site, slot adslot.AdSlot) bool {
-	return s.CanServeAdPiece() && !slot.IsDeactivated()
+	return s.CanServeAdPiece() && !slot.IsDeactivated
 }

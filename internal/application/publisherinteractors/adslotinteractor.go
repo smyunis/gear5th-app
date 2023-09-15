@@ -57,7 +57,7 @@ func (i *AdSlotInteractor) CreateAdSlotForSite(actorUserID shared.ID, siteID sha
 		return err
 	}
 
-	i.eventDispatcher.DispatchAsync(slot.DomainEvents())
+	i.eventDispatcher.DispatchAsync(slot.Events)
 
 	return nil
 }
@@ -73,7 +73,7 @@ func (i *AdSlotInteractor) ChangeAdSlotName(actorUserID shared.ID, adSlotID shar
 		return err
 	}
 
-	s, err := i.siteRepository.Get(context.Background(), slot.SiteID())
+	s, err := i.siteRepository.Get(context.Background(), slot.SiteID)
 	if err != nil {
 		return err
 	}
@@ -82,13 +82,13 @@ func (i *AdSlotInteractor) ChangeAdSlotName(actorUserID shared.ID, adSlotID shar
 		return application.ErrAuthorization
 	}
 
-	slot.SetName(newName)
+	slot.Name = newName
 	err = i.adslotRepository.Save(context.Background(), slot)
 	if err != nil {
 		return err
 	}
 
-	i.eventDispatcher.DispatchAsync(slot.DomainEvents())
+	i.eventDispatcher.DispatchAsync(slot.Events)
 
 	return nil
 
@@ -99,7 +99,7 @@ func (i *AdSlotInteractor) GetIntegrationHTMLSnippet(adSlotID shared.ID) (string
 	if err != nil {
 		return "", err
 	}
-	s, err := i.siteRepository.Get(context.Background(), slot.SiteID())
+	s, err := i.siteRepository.Get(context.Background(), slot.SiteID)
 	if err != nil {
 		return "", err
 	}
@@ -136,7 +136,7 @@ func (i *AdSlotInteractor) DeactivateAdSlot(actorUserID shared.ID, adSlotID shar
 		return err
 	}
 
-	s, err := i.siteRepository.Get(context.Background(), slot.SiteID())
+	s, err := i.siteRepository.Get(context.Background(), slot.SiteID)
 	if err != nil {
 		return err
 	}
@@ -151,7 +151,7 @@ func (i *AdSlotInteractor) DeactivateAdSlot(actorUserID shared.ID, adSlotID shar
 	if err != nil {
 		return err
 	}
-	i.eventDispatcher.DispatchAsync(slot.DomainEvents())
+	i.eventDispatcher.DispatchAsync(slot.Events)
 	return nil
 }
 

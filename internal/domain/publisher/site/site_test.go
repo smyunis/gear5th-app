@@ -42,7 +42,7 @@ func TestAddAdSlot(t *testing.T) {
 	var adslotType adslot.AdSlotType = adslot.Horizontal
 	slot := s.AddAdSlot(adslotName, adslotType)
 
-	if slot.Name() != adslotName {
+	if slot.Name != adslotName {
 		t.FailNow()
 	}
 }

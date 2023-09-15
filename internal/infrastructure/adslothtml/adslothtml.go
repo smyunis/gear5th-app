@@ -1,23 +1,20 @@
 package adslothtml
 
 import (
-	"fmt"
 	"html/template"
 	"net/url"
 	"strings"
 
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/adslot"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/site"
-	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/siteadslotservices"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
 )
 
 var adSlotHTMLTemplate *template.Template
 
 func init() {
-	//TODO generate html
-	tmpl := `<iframe src="{{.AdServerURL}}" width="{{.AdSlot.AdSlotType.Dimentions.Width}}" 
-		height="{{.AdSlot.AdSlotType.Dimentions.Height}}">{{.}}</iframe>`
+	tmpl := `<iframe src="{{.AdServerURL}}" width="{{.AdSlot.SlotType.Dimentions.Width}}"
+		height="{{.AdSlot.SlotType.Dimentions.Height}}" loading="lazy" style="border: none;" scrolling="no"></iframe>`
 	adSlotHTMLTemplate = template.Must(template.New("adslot-integration-snippet").Parse(tmpl))
 }
 
@@ -49,7 +46,13 @@ func NewAdSlotHTMLSnippetService(config infrastructure.ConfigurationProvider) Ad
 func (a AdSlotHTMLSnippetService) GenerateHTML(s site.Site, slot adslot.AdSlot) (string, error) {
 	var htmlStringBuilder strings.Builder
 
-	adServerURL := a.appURL.JoinPath(fmt.Sprintf("/ads/adserver?slot=%s", strings.ToLower(slot.AdSlotType().String())))
+	adServerURL := a.appURL.JoinPath("/ads/adserver")
+	q := adServerURL.Query()
+	q.Add("slot", strings.ToLower(slot.SlotType.String()))
+	q.Add("user-id", s.PublisherId().String())
+	q.Add("adslot-id", slot.ID.String())
+	q.Add("site-id", s.ID().String())
+	adServerURL.RawQuery = q.Encode()
 
 	p := htmlSippetPresenter{
 		Site:        s,
@@ -63,4 +66,3 @@ func (a AdSlotHTMLSnippetService) GenerateHTML(s site.Site, slot adslot.AdSlot) 
 	return htmlStringBuilder.String(), nil
 }
 
-var x siteadslotservices.AdSlotHTMLSnippetService = AdSlotHTMLSnippetService{}

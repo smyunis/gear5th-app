@@ -60,9 +60,9 @@ func (c *EditAdSlotController) editAdSlotOnGet(ctx *fiber.Ctx) error {
 	}
 
 	p := editAdSlotPresenter{
-		AdSlotName:           slot.Name(),
-		AdSlotType:           slot.AdSlotType().String(),
-		AdSlotTypeDimentions: slot.AdSlotType().Dimentions().String(),
+		AdSlotName:           slot.Name,
+		AdSlotType:           slot.SlotType.String(),
+		AdSlotTypeDimentions: slot.SlotType.Dimentions().String(),
 	}
 	return controllers.Render(ctx, editAdSlotTemplate, p)
 }
@@ -77,8 +77,7 @@ func (c *EditAdSlotController) editAdSlotOnPost(ctx *fiber.Ctx) error {
 		return ctx.Redirect("/pages/error.html")
 	}
 
-	p := &editAdSlotPresenter{
-	}
+	p := &editAdSlotPresenter{}
 	err = ctx.BodyParser(p)
 	if err != nil {
 		p.ErrorMessage = "One or more invalid inputs. Check and try again."
