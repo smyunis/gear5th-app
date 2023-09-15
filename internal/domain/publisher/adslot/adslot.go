@@ -33,6 +33,19 @@ func (t AdSlotType) String() string {
 	}
 }
 
+func AdSlotTypeFromString(slotType string) AdSlotType {
+	switch slotType {
+	case "horizontal":
+		return Horizontal
+	case "vertical":
+		return Vertical
+	case "box":
+		return Box
+	default:
+		return 0
+	}
+}
+
 type Dimentions struct {
 	Width  int
 	Height int

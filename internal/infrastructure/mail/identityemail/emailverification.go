@@ -5,19 +5,18 @@ import (
 	"net/url"
 
 	"gitlab.com/gear5th/gear5th-app/internal/application"
-	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
 )
 
 type VerifcationEmailSender struct {
 	appURL             *url.URL
-	digitalSignService identityinteractors.DigitalSignatureService
+	digitalSignService application.DigitalSignatureService
 	logger             application.Logger
 }
 
 func NewVerifcationEmailSender(config infrastructure.ConfigurationProvider,
-	digitalSignService identityinteractors.DigitalSignatureService,
+	digitalSignService application.DigitalSignatureService,
 	logger application.Logger) VerifcationEmailSender {
 	appurlstr := config.Get("APP_URL", "https://gear5th.com")
 	a, err := url.Parse(appurlstr)

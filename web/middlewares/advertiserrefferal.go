@@ -2,19 +2,19 @@ package middlewares
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 	"gitlab.com/gear5th/gear5th-app/web/controllers"
 )
 
 type AdvertiserRefferalMiddleware struct {
 	// accessTokenService identityinteractors.AccessTokenService
-	digitalSignatureService identityinteractors.DigitalSignatureService
+	digitalSignatureService application.DigitalSignatureService
 }
 
 func NewAdvertiserRefferalMiddleware(
 	// accessTokenService identityinteractors.AccessTokenService,
-	digitalSignatureService identityinteractors.DigitalSignatureService) AdvertiserRefferalMiddleware {
+	digitalSignatureService application.DigitalSignatureService) AdvertiserRefferalMiddleware {
 	return AdvertiserRefferalMiddleware{
 		// accessTokenService,
 		digitalSignatureService,

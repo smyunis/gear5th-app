@@ -1,4 +1,4 @@
-package identityinteractors
+package application
 
 import "gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 

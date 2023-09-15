@@ -19,18 +19,18 @@ type ManagedUserInteractor struct {
 	eventDispatcher       application.EventDispatcher
 	userRepository        user.UserRepository
 	managedUserRepository user.ManagedUserRepository
-	tokenGenerator        AccessTokenService
+	tokenGenerator        application.AccessTokenService
 	emailService          RequestPasswordResetEmailService
-	signService           DigitalSignatureService
+	signService           application.DigitalSignatureService
 }
 
 func NewManagedUserInteractor(
 	eventDispatcher application.EventDispatcher,
 	userRepository user.UserRepository,
 	managedUserRepository user.ManagedUserRepository,
-	tokenGenerator AccessTokenService,
+	tokenGenerator application.AccessTokenService,
 	emailService RequestPasswordResetEmailService,
-	signService DigitalSignatureService) ManagedUserInteractor {
+	signService application.DigitalSignatureService) ManagedUserInteractor {
 	return ManagedUserInteractor{
 		eventDispatcher,
 		userRepository,

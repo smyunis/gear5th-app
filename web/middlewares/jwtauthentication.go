@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/gofiber/fiber/v2"
-	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 	"gitlab.com/gear5th/gear5th-app/web/controllers"
 )
@@ -12,11 +12,11 @@ import (
 var ErrInvalidActorID = errors.New("can not fetch actor id from token")
 
 type JwtAuthenticationMiddleware struct {
-	accessTokenService identityinteractors.AccessTokenService
+	accessTokenService application.AccessTokenService
 }
 
 func NewJwtAuthenticationMiddleware(
-	accessTokenService identityinteractors.AccessTokenService) JwtAuthenticationMiddleware {
+	accessTokenService application.AccessTokenService) JwtAuthenticationMiddleware {
 	return JwtAuthenticationMiddleware{
 		accessTokenService,
 	}

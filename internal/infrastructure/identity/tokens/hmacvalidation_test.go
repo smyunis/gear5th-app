@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/tokens"
 )
 
@@ -13,7 +13,7 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-var hservice identityinteractors.DigitalSignatureService
+var hservice application.DigitalSignatureService
 
 func setup() {
 	hservice = tokens.NewHS256HMACValidationService()

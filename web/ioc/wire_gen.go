@@ -8,12 +8,14 @@ package ioc
 
 import (
 	"gitlab.com/gear5th/gear5th-app/internal/application"
+	"gitlab.com/gear5th/gear5th-app/internal/application/adsinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/advertiserinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/googleoauth"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/tokens"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/keyvaluestore/fastcachekeyvaluestore"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
@@ -27,6 +29,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/siterepository"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/adservercontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/adpiececontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/campaigncontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/accountcontrollers"
@@ -281,7 +284,9 @@ func InitAdPieceController() adpiececontrollers.AdPieceController {
 	adPieceInteractor := advertiserinteractors.NewAdPieceInteractor(mongoDBAdPieceRepository, mongoDBCampaignRepository, mongoDBUserRepository, inMemoryEventDispatcher)
 	mongoDBGridFSFileStore := filestore.NewMongoDBGridFSFileStore(mongoDBStoreBootstrap)
 	campaignInteractor := advertiserinteractors.NewCampaignInteractor(mongoDBCampaignRepository, mongoDBUserRepository, mongoDBAdPieceRepository, mongoDBGridFSFileStore, inMemoryEventDispatcher)
-	adPieceController := adpiececontrollers.NewAdPieceController(advertiserRefferalMiddleware, adPieceInteractor, campaignInteractor, mongoDBGridFSFileStore, appLogger)
+	fastCacheKeyValueStore := fastcachekeyvaluestore.NewFastCacheKeyValueStore()
+	adClickInteractor := adsinteractors.NewAdClickInteractor(fastCacheKeyValueStore, hs256HMACValidationService, appLogger)
+	adPieceController := adpiececontrollers.NewAdPieceController(advertiserRefferalMiddleware, adPieceInteractor, campaignInteractor, adClickInteractor, mongoDBGridFSFileStore, appLogger)
 	return adPieceController
 }
 
@@ -316,6 +321,19 @@ func InitCampaignController() campaigncontrollers.CampaignController {
 	campaignInteractor := advertiserinteractors.NewCampaignInteractor(mongoDBCampaignRepository, mongoDBUserRepository, mongoDBAdPieceRepository, mongoDBGridFSFileStore, inMemoryEventDispatcher)
 	campaignController := campaigncontrollers.NewCampaignController(advertiserRefferalMiddleware, campaignInteractor, mongoDBGridFSFileStore, appLogger)
 	return campaignController
+}
+
+func InitAdServerController() adservercontrollers.AdServerController {
+	fastCacheKeyValueStore := fastcachekeyvaluestore.NewFastCacheKeyValueStore()
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	mongoDBCampaignRepository := campaignrepository.NewMongoDBCampaignRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBAdPieceRepository := adpiecerepository.NewMongoDBAdPieceRepository(mongoDBStoreBootstrap, appLogger)
+	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
+	adsPool := adsinteractors.NewAdsPool(fastCacheKeyValueStore, mongoDBCampaignRepository, mongoDBAdPieceRepository, hs256HMACValidationService, appLogger)
+	adServerController := adservercontrollers.NewAdServerController(adsPool, appLogger)
+	return adServerController
 }
 
 func InitEventsRegistrar() events.EventHandlerRegistrar {

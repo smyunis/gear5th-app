@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+    {{if .AdPiece.Ref.String}}
+    <a href="/advertiser/adpiece/{{.AdPiece.ID.String}}/ref?token={{.ViewIDToken}}" target="_blank"
+        style="position: absolute; top: 0;left: 0;">
+        <img src="/advertiser/adpiece/{{.AdPiece.ID.String}}/resource" width="{{.AdPiece.SlotType.Dimentions.Width}}"
+            height="{{.AdPiece.SlotType.Dimentions.Height}}">
+    </a>
+    {{else}}
+    <img src="/advertiser/adpiece/{{.AdPiece.ID.String}}/resource" style="position: absolute; top: 0;left: 0;"
+        width="{{.AdPiece.SlotType.Dimentions.Width}}" height="{{.AdPiece.SlotType.Dimentions.Height}}">
+    {{end}}
+    <script>
+        // AdPieceId , ref link, resource link
+        // track impressions here
+    </script>
+</body>
+
+</html>

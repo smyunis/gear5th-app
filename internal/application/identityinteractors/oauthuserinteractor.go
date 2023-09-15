@@ -7,13 +7,13 @@ import (
 
 type OAuthUserInteractor struct {
 	oAuthUserRepository user.OAuthUserRepository
-	tokenGenerator      AccessTokenService
+	tokenGenerator      application.AccessTokenService
 	googleOAuthService  user.GoogleOAuthService
 }
 
 func NewOAuthUserInteractor(
 	oAuthUserRepository user.OAuthUserRepository,
-	tokenGenerator AccessTokenService,
+	tokenGenerator application.AccessTokenService,
 	googleOAuthService user.GoogleOAuthService) OAuthUserInteractor {
 	return OAuthUserInteractor{
 		oAuthUserRepository,

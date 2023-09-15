@@ -5,20 +5,19 @@ import (
 	"net/url"
 
 	"gitlab.com/gear5th/gear5th-app/internal/application"
-	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
 )
 
 type RequestPassordResetEmailService struct {
 	webURL             *url.URL
-	digitalSignService identityinteractors.DigitalSignatureService
+	digitalSignService application.DigitalSignatureService
 	logger             application.Logger
 }
 
 func NewRequestPassordResetEmailService(
 	config infrastructure.ConfigurationProvider,
-	digitalSignService identityinteractors.DigitalSignatureService,
+	digitalSignService application.DigitalSignatureService,
 	logger application.Logger) RequestPassordResetEmailService {
 	weburlstr := config.Get("APP_URL", "https://gear5th.com")
 	w, err := url.Parse(weburlstr)

@@ -5,6 +5,7 @@ package ioc
 import (
 	"github.com/google/wire"
 	"gitlab.com/gear5th/gear5th-app/internal/application"
+	"gitlab.com/gear5th/gear5th-app/internal/application/adsinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/advertiserinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
@@ -31,6 +32,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/siterepository"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/adservercontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/adpiececontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/campaigncontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/accountcontrollers"
@@ -76,9 +78,9 @@ var Container wire.ProviderSet = wire.NewSet(
 	infrastructure.NewEnvConfigurationProvider,
 	wire.Bind(new(infrastructure.ConfigurationProvider), new(infrastructure.EnvConfigurationProvider)),
 	tokens.NewHS256HMACValidationService,
-	wire.Bind(new(identityinteractors.DigitalSignatureService), new(tokens.HS256HMACValidationService)),
+	wire.Bind(new(application.DigitalSignatureService), new(tokens.HS256HMACValidationService)),
 	tokens.NewJwtAccessTokenService,
-	wire.Bind(new(identityinteractors.AccessTokenService), new(tokens.JwtAccessTokenService)),
+	wire.Bind(new(application.AccessTokenService), new(tokens.JwtAccessTokenService)),
 	siteverification.NewAdsTxtVerificationService,
 	wire.Bind(new(site.AdsTxtVerificationService), new(siteverification.AdsTxtVerificationService)),
 
@@ -114,6 +116,8 @@ var Container wire.ProviderSet = wire.NewSet(
 	publisherinteractors.NewAdSlotInteractor,
 	advertiserinteractors.NewAdPieceInteractor,
 	advertiserinteractors.NewCampaignInteractor,
+	adsinteractors.NewAdsPool,
+	adsinteractors.NewAdClickInteractor,
 
 	//Middlewares
 	middlewares.NewJwtAuthenticationMiddleware,
@@ -138,6 +142,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	adpiececontrollers.NewAdPieceController,
 	campaigncontrollers.NewCampaignController,
 	adpiececontrollers.NewAddAdPieceController,
+	adservercontrollers.NewAdServerController,
 
 	application.NewAppEventDispatcher,
 	wire.Bind(new(application.EventDispatcher), new(application.InMemoryEventDispatcher)),
