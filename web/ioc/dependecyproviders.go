@@ -4,6 +4,7 @@ package ioc
 
 import (
 	"github.com/google/wire"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/adclickcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/adservercontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/adpiececontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/campaigncontrollers"
@@ -119,6 +120,11 @@ func InitCampaignController() campaigncontrollers.CampaignController {
 func InitAdServerController() adservercontrollers.AdServerController {
 	wire.Build(Container)
 	return adservercontrollers.AdServerController{}
+}
+
+func InitAdClickController() adclickcontrollers.AdClickController {
+	wire.Build(Container)
+	return adclickcontrollers.AdClickController{}
 }
 
 // Event Handlers

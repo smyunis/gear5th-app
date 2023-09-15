@@ -7,7 +7,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"gitlab.com/gear5th/gear5th-app/internal/application"
-	"gitlab.com/gear5th/gear5th-app/internal/application/adsinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/advertiserinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/advertiser/adpiece"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/advertiser/campaign"
@@ -35,7 +34,6 @@ type AdPieceController struct {
 	advertiserRefferal middlewares.AdvertiserRefferalMiddleware
 	adPieceInteractor  advertiserinteractors.AdPieceInteractor
 	campaignInteractor advertiserinteractors.CampaignInteractor
-	adClickInteractor  adsinteractors.AdClickInteractor
 	store              application.FileStore
 	logger             application.Logger
 }
@@ -44,14 +42,12 @@ func NewAdPieceController(
 	advertiserRefferal middlewares.AdvertiserRefferalMiddleware,
 	adPieceInteractor advertiserinteractors.AdPieceInteractor,
 	campaignInteractor advertiserinteractors.CampaignInteractor,
-	adClickInteractor adsinteractors.AdClickInteractor,
 	store application.FileStore,
 	logger application.Logger) AdPieceController {
 	return AdPieceController{
 		advertiserRefferal,
 		adPieceInteractor,
 		campaignInteractor,
-		adClickInteractor,
 		store,
 		logger,
 	}
@@ -59,8 +55,7 @@ func NewAdPieceController(
 
 func (c *AdPieceController) AddRoutes(router *fiber.Router) {
 	(*router).Add(fiber.MethodGet, "/adpiece/:adPieceId/resource", c.resourceOnGet)
-	(*router).Add(fiber.MethodGet, "/adpiece/:adPieceId/ref", c.referralOnGet)
-
+	
 	(*router).Use("/adpiece", c.advertiserRefferal.Verification)
 	(*router).Add(fiber.MethodGet, "/adpiece", c.adPiecesOnGet)
 	(*router).Add(fiber.MethodGet, "/adpiece/:adPieceId/remove", c.removeAdPieceOnGet)
@@ -124,35 +119,7 @@ func (c *AdPieceController) resourceOnGet(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func (c *AdPieceController) referralOnGet(ctx *fiber.Ctx) error {
-	//TODO count ad click here
-	adPieceID := ctx.Params("adPieceId", "")
-	if adPieceID == "" {
-		return nil
-	}
 
-	token := ctx.Query("token", "")
-	if token == "" {
-		return nil
-	}
-
-	err := c.adClickInteractor.OnClick(shared.ID(adPieceID), token)
-	if err != nil {
-		c.logger.Error("adpiece/adclick", err)
-	}
-
-	a, err := c.adPieceInteractor.AdPiece(shared.ID(adPieceID))
-	if err != nil {
-		c.logger.Error("adpiece/get", err)
-		return nil
-	}
-
-	if a.Ref.String() == "#" || a.Ref.String() == "" {
-		return nil
-	}
-
-	return ctx.Redirect(a.Ref.String())
-}
 
 func (c *AdPieceController) removeAdPieceOnGet(ctx *fiber.Ctx) error {
 	campaignID := ctx.Query("campaignId", "")

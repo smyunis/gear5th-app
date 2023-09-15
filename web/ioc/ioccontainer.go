@@ -32,6 +32,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/siterepository"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/adclickcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/adservercontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/adpiececontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/campaigncontrollers"
@@ -143,6 +144,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	campaigncontrollers.NewCampaignController,
 	adpiececontrollers.NewAddAdPieceController,
 	adservercontrollers.NewAdServerController,
+	adclickcontrollers.NewAdClickController,
 
 	application.NewAppEventDispatcher,
 	wire.Bind(new(application.EventDispatcher), new(application.InMemoryEventDispatcher)),
