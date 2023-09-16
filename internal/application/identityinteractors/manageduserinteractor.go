@@ -51,11 +51,11 @@ func (m *ManagedUserInteractor) SignIn(email user.Email, password string) (strin
 		return "", err
 	}
 
-	if !u.IsEmailVerified() {
+	if !u.IsEmailVerified {
 		return "", ErrEmailNotVerified
 	}
 
-	return m.tokenGenerator.Generate(u.UserID())
+	return m.tokenGenerator.Generate(u.ID)
 }
 
 func (m *ManagedUserInteractor) CredentialsValid(email user.Email, password string) (user.User, error) {
@@ -68,7 +68,7 @@ func (m *ManagedUserInteractor) CredentialsValid(email user.Email, password stri
 		return u, err
 	}
 
-	managedUser, err := m.managedUserRepository.Get(context.Background(), u.UserID())
+	managedUser, err := m.managedUserRepository.Get(context.Background(), u.ID)
 	if err != nil {
 		if errors.Is(err, application.ErrEntityNotFound) {
 			return u, application.ErrAuthorization
@@ -76,7 +76,7 @@ func (m *ManagedUserInteractor) CredentialsValid(email user.Email, password stri
 		return u, err
 	}
 
-	if email != u.Email() {
+	if email != u.Email {
 		return u, application.ErrAuthorization
 	}
 
@@ -94,7 +94,7 @@ func (m *ManagedUserInteractor) RequestResetPassword(email user.Email) error {
 		return err
 	}
 
-	if !usr.IsEmailVerified() {
+	if !usr.IsEmailVerified {
 		return ErrEmailNotVerified
 	}
 
@@ -126,11 +126,11 @@ func (m *ManagedUserInteractor) ResetPassword(email user.Email, newPassword, res
 		return err
 	}
 
-	if !u.IsEmailVerified() {
+	if !u.IsEmailVerified {
 		return ErrEmailNotVerified
 	}
 
-	managedUser, err := m.managedUserRepository.Get(context.Background(), u.UserID())
+	managedUser, err := m.managedUserRepository.Get(context.Background(), u.ID)
 	if err != nil {
 		return err
 	}

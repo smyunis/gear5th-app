@@ -12,14 +12,14 @@ func CanStartCampaign(actor user.User) bool {
 
 func CanManageCampaign(actor user.User, campaign campaign.Campaign) bool {
 	if actor.HasRole(user.Advertiser) {
-		return campaign.AdvertiserUserID == actor.UserID()
+		return campaign.AdvertiserUserID == actor.ID
 	}
 	return actor.HasRole(user.Administrator)
 }
 
 func CanManageAdPiece(actor user.User, campaign campaign.Campaign, adPiece adpiece.AdPiece) bool {
 	if actor.HasRole(user.Advertiser) {
-		return campaign.AdvertiserUserID == actor.UserID() && campaign.ID == adPiece.CampaignID
+		return campaign.AdvertiserUserID == actor.ID && campaign.ID == adPiece.CampaignID
 	}
 	return actor.HasRole(user.Administrator)
 }

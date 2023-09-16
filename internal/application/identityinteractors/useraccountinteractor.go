@@ -36,11 +36,11 @@ func (i *UserAccountInteractor) User(userID shared.ID) (p UserProfile, err error
 		return UserProfile{}, nil
 	}
 	p.UserID = userID.String()
-	p.AuthenticationMethod = u.AuthenticationMethod()
-	p.PhoneNumber = u.PhoneNumber()
-	p.Email = u.Email()
+	p.AuthenticationMethod = u.AuthenticationMethod
+	p.PhoneNumber = u.PhoneNumber
+	p.Email = u.Email
 
-	if u.AuthenticationMethod() == user.Managed {
+	if u.AuthenticationMethod == user.Managed {
 		mu, err := i.managedUserRepository.Get(context.Background(), userID)
 		if err != nil {
 			return UserProfile{}, nil
@@ -56,10 +56,10 @@ func (i *UserAccountInteractor) SetUser(userID shared.ID, userProfile UserProfil
 	if err != nil {
 		return err
 	}
-	u.SetPhoneNumber(userProfile.PhoneNumber)
+	u.PhoneNumber = userProfile.PhoneNumber
 	i.userRepository.Save(context.Background(), u)
 
-	if u.AuthenticationMethod() == user.Managed {
+	if u.AuthenticationMethod == user.Managed {
 		mu, err := i.managedUserRepository.Get(context.Background(), userID)
 		if err != nil {
 			return err

@@ -53,7 +53,7 @@ func (c *Campaign) IsQuitted() bool {
 
 func (c *Campaign) AddAdPiece(slot adslot.AdSlotType, ref *url.URL, resource string, resourceMIME string) adpiece.AdPiece {
 	ad := adpiece.NewAdPiece(c.ID, slot, ref, resource, resourceMIME)
-	c.Events.Emit("campaign/adpieceadded", c)
+	c.Events.Emit("campaign/adpieceadded", ad)
 	return ad
 }
 

@@ -89,7 +89,7 @@ func (c *PublisherSignUpController) publisherSignUpOnPost(ctx *fiber.Ctx) error 
 			p.ErrorMessage = fmt.Sprintf("%s is not a valid phone number. Check and try again.", pub.PhoneNumber)
 			return controllers.Render(ctx, publisherSignUpTemplate, p)
 		}
-		u.SetPhoneNumber(uPhoneNum)
+		u.PhoneNumber = uPhoneNum
 	}
 
 	name := user.NewPersonName(pub.FirstName, pub.LastName)

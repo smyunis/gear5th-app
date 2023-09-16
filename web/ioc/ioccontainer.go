@@ -20,7 +20,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/adslothtml"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/googleoauth"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/tokens"
-	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/keyvaluestore/fastcachekeyvaluestore"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/keyvaluestore/rediskeyvaluestore"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
@@ -53,8 +53,13 @@ var Container wire.ProviderSet = wire.NewSet(
 	//MongoDB persistence repositores
 	mongodbpersistence.NewMongoDBStoreBootstrap,
 	wire.Bind(new(mongodbpersistence.MongoDBStore), new(mongodbpersistence.MongoDBStoreBootstrap)),
+
+
 	userrepository.NewMongoDBUserRepository,
-	wire.Bind(new(user.UserRepository), new(userrepository.MongoDBUserRepository)),
+	userrepository.NewMongoDBUserRepositoryCached,
+	// wire.Bind(new(user.UserRepository), new(userrepository.MongoDBUserRepository)),
+	wire.Bind(new(user.UserRepository), new(userrepository.MongoDBUserRepositoryCached)),
+
 	manageduserrepository.NewMongoDBMangageUserRepository,
 	wire.Bind(new(user.ManagedUserRepository), new(manageduserrepository.MongoDBMangageUserRepository)),
 	publisherrepository.NewMongoDBPublisherRepository,
@@ -104,13 +109,13 @@ var Container wire.ProviderSet = wire.NewSet(
 	infrastructure.NewAppLogger,
 
 	// Redis
-	// rediskeyvaluestore.NewRedisBootstrapper,
-	// rediskeyvaluestore.NewRedisKeyValueStore,
-	// wire.Bind(new(application.KeyValueStore), new(rediskeyvaluestore.RedisKeyValueStore)),
+	rediskeyvaluestore.NewRedisBootstrapper,
+	rediskeyvaluestore.NewRedisKeyValueStore,
+	wire.Bind(new(application.KeyValueStore), new(rediskeyvaluestore.RedisKeyValueStore)),
 
 	// FastCache
-	fastcachekeyvaluestore.NewFastCacheKeyValueStore,
-	wire.Bind(new(application.KeyValueStore), new(fastcachekeyvaluestore.FastCacheKeyValueStore)),
+	// fastcachekeyvaluestore.NewFastCacheKeyValueStore,
+	// wire.Bind(new(application.KeyValueStore), new(fastcachekeyvaluestore.FastCacheKeyValueStore)),
 
 	//Interactors
 	identityinteractors.NewManagedUserInteractor,

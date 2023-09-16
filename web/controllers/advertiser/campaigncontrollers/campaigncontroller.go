@@ -102,7 +102,7 @@ func (c *CampaignController) campaignOnGet(ctx *fiber.Ctx) error {
 	p := &campaignPresenter{
 		advertiserCamps,
 		token,
-		ad.Email().String(),
+		ad.Email.String(),
 	}
 
 	return controllers.Render(ctx, campaignTemplate, p)

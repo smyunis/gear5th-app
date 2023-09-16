@@ -13,7 +13,7 @@ func TestCreateManagedUser(t *testing.T) {
 	u := user.NewUser(userEmail)
 	u.AsManagedUser(user.NewPersonNameWithFullName("Salman Mohammed"), "pass1234")
 
-	if u.AuthenticationMethod() != user.Managed {
+	if u.AuthenticationMethod != user.Managed {
 		t.FailNow()
 	}
 
@@ -25,7 +25,7 @@ func TestVerifyManagedUsersEmail(t *testing.T) {
 
 	u.VerifyEmail()
 
-	if !u.IsEmailVerified() {
+	if !u.IsEmailVerified {
 		t.FailNow()
 	}
 }
@@ -36,7 +36,7 @@ func TestCreateOAuthUser(t *testing.T) {
 
 	u.AsOAuthUser("idxxxx-yyyy", user.GoogleOAuth)
 
-	if u.AuthenticationMethod() != user.OAuth {
+	if u.AuthenticationMethod != user.OAuth {
 		t.FailNow()
 	}
 
@@ -79,7 +79,7 @@ func TestCreateNewUserEmitsDomainEvent(t *testing.T) {
 	userEmail, _ := user.NewEmail("smyunis@outlook.com")
 	u := user.NewUser(userEmail)
 
-	events := u.DomainEvents()
+	events := u.Events
 
 	_, ok := events["user/signedup"]
 
@@ -93,13 +93,13 @@ func TestAddsSignUpDateForuser(t *testing.T) {
 	userEmail, _ := user.NewEmail("smyunis@outlook.com")
 	u := user.NewUser(userEmail)
 
-	if u.SignUpDate().Year() != time.Now().Year() {
+	if u.SignUpDate.Year() != time.Now().Year() {
 		t.FailNow()
 	}
-	if u.SignUpDate().Month() != time.Now().Month() {
+	if u.SignUpDate.Month() != time.Now().Month() {
 		t.FailNow()
 	}
-	if u.SignUpDate().Day() != time.Now().Day() {
+	if u.SignUpDate.Day() != time.Now().Day() {
 		t.FailNow()
 	}
 }
@@ -107,15 +107,15 @@ func TestAddsSignUpDateForuser(t *testing.T) {
 func TestReconsUser(t *testing.T) {
 	userEmail, _ := user.NewEmail("smyunis@outlook.com")
 	u := user.NewUser(userEmail)
-	id := u.UserID()
+	id := u.ID
 
 	ru := user.ReconstituteUser(id, userEmail,
-		u.PhoneNumber(), u.IsEmailVerified(),
-		u.Roles(), u.AuthenticationMethod(), u.SignUpDate())
+		u.PhoneNumber, u.IsEmailVerified,
+		u.Roles, u.AuthenticationMethod, u.SignUpDate)
 
-	if ru.Email() != u.Email() &&
-		ru.UserID() != u.UserID() &&
-		!ru.SignUpDate().Equal(u.SignUpDate()) {
+	if ru.Email != u.Email &&
+		ru.ID != u.ID &&
+		!ru.SignUpDate.Equal(u.SignUpDate) {
 		t.Fatal("recons not equal")
 	}
 }
@@ -123,7 +123,7 @@ func TestReconsUser(t *testing.T) {
 func TestReonsManagedUser(t *testing.T) {
 	userEmail, _ := user.NewEmail("smyunis@outlook.com")
 	u := user.NewUser(userEmail)
-	id := u.UserID()
+	id := u.ID
 	name := user.NewPersonNameWithFullName("Dracule Mihawk")
 	mu := u.AsManagedUser(name, "123456")
 

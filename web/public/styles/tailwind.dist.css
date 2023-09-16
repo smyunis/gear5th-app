@@ -1282,14 +1282,6 @@ select {
   vertical-align: middle;
 }
 
-.align-text-top {
-  vertical-align: text-top;
-}
-
-.align-text-bottom {
-  vertical-align: text-bottom;
-}
-
 .font-roboto {
   font-family: Roboto, sans-serif;
 }

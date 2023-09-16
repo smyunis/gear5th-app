@@ -30,7 +30,6 @@ func NewAdPieceInteractor(adPieceRepository adpiece.AdPieceRepository,
 	}
 }
 
-
 func (i *AdPieceInteractor) DeactivateAdPiece(actorID shared.ID, adPieceID shared.ID) error {
 
 	actor, err := i.userRepository.Get(context.Background(), actorID)
@@ -59,7 +58,7 @@ func (i *AdPieceInteractor) DeactivateAdPiece(actorID shared.ID, adPieceID share
 		return err
 	}
 
-	i.eventDispatcher.DispatchAsync(a.Events)
+	i.eventDispatcher.DispatchAsync(a.Events, c.Events)
 	return nil
 }
 

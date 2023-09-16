@@ -46,7 +46,7 @@ func (r MongoDBUserRepository) Get(ctx context.Context, id shared.ID) (user.User
 }
 
 func (r MongoDBUserRepository) Save(ctx context.Context, u user.User) error {
-	id := u.UserID().String()
+	id := u.ID.String()
 	users := r.db.Collection("users")
 
 	var dbEntry = mapUserToM(u)
@@ -102,13 +102,13 @@ func mapMToUser(res primitive.M) user.User {
 
 func mapUserToM(u user.User) bson.M {
 	var dbEntry = bson.M{
-		"_id":                  u.UserID().String(),
-		"email":                u.Email().String(),
-		"phoneNumber":          u.PhoneNumber().PhoneNumber(),
-		"isEmailVerified":      u.IsEmailVerified(),
-		"roles":                u.Roles(),
-		"authenticationMethod": u.AuthenticationMethod(),
-		"signUpDate":           u.SignUpDate(),
+		"_id":                  u.ID.String(),
+		"email":                u.Email.String(),
+		"phoneNumber":          u.PhoneNumber.String(),
+		"isEmailVerified":      u.IsEmailVerified,
+		"roles":                u.Roles,
+		"authenticationMethod": u.AuthenticationMethod,
+		"signUpDate":           u.SignUpDate,
 	}
 	return dbEntry
 }

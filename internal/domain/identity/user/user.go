@@ -22,25 +22,25 @@ type UserCreatedEvent struct {
 }
 
 type User struct {
-	id                   shared.ID
-	email                Email
-	phoneNumber          PhoneNumber
-	isEmailVerified      bool
-	roles                []UserRole
-	authenticationMethod AuthenticationMethod
-	signUpDate           time.Time
-	domainEvents         shared.Events
+	ID                   shared.ID
+	Email                Email
+	PhoneNumber          PhoneNumber
+	IsEmailVerified      bool
+	Roles                []UserRole
+	AuthenticationMethod AuthenticationMethod
+	SignUpDate           time.Time
+	Events               shared.Events
 }
 
 func NewUser(email Email) User {
 	u := User{
-		id:           shared.NewID(),
-		email:        email,
-		roles:        make([]UserRole, 0),
-		signUpDate:   time.Now(),
-		domainEvents: make(shared.Events),
+		ID:         shared.NewID(),
+		Email:      email,
+		Roles:      make([]UserRole, 0),
+		SignUpDate: time.Now(),
+		Events:     make(shared.Events),
 	}
-	u.domainEvents.Emit("user/signedup", u)
+	u.Events.Emit("user/signedup", u)
 	return u
 }
 
@@ -65,9 +65,9 @@ func ReconstituteUser(
 }
 
 func (u *User) AsManagedUser(name PersonName, password string) ManagedUser {
-	u.authenticationMethod = Managed
+	u.AuthenticationMethod = Managed
 	managedUser := ManagedUser{
-		userId: u.id,
+		userId: u.ID,
 		name:   name,
 	}
 	managedUser.SetPassword(password)
@@ -75,9 +75,9 @@ func (u *User) AsManagedUser(name PersonName, password string) ManagedUser {
 }
 
 func (u *User) AsOAuthUser(userAccountID string, provider OAuthProvider) OAuthUser {
-	u.authenticationMethod = OAuth
+	u.AuthenticationMethod = OAuth
 	return OAuthUser{
-		userID:        u.id,
+		userID:        u.ID,
 		userAccountID: userAccountID,
 		oauthProvider: provider,
 	}
@@ -85,57 +85,19 @@ func (u *User) AsOAuthUser(userAccountID string, provider OAuthProvider) OAuthUs
 
 func (u *User) SignUpPublisher() publisher.Publisher {
 	u.addRoleIfNotExists(Publisher)
-	return publisher.NewPublisher(u.id)
-}
-
-func (u *User) UserID() shared.ID {
-	return u.id
+	return publisher.NewPublisher(u.ID)
 }
 
 func (u *User) VerifyEmail() {
-	u.isEmailVerified = true
-}
-
-func (u *User) IsEmailVerified() bool {
-	return u.isEmailVerified
-}
-
-func (u *User) DomainEvents() shared.Events {
-	return u.domainEvents
-}
-
-func (u *User) AuthenticationMethod() AuthenticationMethod {
-	return u.authenticationMethod
-}
-
-func (u *User) Email() Email {
-	return u.email
-}
-
-func (u *User) PhoneNumber() PhoneNumber {
-	return u.phoneNumber
-}
-
-func (u *User) SetPhoneNumber(phoneNumber PhoneNumber) {
-	u.phoneNumber = phoneNumber
-}
-
-func (u *User) SignUpDate() time.Time {
-	return u.signUpDate
+	u.IsEmailVerified = true
 }
 
 func (u *User) HasRole(role UserRole) bool {
-	return slices.Contains(u.roles, role)
-}
-
-func (u *User) Roles() []UserRole {
-	roles := make([]UserRole, len(u.roles))
-	copy(roles, u.roles)
-	return u.roles
+	return slices.Contains(u.Roles, role)
 }
 
 func (u *User) addRoleIfNotExists(role UserRole) {
-	if !slices.Contains(u.roles, role) {
-		u.roles = append(u.roles, role)
+	if !slices.Contains(u.Roles, role) {
+		u.Roles = append(u.Roles, role)
 	}
 }

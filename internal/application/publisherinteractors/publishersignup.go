@@ -39,7 +39,7 @@ func NewPublisherSignUpInteractor(
 func (i *PublisherSignUpInteractor) ManagedUserSignUp(usr user.User, managedUser user.ManagedUser) error {
 
 	userRepository := i.unitOfWork.UserRepository()
-	existingUser, err := userRepository.UserWithEmail(context.Background(), usr.Email())
+	existingUser, err := userRepository.UserWithEmail(context.Background(), usr.Email)
 
 	if err == nil {
 		usr = existingUser
@@ -59,7 +59,7 @@ func (i *PublisherSignUpInteractor) ManagedUserSignUp(usr user.User, managedUser
 		return fmt.Errorf("signup publisher failed : %w", err)
 	}
 
-	i.eventDispatcher.DispatchAsync(usr.DomainEvents())
+	i.eventDispatcher.DispatchAsync(usr.Events)
 
 	return nil
 
@@ -96,7 +96,7 @@ func (i *PublisherSignUpInteractor) OAuthUserSignUp(token string) error {
 		return err
 	}
 
-	i.eventDispatcher.DispatchAsync(u.DomainEvents())
+	i.eventDispatcher.DispatchAsync(u.Events)
 
 	return nil
 

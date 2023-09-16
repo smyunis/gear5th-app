@@ -24,6 +24,6 @@ func NewPhoneNumber(phoneNumber string) (PhoneNumber, error) {
 	return PhoneNumber{phoneNumber}, shared.ErrInvalidValue{ValueType: "phone number", Value: phoneNumber}
 }
 
-func (p PhoneNumber) PhoneNumber() string {
+func (p PhoneNumber) String() string {
 	return p.phoneNumber
 }

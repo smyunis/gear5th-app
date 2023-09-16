@@ -37,14 +37,14 @@ func (s RequestPassordResetEmailService) SendMail(u user.User, passwordResetToke
 
 	//TODO send mail here
 
-	s.logger.Info("mail/resetpassword", fmt.Sprintf("Sent reset password mail to %s <-> %s \n", u.Email().String(), passwordResetURL))
+	s.logger.Info("mail/resetpassword", fmt.Sprintf("Sent reset password mail to %s <-> %s \n", u.Email.String(), passwordResetURL))
 
 	return nil
 }
 
 func (r RequestPassordResetEmailService) buildPasswordResetWebURL(u user.User, passwordResetToken string) string {
 	// <APP_URL>/publish/identity/managed/{userID}/reset-password?token={passwordResetToken}
-	r.webURL.Path = fmt.Sprintf("/publish/identity/managed/%s/reset-password", u.UserID().String())
+	r.webURL.Path = fmt.Sprintf("/publish/identity/managed/%s/reset-password", u.ID.String())
 	q := r.webURL.Query()
 	q.Set("token", passwordResetToken)
 	r.webURL.RawQuery = q.Encode()

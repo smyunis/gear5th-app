@@ -26,7 +26,7 @@ func TestValidPhoneNumber(t *testing.T) {
 			if err != nil {
 				t.Fatal(err.Error())
 			}
-			if phnum.PhoneNumber() != phonenum {
+			if phnum.String() != phonenum {
 				t.FailNow()
 			}
 		})

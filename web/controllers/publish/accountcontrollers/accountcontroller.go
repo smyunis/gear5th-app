@@ -71,7 +71,7 @@ func (c *AccountController) accountOnGet(ctx *fiber.Ctx) error {
 	p := accountPresenter{
 		IsManagedUser: u.AuthenticationMethod == user.Managed,
 		Email:         u.Email.String(),
-		PhoneNumber:   u.PhoneNumber.PhoneNumber(),
+		PhoneNumber:   u.PhoneNumber.String(),
 		FirstName:     u.Fullname.FirstName(),
 		LastName:      u.Fullname.LastName(),
 	}

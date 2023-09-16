@@ -34,8 +34,8 @@
                         {{.Name}}
                     </span>
                     <span>
-                        {{.AdSlotType}}
-                        <span class="text-xs"> ({{.SlotDimentions}} px)</span>
+                        <span class="font-bold">{{.AdSlotType}}</span>
+                        <span class="text-xs text-medium"> {{.SlotDimentions}} px</span>
                     </span>
                     <span class="">
                         <a href="/publish/ads/integration-snippet/{{.AdSlotID}}" title="integration code snippet"
@@ -56,7 +56,7 @@
                     <p class="text-dark">{{.Name}}</p>
                     <div class="flex items-center gap-4 mt-8">
                         <a href="/publish/ads/remove-adslot/{{.AdSlotID}}">
-                            <button class="h-10 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+                            <button class="h-10 text-white bg-red-700 px-4 py-2 rounded-sm hover:opacity-95">
                                 <i class='bx bx-trash'></i>
                                 Remove ad slot
                             </button>

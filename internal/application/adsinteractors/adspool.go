@@ -1,6 +1,7 @@
 package adsinteractors
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -44,20 +45,10 @@ func NewAdsPool(
 
 func (p *AdsPool) Next(slot adslot.AdSlotType) (*AdView, error) {
 
-	curindex, err := p.cacheStore.Get(adsPoolSlotIndexCacheKey(slot))
+	cur, err := p.cursorIndex(slot)
 	if err != nil {
-		if errors.Is(err, application.ErrEntityNotFound) {
-			loadIndexErr := p.loadAdPieceIndexes()
-			if loadIndexErr != nil {
-				p.logger.Error("adspool/cachestore/load-adpiece-indexes", loadIndexErr)
-				return &AdView{}, loadIndexErr
-			}
-		} else {
-			p.logger.Error("adspool/cachestore/get-cur-index", err)
-			return &AdView{}, err
-		}
+		return nil, err
 	}
-	cur, _ := strconv.Atoi(curindex)
 
 	ad, err := p.cacheStore.Get(adsPoolAdPieceCacheKey(slot, cur))
 	if err != nil {
@@ -105,6 +96,40 @@ func (p *AdsPool) Next(slot adslot.AdSlotType) (*AdView, error) {
 
 }
 
+func (p *AdsPool) OnNewAdPiece(adPieceEvent any) {
+	newAdPiece := adPieceEvent.(adpiece.AdPiece)
+
+	camp, err := p.campaignRepository.Get(context.Background(), newAdPiece.CampaignID)
+	if err != nil {
+		p.logger.Error("adpool/on-newadpiece/get-campaign", err)
+		return
+	}
+	if camp.IsRunning() {
+		p.appendAdPiece(newAdPiece)
+	}
+}
+
+
+
+func (p *AdsPool) cursorIndex(slot adslot.AdSlotType) (int, error) {
+	curindex, err := p.cacheStore.Get(adsPoolSlotIndexCacheKey(slot))
+	if err != nil {
+		if errors.Is(err, application.ErrEntityNotFound) {
+			loadIndexErr := p.loadAdPieceIndexes()
+			if loadIndexErr != nil {
+				p.logger.Error("adspool/cachestore/load-adpiece-indexes", loadIndexErr)
+				return 0, loadIndexErr
+			}
+		} else {
+			p.logger.Error("adspool/cachestore/get-cur-index", err)
+			return 0, err
+		}
+	}
+	cur, _ := strconv.Atoi(curindex)
+
+	return cur, nil
+}
+
 func (p *AdsPool) moveCursorIndex(slot adslot.AdSlotType, cur int) {
 	ps, err := p.cacheStore.Get(adsPoolLengthCacheKey(slot))
 	if err != nil {
@@ -147,24 +172,32 @@ func (p *AdsPool) loadAdPieces() error {
 		}
 
 		for _, a := range adPieces {
-			j, err := json.Marshal(a)
-			if err != nil {
-				p.logger.Error("adspool/marshal-adpiece-json", err)
-				continue
-			}
-
-			slotLengthStr, _ := p.cacheStore.Get(adsPoolLengthCacheKey(a.SlotType))
-			slotLength, _ := strconv.Atoi(slotLengthStr)
-
-			err = p.cacheStore.Save(adsPoolAdPieceCacheKey(a.SlotType, slotLength), string(j), 24*time.Hour)
-			if err != nil {
-				p.logger.Error("adspool/save-adpiece-to-pool", err)
-				continue
-			}
-			err = p.cacheStore.Save(adsPoolLengthCacheKey(a.SlotType), strconv.Itoa(slotLength+1), 0)
+			p.appendAdPiece(a)
 		}
 	}
 
+	return nil
+}
+
+func (p *AdsPool) appendAdPiece(a adpiece.AdPiece) error {
+	j, err := json.Marshal(a)
+	if err != nil {
+		p.logger.Error("adspool/marshal-adpiece-json", err)
+		return err
+	}
+
+	slotLengthStr, _ := p.cacheStore.Get(adsPoolLengthCacheKey(a.SlotType))
+	slotLength, _ := strconv.Atoi(slotLengthStr)
+
+	err = p.cacheStore.Save(adsPoolAdPieceCacheKey(a.SlotType, slotLength), string(j), 24*time.Hour)
+	if err != nil {
+		p.logger.Error("adspool/save-adpiece-to-pool", err)
+		return err
+	}
+	err = p.cacheStore.Save(adsPoolLengthCacheKey(a.SlotType), strconv.Itoa(slotLength+1), 0)
+	if err != nil {
+		p.logger.Error("adspool/save-adpiece-length-to-pool", err)
+	}
 	return nil
 }
 

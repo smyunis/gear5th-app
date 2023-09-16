@@ -39,7 +39,7 @@ func TestUserCanModifyAdSlotOnlyIfUserOwnsSiteItBelongsTo(t *testing.T) {
 	u := user.NewUser(email)
 	u.SignUpPublisher()
 	siteURL, _ := url.Parse("https://www.google.com")
-	s := site.NewSite(u.UserID(), *siteURL)
+	s := site.NewSite(u.ID, *siteURL)
 	slot := adslot.NewAdSlot(s.ID(), "adslot-x", adslot.Horizontal)
 
 	if !authorization.CanModifyAdSlot(u, s, slot) {

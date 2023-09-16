@@ -33,16 +33,16 @@ func NewVerifcationEmailSender(config infrastructure.ConfigurationProvider,
 
 func (s VerifcationEmailSender) SendMail(u user.User) error {
 
-	token, err := s.digitalSignService.Generate(u.UserID().String())
+	token, err := s.digitalSignService.Generate(u.ID.String())
 	if err != nil {
 		return err
 	}
 
-	verificationURL := s.buildEmailVerificationURL(u.UserID().String(), token)
+	verificationURL := s.buildEmailVerificationURL(u.ID.String(), token)
 
 	//TODO send email with link to verify email
 
-	s.logger.Info("mail/verificationemail", fmt.Sprintf("Sending Verification Email to %s <-> %s\n", u.Email().String(), verificationURL))
+	s.logger.Info("mail/verificationemail", fmt.Sprintf("Sending Verification Email to %s <-> %s\n", u.Email.String(), verificationURL))
 	return nil
 
 }
