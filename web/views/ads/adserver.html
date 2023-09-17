@@ -6,16 +6,17 @@
 </head>
 
 <body style="margin: 0;">
-    {{if .AdPiece.Ref.String}}
-    <a href="/ads/adclick/adpiece/{{.AdPiece.ID.String}}?token={{.ViewIDToken}}" target="_blank"
-        style="position: absolute; top: 0;left: 0;">
-        <img src="/advertiser/adpiece/{{.AdPiece.ID.String}}/resource" alt="" title=""
-            width="{{.AdPiece.SlotType.Dimentions.Width}}" height="{{.AdPiece.SlotType.Dimentions.Height}}">
+    {{if .AdView.AdPiece.Ref.String}}
+    <a href="/ads/adclick/adpiece/{{.AdView.AdPiece.ID.String}}?token={{.AdView.ViewIDToken}}&site-id={{.SiteID}}&publisher-id={{.PublisherID}}&adslot-id={{.AdSlotID}}"
+        target="_blank" style="position: absolute; top: 0;left: 0;">
+        <img src="/advertiser/adpiece/{{.AdView.AdPiece.ID.String}}/resource" alt="" title=""
+            width="{{.AdView.AdPiece.SlotType.Dimentions.Width}}"
+            height="{{.AdView.AdPiece.SlotType.Dimentions.Height}}">
     </a>
     {{else}}
-    <img src="/advertiser/adpiece/{{.AdPiece.ID.String}}/resource" alt="" title=""
-        style="position: absolute; top: 0;left: 0;" width="{{.AdPiece.SlotType.Dimentions.Width}}"
-        height="{{.AdPiece.SlotType.Dimentions.Height}}">
+    <img src="/advertiser/adpiece/{{.AdView.AdPiece.ID.String}}/resource" alt="" title=""
+        style="position: absolute; top: 0;left: 0;" width="{{.AdView.AdPiece.SlotType.Dimentions.Width}}"
+        height="{{.AdView.AdPiece.SlotType.Dimentions.Height}}">
     {{end}}
     <script>
         // AdPieceId , ref link, resource link

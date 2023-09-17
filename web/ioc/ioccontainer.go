@@ -9,6 +9,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/application/advertiserinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/ads/adclick"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/advertiser/adpiece"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/advertiser/campaign"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
@@ -24,6 +25,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/adspersistence/adclickrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/adpiecerepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/campaignrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/filestore"
@@ -54,7 +56,6 @@ var Container wire.ProviderSet = wire.NewSet(
 	mongodbpersistence.NewMongoDBStoreBootstrap,
 	wire.Bind(new(mongodbpersistence.MongoDBStore), new(mongodbpersistence.MongoDBStoreBootstrap)),
 
-
 	userrepository.NewMongoDBUserRepository,
 	userrepository.NewMongoDBUserRepositoryCached,
 	// wire.Bind(new(user.UserRepository), new(userrepository.MongoDBUserRepository)),
@@ -78,6 +79,8 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(campaign.CampaignRepository), new(campaignrepository.MongoDBCampaignRepository)),
 	adpiecerepository.NewMongoDBAdPieceRepository,
 	wire.Bind(new(adpiece.AdPieceRepository), new(adpiecerepository.MongoDBAdPieceRepository)),
+	adclickrepository.NewMongoDBAdClickRepository,
+	wire.Bind(new(adclick.AdClickRepository), new(adclickrepository.MongoDBAdClickRepository)),
 
 	//Infrastructures
 	infrastructure.NewAppHTTPClient,
@@ -93,7 +96,6 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(site.AdsTxtVerificationService), new(siteverification.AdsTxtVerificationService)),
 	adslothtml.NewAdSlotHTMLSnippetService,
 	wire.Bind(new(siteadslotservices.AdSlotHTMLSnippetService), new(adslothtml.AdSlotHTMLSnippetService)),
-
 
 	googleoauth.NewGoogleOAuthService,
 	wire.Bind(new(user.GoogleOAuthService), new(googleoauth.GoogleOAuthServiceImpl)),

@@ -20,6 +20,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/adspersistence/adclickrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/adpiecerepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/campaignrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/filestore"
@@ -384,8 +385,9 @@ func InitAdClickController() adclickcontrollers.AdClickController {
 	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
 	adPieceInteractor := advertiserinteractors.NewAdPieceInteractor(mongoDBAdPieceRepository, mongoDBCampaignRepository, mongoDBUserRepositoryCached, inMemoryEventDispatcher)
+	mongoDBAdClickRepository := adclickrepository.NewMongoDBAdClickRepository(mongoDBStoreBootstrap, appLogger)
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
-	adClickInteractor := adsinteractors.NewAdClickInteractor(redisKeyValueStore, hs256HMACValidationService, appLogger)
+	adClickInteractor := adsinteractors.NewAdClickInteractor(mongoDBAdClickRepository, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
 	adClickController := adclickcontrollers.NewAdClickController(adPieceInteractor, adClickInteractor, appLogger)
 	return adClickController
 }

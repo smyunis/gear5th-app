@@ -19,6 +19,13 @@ func init() {
 
 }
 
+type adServerPresenter struct {
+	SiteID      string
+	PublisherID string
+	AdSlotID    string
+	AdView      adsinteractors.AdView
+}
+
 type AdServerController struct {
 	adsPool adsinteractors.AdsPool
 	logger  application.Logger
@@ -43,11 +50,33 @@ func (c *AdServerController) adServerOnGet(ctx *fiber.Ctx) error {
 		return nil
 	}
 
+	siteID := ctx.Query("site-id", "")
+	if siteID == "" {
+		return nil
+	}
+
+	slotID := ctx.Query("adslot-id", "")
+	if slotID == "" {
+		return nil
+	}
+
+	publisherID := ctx.Query("publisher-id", "")
+	if publisherID == "" {
+		return nil
+	}
+
 	ad, err := c.adsPool.Next(adslot.AdSlotTypeFromString(slot))
 	if err != nil {
 		c.logger.Error("ads/adserver", err)
 		return nil
 	}
 
-	return controllers.Render(ctx, adServerTemplate, ad)
+	p := adServerPresenter{
+		SiteID:      siteID,
+		AdSlotID:    slotID,
+		PublisherID: publisherID,
+		AdView:      *ad,
+	}
+
+	return controllers.Render(ctx, adServerTemplate, p)
 }

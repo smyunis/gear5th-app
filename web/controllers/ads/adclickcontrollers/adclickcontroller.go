@@ -9,14 +9,14 @@ import (
 )
 
 type AdClickController struct {
-	adPieceInteractor  advertiserinteractors.AdPieceInteractor
-	adClickInteractor  adsinteractors.AdClickInteractor
-	logger  application.Logger
+	adPieceInteractor advertiserinteractors.AdPieceInteractor
+	adClickInteractor adsinteractors.AdClickInteractor
+	logger            application.Logger
 }
 
 func NewAdClickController(
-	adPieceInteractor  advertiserinteractors.AdPieceInteractor,
-	adClickInteractor  adsinteractors.AdClickInteractor,
+	adPieceInteractor advertiserinteractors.AdPieceInteractor,
+	adClickInteractor adsinteractors.AdClickInteractor,
 	logger application.Logger) AdClickController {
 	return AdClickController{
 		adPieceInteractor,
@@ -41,7 +41,22 @@ func (c *AdClickController) referralOnGet(ctx *fiber.Ctx) error {
 		return nil
 	}
 
-	err := c.adClickInteractor.OnClick(shared.ID(adPieceID), token)
+	siteID := ctx.Query("site-id", "")
+	if siteID == "" {
+		return nil
+	}
+
+	slotID := ctx.Query("adslot-id", "")
+	if slotID == "" {
+		return nil
+	}
+
+	publisherID := ctx.Query("publisher-id", "")
+	if publisherID == "" {
+		return nil
+	}
+
+	err := c.adClickInteractor.OnClick(shared.ID(adPieceID), shared.ID(siteID), shared.ID(slotID), shared.ID(publisherID), token)
 	if err != nil {
 		c.logger.Error("adpiece/adclick", err)
 	}
