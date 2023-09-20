@@ -46,7 +46,7 @@ func (r MongoDBSiteRepository) Get(ctx context.Context, id shared.ID) (site.Site
 }
 
 func (r MongoDBSiteRepository) Save(ctx context.Context, e site.Site) error {
-	id := e.ID().String()
+	id := e.ID.String()
 	sites := r.db.Collection("sites")
 
 	var dbEntry = mapSiteToM(e)
@@ -97,13 +97,13 @@ func mapSiteToM(s site.Site) bson.M {
 		})
 	}
 
-	siteURL := s.URL()
+	siteURL := s.URL
 	var dbEntry = bson.M{
-		"_id":                 s.ID().String(),
+		"_id":                 s.ID.String(),
 		"url":                 siteURL.String(),
-		"isVerified":          s.IsVerified(),
-		"publisherId":         s.PublisherId().String(),
-		"isDeactivated":       !s.IsActive(),
+		"isVerified":          s.IsVerified,
+		"publisherId":         s.PublisherID.String(),
+		"isDeactivated":       s.IsDeactivated,
 		"monetizationHistory": monetizationHistory,
 	}
 	return dbEntry

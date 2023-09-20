@@ -14,7 +14,6 @@ type AdClickRepository interface {
 type AdClick struct {
 	ID                shared.ID
 	Events            shared.Events
-	ViewID            shared.ID
 	ClickedAdPieceID  shared.ID
 	OriginSiteID      shared.ID
 	OriginAdSlotID    shared.ID
@@ -26,8 +25,7 @@ func NewAdClick(viewID shared.ID, clickedAdPieceID shared.ID, originSiteID share
 	originAdSlotID shared.ID,
 	originPublisherID shared.ID) AdClick {
 	a := AdClick{
-		ID:                shared.NewID(),
-		ViewID:            viewID,
+		ID:               viewID,
 		ClickedAdPieceID:  clickedAdPieceID,
 		OriginSiteID:      originSiteID,
 		OriginAdSlotID:    originAdSlotID,

@@ -68,7 +68,7 @@ func (c *VerifySiteController) verifyPrompt(ctx *fiber.Ctx) error {
 		return ctx.Redirect("/pages/error.html")
 	}
 
-	siteURL := s.URL()
+	siteURL := s.URL
 	adsTxtRecord, err := c.interactor.GenerateAdsTxtRecord(shared.ID(siteID))
 	if err != nil {
 		if !errors.Is(err, application.ErrEntityNotFound) {

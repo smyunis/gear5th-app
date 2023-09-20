@@ -3,25 +3,48 @@
 
 <head>
     <meta charset="UTF-8">
+    <title>gear5th ad container</title>
 </head>
 
-<body style="margin: 0;">
-    {{if .AdView.AdPiece.Ref.String}}
-    <a href="/ads/adclick/adpiece/{{.AdView.AdPiece.ID.String}}?token={{.AdView.ViewIDToken}}&site-id={{.SiteID}}&publisher-id={{.PublisherID}}&adslot-id={{.AdSlotID}}"
-        target="_blank" style="position: absolute; top: 0;left: 0;">
+<body topmargin="0" leftmargin="0" style="margin: 0;">
+    <div id="gear5th-adserver" style="position: absolute; top: 0;left: 0;">
+        {{if .AdView.AdPiece.Ref.String}}
+        <a href="/ads/adclick/adpiece/{{.AdView.AdPiece.ID.String}}?token={{.AdView.ViewIDToken}}&site-id={{.SiteID}}&publisher-id={{.PublisherID}}&adslot-id={{.AdSlotID}}"
+            target="_blank">
+            <img src="/advertiser/adpiece/{{.AdView.AdPiece.ID.String}}/resource" alt="" title=""
+                width="{{.AdView.AdPiece.SlotType.Dimentions.Width}}"
+                height="{{.AdView.AdPiece.SlotType.Dimentions.Height}}">
+        </a>
+        {{else}}
         <img src="/advertiser/adpiece/{{.AdView.AdPiece.ID.String}}/resource" alt="" title=""
             width="{{.AdView.AdPiece.SlotType.Dimentions.Width}}"
             height="{{.AdView.AdPiece.SlotType.Dimentions.Height}}">
-    </a>
-    {{else}}
-    <img src="/advertiser/adpiece/{{.AdView.AdPiece.ID.String}}/resource" alt="" title=""
-        style="position: absolute; top: 0;left: 0;" width="{{.AdView.AdPiece.SlotType.Dimentions.Width}}"
-        height="{{.AdView.AdPiece.SlotType.Dimentions.Height}}">
-    {{end}}
+        {{end}}
+    </div>
     <script>
-        // AdPieceId , ref link, resource link
-        // track impressions here
+        window.addEventListener("message", (e) => {
+            if (e.data == "gear5th-ad-impression") {
+                makeImpression()
+            }
+        })
+
+        function makeImpression() {
+            fetch("/ads/impression", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "adPieceId": "{{.AdView.AdPiece.ID.String}}",
+                    "siteId": "{{.SiteID}}",
+                    "adSlotId": "{{.AdSlotID}}",
+                    "publihserId": "{{.PublisherID}}",
+                    "token": "{{.AdView.ViewIDToken}}",
+                })
+            })
+        }
     </script>
+
 </body>
 
 </html>

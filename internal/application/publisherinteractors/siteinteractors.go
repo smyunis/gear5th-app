@@ -53,7 +53,7 @@ func (i *SiteInteractor) CreateSite(actorUserID shared.ID, siteURL url.URL) erro
 	if err != nil {
 		return err
 	}
-	i.eventDispatcher.DispatchAsync(s.DomainEvents())
+	i.eventDispatcher.DispatchAsync(s.Events)
 
 	return nil
 }
@@ -74,7 +74,7 @@ func (i *SiteInteractor) VerifySite(siteID shared.ID) error {
 	}
 	s.Verify()
 	i.siteRepository.Save(context.Background(), s)
-	i.eventDispatcher.DispatchAsync(s.DomainEvents())
+	i.eventDispatcher.DispatchAsync(s.Events)
 
 	return nil
 }
@@ -104,7 +104,7 @@ func (i *SiteInteractor) RemoveSite(actorUserID shared.ID, siteID shared.ID) err
 
 	s.Deactivate()
 	i.siteRepository.Save(context.Background(), s)
-	i.eventDispatcher.DispatchAsync(s.DomainEvents())
+	i.eventDispatcher.DispatchAsync(s.Events)
 	return nil
 }
 

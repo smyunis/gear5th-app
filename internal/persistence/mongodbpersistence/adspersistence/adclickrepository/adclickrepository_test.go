@@ -1,3 +1,4 @@
+//go:build db
 package adclickrepository_test
 
 import (

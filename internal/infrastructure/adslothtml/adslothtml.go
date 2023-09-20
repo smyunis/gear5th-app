@@ -1,6 +1,7 @@
 package adslothtml
 
 import (
+	_ "embed"
 	"html/template"
 	"net/url"
 	"strings"
@@ -12,13 +13,14 @@ import (
 
 var adSlotHTMLTemplate *template.Template
 
+//go:embed adslot.html
+var adSlotHTMLTemplateFile string
+
 func init() {
-	tmpl := `<iframe src="{{.AdServerURL}}" width="{{.AdSlot.SlotType.Dimentions.Width}}"
-		height="{{.AdSlot.SlotType.Dimentions.Height}}" loading="lazy" style="border: none;" scrolling="no"></iframe>`
-	adSlotHTMLTemplate = template.Must(template.New("adslot-integration-snippet").Parse(tmpl))
+	adSlotHTMLTemplate = template.Must(template.New("adslot-integration-snippet").Parse(adSlotHTMLTemplateFile))
 }
 
-type htmlSippetPresenter struct {
+type htmlSnippetPresenter struct {
 	Site        site.Site
 	AdSlot      adslot.AdSlot
 	AdServerURL *url.URL
@@ -49,12 +51,12 @@ func (a AdSlotHTMLSnippetService) GenerateHTML(s site.Site, slot adslot.AdSlot) 
 	adServerURL := a.appURL.JoinPath("/ads/adserver")
 	q := adServerURL.Query()
 	q.Add("slot", strings.ToLower(slot.SlotType.String()))
-	q.Add("publisher-id", s.PublisherId().String())
+	q.Add("publisher-id", s.PublisherID.String())
 	q.Add("adslot-id", slot.ID.String())
-	q.Add("site-id", s.ID().String())
+	q.Add("site-id", s.ID.String())
 	adServerURL.RawQuery = q.Encode()
 
-	p := htmlSippetPresenter{
+	p := htmlSnippetPresenter{
 		Site:        s,
 		AdSlot:      slot,
 		AdServerURL: adServerURL,
@@ -65,4 +67,3 @@ func (a AdSlotHTMLSnippetService) GenerateHTML(s site.Site, slot adslot.AdSlot) 
 	}
 	return htmlStringBuilder.String(), nil
 }
-

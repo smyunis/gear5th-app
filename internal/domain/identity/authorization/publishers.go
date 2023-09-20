@@ -7,7 +7,7 @@ import (
 )
 
 func CanModifySite(actor user.User, s site.Site) bool {
-	return actor.HasRole(user.Publisher) && s.PublisherId() == actor.ID
+	return actor.HasRole(user.Publisher) && s.PublisherID == actor.ID
 }
 
 func CanCreateSite(actor user.User) bool {
@@ -15,6 +15,6 @@ func CanCreateSite(actor user.User) bool {
 }
 
 func CanModifyAdSlot(actor user.User, s site.Site, slot adslot.AdSlot) bool {
-	return actor.HasRole(user.Publisher) && (s.ID() == slot.SiteID) &&
-		(s.PublisherId() == actor.ID)
+	return actor.HasRole(user.Publisher) && (s.ID == slot.SiteID) &&
+		(s.PublisherID == actor.ID)
 }

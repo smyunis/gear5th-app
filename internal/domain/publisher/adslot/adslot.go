@@ -11,8 +11,6 @@ type AdSlotRepository interface {
 	ActiveAdSlotsForSite(siteID shared.ID) ([]AdSlot, error)
 }
 
-
-
 type AdSlotType int
 
 const (
@@ -121,3 +119,6 @@ func (s *AdSlot) Deactivate() {
 	s.IsDeactivated = true
 }
 
+func (s *AdSlot) CanServeAdPieces() bool {
+	return !s.IsDeactivated && (s.SlotType != 0)
+}

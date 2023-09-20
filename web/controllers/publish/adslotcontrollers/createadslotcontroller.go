@@ -81,7 +81,7 @@ func (c *CreateAdSlotController) createAdSlotOnGet(ctx *fiber.Ctx) error {
 	sites := make([]createAdSlotSitesPresenter, 0)
 	for _, s := range activeSites {
 		sites = append(sites, createAdSlotSitesPresenter{
-			SiteID:     s.ID().String(),
+			SiteID:     s.ID.String(),
 			SiteDomain: s.SiteDomain(),
 		})
 	}

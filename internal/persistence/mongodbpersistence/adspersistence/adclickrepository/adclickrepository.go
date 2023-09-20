@@ -93,7 +93,6 @@ func (r MongoDBAdClickRepository) AdClicksForPublisher(publisherID shared.ID, st
 func mapAdClickToM(s adclick.AdClick) bson.M {
 	return bson.M{
 		"_id":         s.ID.String(),
-		"viewId":      s.ViewID.String(),
 		"slotId":      s.OriginAdSlotID.String(),
 		"adPieceId":   s.ClickedAdPieceID.String(),
 		"siteId":      s.OriginSiteID.String(),
@@ -106,7 +105,6 @@ func mapMToAdClick(res primitive.M) adclick.AdClick {
 	return adclick.AdClick{
 		ID:                shared.ID(res["_id"].(string)),
 		Events:            make(shared.Events),
-		ViewID:            shared.ID(res["viewId"].(string)),
 		ClickedAdPieceID:  shared.ID(res["adPieceId"].(string)),
 		OriginSiteID:      shared.ID(res["siteId"].(string)),
 		OriginAdSlotID:    shared.ID(res["slotId"].(string)),

@@ -52,7 +52,7 @@ func TestDeactivateSite(t *testing.T) {
 
 	s.Deactivate()
 
-	if s.IsActive() {
+	if !s.IsDeactivated {
 		t.FailNow()
 	}
 }

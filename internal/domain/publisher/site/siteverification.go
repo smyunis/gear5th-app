@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-
 )
 
 // type SiteVerificationError struct {
@@ -50,7 +49,7 @@ type AdsTxtVerificationService interface {
 }
 
 func VerifySiteHostname(site *Site, source url.URL) error {
-	siteFqdn := site.url.Hostname()
+	siteFqdn := site.URL.Hostname()
 	sourceFqdn := source.Hostname()
 
 	if siteFqdn != sourceFqdn {
@@ -61,12 +60,10 @@ func VerifySiteHostname(site *Site, source url.URL) error {
 	return nil
 }
 
-
-
 func GetAdsTxtRecord(s Site) AdsTxtRecord {
 	record := AdsTxtRecord{
 		AdExchangeDomain: "gear5th.com",
-		PublisherId:      s.publisherId.String(),
+		PublisherId:      s.PublisherID.String(),
 		Relation:         "DIRECT",
 	}
 	return record

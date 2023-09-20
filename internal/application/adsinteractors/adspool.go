@@ -84,7 +84,7 @@ func (p *AdsPool) Next(slot adslot.AdSlotType) (*AdView, error) {
 		p.logger.Error("adspool/generate-view-id-hash", err)
 	}
 
-	err = p.cacheStore.Save(ViewIDCacheKey(viewID.String()), "1", 1*time.Hour)
+	err = p.cacheStore.Save(ViewIDCacheKey(viewID.String()), "1", 20*time.Minute)
 	if err != nil {
 		p.logger.Error("adspool/cachestore/save-generated-view-id", err)
 	}
@@ -149,12 +149,7 @@ func (p *AdsPool) moveCursorIndex(slot adslot.AdSlotType, cur int) {
 
 func (p *AdsPool) loadAdPieces() error {
 
-	err := p.cacheStore.Save(adsPoolLengthCacheKey(adslot.Box), "0", 0)
-	err = p.cacheStore.Save(adsPoolLengthCacheKey(adslot.Vertical), "0", 0)
-	err = p.cacheStore.Save(adsPoolLengthCacheKey(adslot.Horizontal), "0", 0)
-	if err != nil {
-		p.logger.Error("adspool/cachestore/save-adspool-length", err)
-	}
+	p.loadAdsPoolLengths()
 
 	runningCampaigns, err := p.campaignRepository.RunningCampaigns()
 	if err != nil {
@@ -176,7 +171,18 @@ func (p *AdsPool) loadAdPieces() error {
 		}
 	}
 
+	p.loadAdPieceIndexes()
+
 	return nil
+}
+
+func (p *AdsPool) loadAdsPoolLengths() {
+	err := p.cacheStore.Save(adsPoolLengthCacheKey(adslot.Box), "0", 0)
+	err = p.cacheStore.Save(adsPoolLengthCacheKey(adslot.Vertical), "0", 0)
+	err = p.cacheStore.Save(adsPoolLengthCacheKey(adslot.Horizontal), "0", 0)
+	if err != nil {
+		p.logger.Error("adspool/cachestore/save-adspool-length", err)
+	}
 }
 
 func (p *AdsPool) appendAdPiece(a adpiece.AdPiece) error {

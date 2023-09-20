@@ -116,7 +116,7 @@ func (i *AdSlotInteractor) ActiveAdSlotsForPublisher(publisherID shared.ID) (Sit
 		return siteAdSlots, err
 	}
 	for _, activeSite := range activeSites {
-		slots, err := i.adslotRepository.ActiveAdSlotsForSite(activeSite.ID())
+		slots, err := i.adslotRepository.ActiveAdSlotsForSite(activeSite.ID)
 		if err != nil {
 			return siteAdSlots, err
 		}

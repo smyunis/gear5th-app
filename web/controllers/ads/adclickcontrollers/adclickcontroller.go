@@ -10,13 +10,13 @@ import (
 
 type AdClickController struct {
 	adPieceInteractor advertiserinteractors.AdPieceInteractor
-	adClickInteractor adsinteractors.AdClickInteractor
+	adClickInteractor adsinteractors.AdsInteractor
 	logger            application.Logger
 }
 
 func NewAdClickController(
 	adPieceInteractor advertiserinteractors.AdPieceInteractor,
-	adClickInteractor adsinteractors.AdClickInteractor,
+	adClickInteractor adsinteractors.AdsInteractor,
 	logger application.Logger) AdClickController {
 	return AdClickController{
 		adPieceInteractor,
@@ -30,7 +30,6 @@ func (c *AdClickController) AddRoutes(router *fiber.Router) {
 }
 
 func (c *AdClickController) referralOnGet(ctx *fiber.Ctx) error {
-	//TODO count ad click here
 	adPieceID := ctx.Params("adPieceId", "")
 	if adPieceID == "" {
 		return nil

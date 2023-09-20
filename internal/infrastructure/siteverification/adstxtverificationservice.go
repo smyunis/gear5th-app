@@ -70,7 +70,7 @@ func (a *AdsTxtVerificationService) fetchAdsTxtContent(s *site.Site) (string, er
 }
 
 func (*AdsTxtVerificationService) adsTxtUrl(s *site.Site) (string, error) {
-	baseUrl := s.URL().Scheme + "://" + s.URL().Host
+	baseUrl := s.URL.Scheme + "://" + s.URL.Host
 	adsTxturl, err := url.JoinPath(baseUrl, "ads.txt")
 	return adsTxturl, err
 }

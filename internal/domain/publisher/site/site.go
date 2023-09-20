@@ -23,22 +23,22 @@ type MonetizationStatus struct {
 }
 
 type Site struct {
-	id                        shared.ID
-	events                    shared.Events
-	publisherId               shared.ID
-	url                       url.URL
-	isVerified                bool
-	isDeactivated             bool
-	monetiaztionStatusHistory []MonetizationStatus
+	ID                        shared.ID
+	Events                    shared.Events
+	PublisherID               shared.ID
+	URL                       url.URL
+	IsVerified                bool
+	IsDeactivated             bool
+	MonetiaztionStatusHistory []MonetizationStatus
 }
 
 func NewSite(publisherId shared.ID, url url.URL) Site {
 	return Site{
-		id:                        shared.NewID(),
-		publisherId:               publisherId,
-		url:                       url,
-		events:                    make(shared.Events),
-		monetiaztionStatusHistory: []MonetizationStatus{{CanMonetize: true, Time: time.Now()}},
+		ID:                        shared.NewID(),
+		PublisherID:               publisherId,
+		URL:                       url,
+		Events:                    make(shared.Events),
+		MonetiaztionStatusHistory: []MonetizationStatus{{CanMonetize: true, Time: time.Now()}},
 	}
 }
 
@@ -60,59 +60,36 @@ func ReconstituteSite(
 	}
 }
 
-func (s *Site) ID() shared.ID {
-	return s.id
-}
-
 func (s *Site) Verify() {
-	s.isVerified = true
-}
-
-func (s *Site) IsVerified() bool {
-	return s.isVerified
-}
-
-func (s *Site) PublisherId() shared.ID {
-	return s.publisherId
-}
-
-func (s *Site) URL() url.URL {
-	return s.url
+	s.IsVerified = true
 }
 
 func (s *Site) SiteDomain() string {
-	return s.url.Hostname()
+	return s.URL.Hostname()
 }
 
 func (s *Site) AddAdSlot(name string, adSlotType adslot.AdSlotType) adslot.AdSlot {
-	return adslot.NewAdSlot(s.id, name, adSlotType)
+	return adslot.NewAdSlot(s.ID, name, adSlotType)
 }
 
 func (s *Site) Deactivate() {
-	s.isDeactivated = true
-	s.events.Emit("site/deactivated", *s)
-}
-
-func (s *Site) IsActive() bool {
-	return !s.isDeactivated
-}
-func (s *Site) DomainEvents() shared.Events {
-	return s.events
+	s.IsDeactivated = true
+	s.Events.Emit("site/deactivated", *s)
 }
 
 func (s *Site) MonetizationStatusHistory() []MonetizationStatus {
-	history := make([]MonetizationStatus, len(s.monetiaztionStatusHistory))
-	copy(history, s.monetiaztionStatusHistory)
+	history := make([]MonetizationStatus, len(s.MonetiaztionStatusHistory))
+	copy(history, s.MonetiaztionStatusHistory)
 	return history
 }
 
 func (s *Site) CanServeAdPiece() bool {
-	return s.IsVerified() && s.IsActive()
+	return s.IsVerified && !s.IsDeactivated
 }
 
 func (s *Site) Demonetize() {
 	if s.lastMonietizationStatus() {
-		s.monetiaztionStatusHistory = append(s.monetiaztionStatusHistory, MonetizationStatus{
+		s.MonetiaztionStatusHistory = append(s.MonetiaztionStatusHistory, MonetizationStatus{
 			CanMonetize: false,
 			Time:        time.Now(),
 		})
@@ -121,7 +98,7 @@ func (s *Site) Demonetize() {
 
 func (s *Site) AllowMonetization() {
 	if !s.lastMonietizationStatus() {
-		s.monetiaztionStatusHistory = append(s.monetiaztionStatusHistory, MonetizationStatus{
+		s.MonetiaztionStatusHistory = append(s.MonetiaztionStatusHistory, MonetizationStatus{
 			CanMonetize: true,
 			Time:        time.Now(),
 		})
@@ -130,7 +107,7 @@ func (s *Site) AllowMonetization() {
 
 func (s *Site) DemonetizeForTimePeriod(period time.Duration) {
 	s.Demonetize()
-	s.monetiaztionStatusHistory = append(s.monetiaztionStatusHistory, MonetizationStatus{
+	s.MonetiaztionStatusHistory = append(s.MonetiaztionStatusHistory, MonetizationStatus{
 		CanMonetize: true,
 		Time:        time.Now().Add(period),
 	})
@@ -142,15 +119,15 @@ func (s *Site) CanMonetize() bool {
 
 func (s *Site) canMonetizeCurrently() bool {
 
-	upperHistoryIndex := slices.IndexFunc(s.monetiaztionStatusHistory, func(ms MonetizationStatus) bool {
+	upperHistoryIndex := slices.IndexFunc(s.MonetiaztionStatusHistory, func(ms MonetizationStatus) bool {
 		return ms.Time.After(time.Now())
 	})
 	if upperHistoryIndex == -1 || upperHistoryIndex == 0 {
 		return s.lastMonietizationStatus()
 	}
-	return s.monetiaztionStatusHistory[upperHistoryIndex-1].CanMonetize
+	return s.MonetiaztionStatusHistory[upperHistoryIndex-1].CanMonetize
 }
 
 func (s *Site) lastMonietizationStatus() bool {
-	return s.monetiaztionStatusHistory[len(s.monetiaztionStatusHistory)-1].CanMonetize
+	return s.MonetiaztionStatusHistory[len(s.MonetiaztionStatusHistory)-1].CanMonetize
 }

@@ -21,6 +21,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/adspersistence/adclickrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/adspersistence/impressionrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/adpiecerepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/campaignrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/filestore"
@@ -33,6 +34,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/siterepository"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/adclickcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/adservercontrollers"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/impressioncontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/adpiececontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/campaigncontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/accountcontrollers"
@@ -385,11 +387,35 @@ func InitAdClickController() adclickcontrollers.AdClickController {
 	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
 	adPieceInteractor := advertiserinteractors.NewAdPieceInteractor(mongoDBAdPieceRepository, mongoDBCampaignRepository, mongoDBUserRepositoryCached, inMemoryEventDispatcher)
+	mongoDBImpressionRepository := impressionrepository.NewMongoDBImpressionRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBAdClickRepository := adclickrepository.NewMongoDBAdClickRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBSiteRepository := siterepository.NewMongoDBSiteRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBAdSlotRepository := adslotrepository.NewMongoDBAdSlotRepository(mongoDBStoreBootstrap, appLogger)
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
-	adClickInteractor := adsinteractors.NewAdClickInteractor(mongoDBAdClickRepository, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
-	adClickController := adclickcontrollers.NewAdClickController(adPieceInteractor, adClickInteractor, appLogger)
+	adsInteractor := adsinteractors.NewAdsInteractor(mongoDBImpressionRepository, mongoDBAdClickRepository, mongoDBSiteRepository, mongoDBAdSlotRepository, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
+	adClickController := adclickcontrollers.NewAdClickController(adPieceInteractor, adsInteractor, appLogger)
 	return adClickController
+}
+
+func InitImpressionController() impressioncontrollers.ImpressionController {
+	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	mongoDBAdPieceRepository := adpiecerepository.NewMongoDBAdPieceRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBCampaignRepository := campaignrepository.NewMongoDBCampaignRepository(mongoDBStoreBootstrap, appLogger)
+	redisBootstrapper := rediskeyvaluestore.NewRedisBootstrapper(envConfigurationProvider)
+	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
+	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
+	inMemoryEventDispatcher := application.NewAppEventDispatcher()
+	adPieceInteractor := advertiserinteractors.NewAdPieceInteractor(mongoDBAdPieceRepository, mongoDBCampaignRepository, mongoDBUserRepositoryCached, inMemoryEventDispatcher)
+	mongoDBImpressionRepository := impressionrepository.NewMongoDBImpressionRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBAdClickRepository := adclickrepository.NewMongoDBAdClickRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBSiteRepository := siterepository.NewMongoDBSiteRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBAdSlotRepository := adslotrepository.NewMongoDBAdSlotRepository(mongoDBStoreBootstrap, appLogger)
+	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
+	adsInteractor := adsinteractors.NewAdsInteractor(mongoDBImpressionRepository, mongoDBAdClickRepository, mongoDBSiteRepository, mongoDBAdSlotRepository, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
+	impressionController := impressioncontrollers.NewImpressionController(adPieceInteractor, adsInteractor, appLogger)
+	return impressionController
 }
 
 func InitEventsRegistrar() events.EventHandlerRegistrar {

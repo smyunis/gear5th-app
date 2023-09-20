@@ -14,4 +14,7 @@ func Routes(app *fiber.App) {
 
 	adclickController := ioc.InitAdClickController()
 	adclickController.AddRoutes(&route)
+
+	impressionsController := ioc.InitImpressionController()
+	impressionsController.AddRoutes(&route)
 }

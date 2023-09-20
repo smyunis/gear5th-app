@@ -10,6 +10,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/ads/adclick"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/ads/impression"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/advertiser/adpiece"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/advertiser/campaign"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
@@ -26,6 +27,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/adspersistence/adclickrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/adspersistence/impressionrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/adpiecerepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/campaignrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/filestore"
@@ -38,6 +40,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/siterepository"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/adclickcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/adservercontrollers"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/impressioncontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/adpiececontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/advertiser/campaigncontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/accountcontrollers"
@@ -81,6 +84,8 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(adpiece.AdPieceRepository), new(adpiecerepository.MongoDBAdPieceRepository)),
 	adclickrepository.NewMongoDBAdClickRepository,
 	wire.Bind(new(adclick.AdClickRepository), new(adclickrepository.MongoDBAdClickRepository)),
+	impressionrepository.NewMongoDBImpressionRepository,
+	wire.Bind(new(impression.ImpressionRepository), new(impressionrepository.MongoDBImpressionRepository)),
 
 	//Infrastructures
 	infrastructure.NewAppHTTPClient,
@@ -130,7 +135,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	advertiserinteractors.NewAdPieceInteractor,
 	advertiserinteractors.NewCampaignInteractor,
 	adsinteractors.NewAdsPool,
-	adsinteractors.NewAdClickInteractor,
+	adsinteractors.NewAdsInteractor,
 
 	//Middlewares
 	middlewares.NewJwtAuthenticationMiddleware,
@@ -157,6 +162,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	adpiececontrollers.NewAddAdPieceController,
 	adservercontrollers.NewAdServerController,
 	adclickcontrollers.NewAdClickController,
+	impressioncontrollers.NewImpressionController,
 
 	application.NewAppEventDispatcher,
 	wire.Bind(new(application.EventDispatcher), new(application.InMemoryEventDispatcher)),

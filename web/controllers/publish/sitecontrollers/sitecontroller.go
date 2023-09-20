@@ -75,9 +75,9 @@ func (c *SiteController) onGet(ctx *fiber.Ctx) error {
 	}
 	sites := make([]sitePresenterActiveSite, 0)
 	for _, s := range activeSites {
-		siteURL := s.URL()
+		siteURL := s.URL
 		siteDomain := siteURL.Hostname()
-		adsTxtRecord, err := c.interactor.GenerateAdsTxtRecord(s.ID())
+		adsTxtRecord, err := c.interactor.GenerateAdsTxtRecord(s.ID)
 		if err != nil {
 			p := sitePresenter{
 				ErrorMessage: "We're unable to get your sites at the moment. Try again later.",
@@ -85,9 +85,9 @@ func (c *SiteController) onGet(ctx *fiber.Ctx) error {
 			return controllers.Render(ctx, siteTemplate, p)
 		}
 		sites = append(sites, sitePresenterActiveSite{
-			SiteID:           string(s.ID()),
+			SiteID:           s.ID.String(),
 			SiteDomain:       siteDomain,
-			IsSiteVerified:   s.IsVerified(),
+			IsSiteVerified:   s.IsVerified,
 			SiteAdsTxtRecord: adsTxtRecord.String(),
 			SiteURL:          siteURL.String(),
 		})
