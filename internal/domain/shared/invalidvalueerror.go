@@ -1,6 +1,11 @@
 package shared
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
+
+var ErrInvalidOperation = errors.New("operation is not permitted")
 
 type ErrInvalidValue struct {
 	ValueType  string

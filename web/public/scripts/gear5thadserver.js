@@ -3,6 +3,7 @@ window.gear5thadserver[document.currentScript.getAttribute("adslot")] = window.g
     adSlotId: document.currentScript.getAttribute("adslot"),
     async main() {
         let ins = document.getElementById(this.adSlotId)
+
         let frame = document.createElement("iframe")
         frame.id = "gear5th-adframe-" + ins.dataset.adslotId
         frame.setAttribute("src", ins.dataset.adserverUrl)
@@ -12,6 +13,7 @@ window.gear5thadserver[document.currentScript.getAttribute("adslot")] = window.g
         frame.style.border = "none"
         frame.setAttribute("scrolling", "no")
         ins.appendChild(frame)
+
 
         let impressionCheckInterval = setInterval(() => {
             if (this.isPartiallyInViewport(frame)) {

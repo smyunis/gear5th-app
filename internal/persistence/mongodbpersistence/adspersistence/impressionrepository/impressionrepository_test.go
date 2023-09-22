@@ -1,3 +1,4 @@
+//go:build db
 package impressionrepository_test
 
 import (
@@ -80,4 +81,30 @@ func TestImpressionWithintimeperiod(t *testing.T) {
 	}) {
 		t.FailNow()
 	}
+}
+
+func TestCountDailyimpressions(t *testing.T) {
+	i := shared.NewID()
+	a := impression.NewImpression(shared.NewID(), i, i, i, i)
+
+	err := impRepo.Save(context.TODO(), a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	a2 := impression.NewImpression(shared.NewID(), i, i, i, i)
+
+	err = impRepo.Save(context.TODO(), a2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	c,err := impRepo.DailyImpressionCount(time.Now())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if c == 0 {
+		t.FailNow()
+	}
+
 }

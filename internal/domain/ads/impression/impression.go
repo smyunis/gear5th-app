@@ -9,6 +9,7 @@ import (
 type ImpressionRepository interface {
 	shared.EntityRepository[Impression]
 	ImpressionsForPublisher(publisherID shared.ID, start time.Time, end time.Time) ([]Impression, error)
+	DailyImpressionCount(day time.Time) (int, error)
 }
 
 type Impression struct {
@@ -33,6 +34,6 @@ func NewImpression(viewID shared.ID, adPieceID shared.ID, originSiteID shared.ID
 		Time:              time.Now(),
 		Events:            make(shared.Events),
 	}
-	a.Events.Emit("ad/impression-made", a)
+	a.Events.Emit("impression/made", a)
 	return a
 }

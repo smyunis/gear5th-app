@@ -6,8 +6,8 @@
     <title>gear5th ad container</title>
 </head>
 
-<body topmargin="0" leftmargin="0" style="margin: 0;">
-    <div id="gear5th-adserver" style="position: absolute; top: 0;left: 0;">
+<body topmargin="0" leftmargin="0" rightmargin="0" bottommargin="0">
+    <div id="gear5th-adserver" style="position: absolute; top: 0;left: 0; z-index: 10000;">
         {{if .AdView.AdPiece.Ref.String}}
         <a href="/ads/adclick/adpiece/{{.AdView.AdPiece.ID.String}}?token={{.AdView.ViewIDToken}}&site-id={{.SiteID}}&publisher-id={{.PublisherID}}&adslot-id={{.AdSlotID}}"
             target="_blank">

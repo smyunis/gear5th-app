@@ -55,7 +55,7 @@ func (c *AdClickController) referralOnGet(ctx *fiber.Ctx) error {
 		return nil
 	}
 
-	err := c.adClickInteractor.OnClick(shared.ID(adPieceID), shared.ID(siteID), shared.ID(slotID), shared.ID(publisherID), token)
+	err := c.adClickInteractor.NewAdClick(shared.ID(adPieceID), shared.ID(siteID), shared.ID(slotID), shared.ID(publisherID), token)
 	if err != nil {
 		c.logger.Error("adpiece/adclick", err)
 	}

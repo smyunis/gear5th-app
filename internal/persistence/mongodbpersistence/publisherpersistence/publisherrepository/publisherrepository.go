@@ -53,7 +53,7 @@ func (r MongoDBPublisherRepository) Save(ctx context.Context, pub publisher.Publ
 	p := mapPublisherToM(pub)
 
 	updateOptions := options.Update().SetUpsert(true)
-	_, err := publishers.UpdateByID(ctx, pub.UserID().String(),
+	_, err := publishers.UpdateByID(ctx, pub.UserID.String(),
 		bson.D{{"$set", p}}, updateOptions)
 
 	if err != nil {
@@ -64,34 +64,19 @@ func (r MongoDBPublisherRepository) Save(ctx context.Context, pub publisher.Publ
 }
 
 func mapPublisherToM(pub publisher.Publisher) primitive.M {
-	notifications := bson.A{}
-	for _, n := range pub.UnacknowledgedNotifications() {
-		notifications = append(notifications, bson.M{
-			"message": n.Message(),
-			"time":    n.Time(),
-		})
-	}
 
 	p := bson.M{
-		"_id":                         pub.UserID().String(),
-		"unacknowledgedNotifications": notifications,
+		"_id":              pub.UserID.String(),
+		"lastDisbursement": pub.LastDisbursement,
 	}
 	return p
 }
 
 func mapMToPublisher(res primitive.M) publisher.Publisher {
-	nr := res["unacknowledgedNotifications"].(primitive.A)
-	notifications := make([]shared.Notification, 0)
-	for _, n := range nr {
-		nm := n.(bson.M)
-		nmessage := nm["message"].(string)
-		ntime := nm["time"].(primitive.DateTime).Time()
-		notifications = append(notifications,
-			shared.ReconstituteNotification(nmessage, ntime))
-	}
 
-	p := publisher.ReconstitutePublisher(
+	p := publisher.Publisher{
 		shared.ID(res["_id"].(string)),
-		notifications)
+		res["lastDisbursement"].(primitive.DateTime).Time(),
+	}
 	return p
 }

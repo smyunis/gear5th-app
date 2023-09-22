@@ -11,6 +11,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/application/adsinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/advertiserinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/paymentinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/adslothtml"
@@ -28,6 +29,8 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/oauthuserrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/paymentpersistence/depositrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/paymentpersistence/earningrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/adslotrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
@@ -429,8 +432,17 @@ func InitEventsRegistrar() events.EventHandlerRegistrar {
 	mongoDBAdPieceRepository := adpiecerepository.NewMongoDBAdPieceRepository(mongoDBStoreBootstrap, appLogger)
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
 	adsPool := adsinteractors.NewAdsPool(redisKeyValueStore, mongoDBCampaignRepository, mongoDBAdPieceRepository, hs256HMACValidationService, appLogger)
+	mongoDBImpressionRepository := impressionrepository.NewMongoDBImpressionRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBAdClickRepository := adclickrepository.NewMongoDBAdClickRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBSiteRepository := siterepository.NewMongoDBSiteRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBAdSlotRepository := adslotrepository.NewMongoDBAdSlotRepository(mongoDBStoreBootstrap, appLogger)
+	adsInteractor := adsinteractors.NewAdsInteractor(mongoDBImpressionRepository, mongoDBAdClickRepository, mongoDBSiteRepository, mongoDBAdSlotRepository, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
+	mongoDBDepositRepository := depositrepository.NewMongoDBDepositRepository(mongoDBStoreBootstrap, appLogger)
+	depositInteractor := paymentinteractors.NewDepositInteractor(mongoDBDepositRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
+	mongoDBEarningRepository := earningrepository.NewMongoDBEarningRepository(mongoDBStoreBootstrap, appLogger)
+	earningInteractor := paymentinteractors.NewEarningInteractor(mongoDBEarningRepository, mongoDBDepositRepository, mongoDBImpressionRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
 	verifcationEmailSender := identityemail.NewVerifcationEmailSender(envConfigurationProvider, hs256HMACValidationService, appLogger)
 	verificationEmailInteractor := identityinteractors.NewVerificationEmailInteractor(verifcationEmailSender, appLogger)
-	eventHandlerRegistrar := events.NewEventHandlerRegistrar(inMemoryEventDispatcher, adsPool, verificationEmailInteractor)
+	eventHandlerRegistrar := events.NewEventHandlerRegistrar(inMemoryEventDispatcher, adsPool, adsInteractor, depositInteractor, earningInteractor, verificationEmailInteractor)
 	return eventHandlerRegistrar
 }

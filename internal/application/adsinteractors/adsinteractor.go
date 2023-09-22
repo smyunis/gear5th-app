@@ -46,7 +46,7 @@ func NewAdsInteractor(
 	}
 }
 
-func (i *AdsInteractor) OnImpression(adPieceID shared.ID, siteID shared.ID, adSlotID shared.ID, publisherID shared.ID, token string) error {
+func (i *AdsInteractor) NewImpression(adPieceID shared.ID, siteID shared.ID, adSlotID shared.ID, publisherID shared.ID, token string) error {
 
 	viewID, err := i.validateToken(token)
 	if err != nil {
@@ -61,20 +61,20 @@ func (i *AdsInteractor) OnImpression(adPieceID shared.ID, siteID shared.ID, adSl
 		return application.ErrRequirementFailed
 	}
 
-	a := impression.NewImpression(shared.ID(viewID), adPieceID, siteID, adSlotID, publisherID)
+	imp := impression.NewImpression(shared.ID(viewID), adPieceID, siteID, adSlotID, publisherID)
 
-	err = i.impressionRepository.Save(context.Background(), a)
+	err = i.impressionRepository.Save(context.Background(), imp)
 	if err != nil {
 		i.logger.Error("impression/save", err)
 		return err
 	}
 
-	i.eventDispatcher.DispatchAsync(a.Events)
+	i.eventDispatcher.DispatchAsync(imp.Events)
 
 	return nil
 }
 
-func (i *AdsInteractor) OnClick(adPieceID shared.ID, siteID shared.ID, adSlotID shared.ID, publisherID shared.ID, token string) error {
+func (i *AdsInteractor) NewAdClick(adPieceID shared.ID, siteID shared.ID, adSlotID shared.ID, publisherID shared.ID, token string) error {
 	viewID, err := i.validateToken(token)
 	if err != nil {
 		return application.ErrRequirementFailed
@@ -151,4 +151,25 @@ func (i *AdsInteractor) adSlotCanServeAdPieces(slotID shared.ID) bool {
 		return s.CanServeAdPieces()
 	}
 	return canServe
+}
+
+func (i *AdsInteractor) IncrementImpressionCount(e any) {
+	today := time.Now()
+	c, err := i.cacheStore.Get(DailyImpressionCountCacheKey(today))
+	totalImpressions, parseErr := strconv.Atoi(c)
+	if err != nil || parseErr != nil {
+		totalImpressions, err = i.impressionRepository.DailyImpressionCount(today)
+		if err != nil {
+			i.logger.Error("impressions/dailyimpressioncount", err)
+			return
+		}
+	}
+	totalImpressions += 1
+	cs := strconv.Itoa(totalImpressions)
+	i.cacheStore.Save(DailyImpressionCountCacheKey(today), cs, 24*time.Hour)
+}
+
+
+func DailyImpressionCountCacheKey(day time.Time) string {
+	return fmt.Sprintf("dailyimpressioncount:%s", day.Format("20060102"))
 }
