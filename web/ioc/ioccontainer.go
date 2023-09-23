@@ -16,6 +16,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/domain/advertiser/campaign"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/deposit"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/disbursement"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/earning"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/adslot"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
@@ -26,6 +27,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/googleoauth"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/tokens"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/keyvaluestore/rediskeyvaluestore"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/disbursementemail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence"
@@ -38,6 +40,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/oauthuserrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/paymentpersistence/depositrepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/paymentpersistence/disbursementrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/paymentpersistence/earningrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/adslotrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
@@ -52,6 +55,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/adslotcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/homecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/identitycontrollers"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/paymentcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/publishercontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/sitecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/events"
@@ -95,6 +99,8 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(deposit.DepositRepository), new(depositrepository.MongoDBDepositRepository)),
 	earningrepository.NewMongoDBEarningRepository,
 	wire.Bind(new(earning.EarningRepository), new(earningrepository.MongoDBEarningRepository)),
+	disbursementrepository.NewMongoDBDisbursementRepository,
+	wire.Bind(new(disbursement.DisbursementRepository), new(disbursementrepository.MongoDBDisbursementRepository)),
 
 	//Infrastructures
 	infrastructure.NewAppHTTPClient,
@@ -119,6 +125,8 @@ var Container wire.ProviderSet = wire.NewSet(
 	identityemail.NewRequestPassordResetEmailService,
 	wire.Bind(new(identityinteractors.RequestPasswordResetEmailService), new(identityemail.RequestPassordResetEmailService)),
 	wire.Bind(new(identityinteractors.VerificationEmailService), new(identityemail.VerifcationEmailSender)),
+	disbursementemail.NewDisbursementEmailService,
+	wire.Bind(new(paymentinteractors.DisbursementEmailService), new(disbursementemail.DisbursementEmailService)),
 
 	// Logger
 	wire.Bind(new(application.Logger), new(infrastructure.AppLogger)),
@@ -147,6 +155,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	adsinteractors.NewAdsInteractor,
 	paymentinteractors.NewDepositInteractor,
 	paymentinteractors.NewEarningInteractor,
+	paymentinteractors.NewDisbursementInteractor,
 
 	//Middlewares
 	middlewares.NewJwtAuthenticationMiddleware,
@@ -174,6 +183,8 @@ var Container wire.ProviderSet = wire.NewSet(
 	adservercontrollers.NewAdServerController,
 	adclickcontrollers.NewAdClickController,
 	impressioncontrollers.NewImpressionController,
+	paymentcontrollers.NewPaymentController,
+	paymentcontrollers.NewDisbursementController,
 
 	application.NewAppEventDispatcher,
 	wire.Bind(new(application.EventDispatcher), new(application.InMemoryEventDispatcher)),

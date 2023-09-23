@@ -2,6 +2,7 @@ package paymentinteractors
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -10,11 +11,14 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/domain/ads/impression"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/deposit"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/earning"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 )
 
 type EarningInteractor struct {
 	earningRepository    earning.EarningRepository
 	depositRepository    deposit.DepositRepository
+	publisherRepository  publisher.PublisherRepository
 	impressionRepository impression.ImpressionRepository
 	cacheStore           application.KeyValueStore
 	eventDispatcher      application.EventDispatcher
@@ -24,6 +28,7 @@ type EarningInteractor struct {
 func NewEarningInteractor(
 	earningRepository earning.EarningRepository,
 	depositRepository deposit.DepositRepository,
+	publisherRepository publisher.PublisherRepository,
 	impressionRepository impression.ImpressionRepository,
 	cacheStore application.KeyValueStore,
 	eventDispatcher application.EventDispatcher,
@@ -31,11 +36,40 @@ func NewEarningInteractor(
 	return EarningInteractor{
 		earningRepository,
 		depositRepository,
+		publisherRepository,
 		impressionRepository,
 		cacheStore,
 		eventDispatcher,
 		logger,
 	}
+}
+
+func (i *EarningInteractor) CurrentBalance(publisherID shared.ID) (float64, error) {
+	p, err := i.publisherRepository.Get(context.Background(), publisherID)
+	if err != nil {
+		return 0.0, err
+	}
+	balanceCacheKey := fmt.Sprintf("balance:%s:%s", publisherID.String(), time.Now().Format("20060102"))
+	b, err := i.cacheStore.Get(balanceCacheKey)
+	bal, parseErr := strconv.ParseFloat(b, 64)
+	if err != nil || parseErr != nil {
+		earnings, err := i.earningRepository.EarningsForPublisher(publisherID, p.LastDisbursement, time.Now())
+		if err != nil {
+			return 0.0, err
+		}
+		bal = earning.TotalEarningsAmount(earnings)
+		fs := strconv.FormatFloat(bal, 'f', 2, 64)
+		i.cacheStore.Save(balanceCacheKey, fs, 2*time.Hour)
+	}
+	return bal, nil
+}
+
+func (i *EarningInteractor) CanRequestDisbursement(publisherID shared.ID) bool {
+	bal, err := i.CurrentBalance(publisherID)
+	if err != nil {
+		return false
+	}
+	return bal > earning.DisbursementRequestTreshold
 }
 
 func (i *EarningInteractor) OnImpression(newImpression any) {

@@ -54,4 +54,10 @@ func Routes(app *fiber.App) {
 	accountcontroller := ioc.InitAccountController()
 	accountcontroller.AddRoutes(&publishRouter)
 
+	paymentController := ioc.InitPaymentController()
+	paymentController.AddRoutes(&publishRouter)
+
+	disbusementController := ioc.InitDisbursementController()
+	disbusementController.AddRoutes(&publishRouter)
+
 }

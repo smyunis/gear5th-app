@@ -13,6 +13,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/adslotcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/homecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/identitycontrollers"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/paymentcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/publishercontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/publish/sitecontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/events"
@@ -131,6 +132,16 @@ func InitAdClickController() adclickcontrollers.AdClickController {
 func InitImpressionController() impressioncontrollers.ImpressionController {
 	wire.Build(Container)
 	return impressioncontrollers.ImpressionController{}
+}
+
+func InitPaymentController() paymentcontrollers.PaymentController {
+	wire.Build(Container)
+	return paymentcontrollers.PaymentController{}
+}
+
+func InitDisbursementController() paymentcontrollers.DisbursementController {
+	wire.Build(Container)
+	return paymentcontrollers.DisbursementController{}
 }
 
 // Event Handlers

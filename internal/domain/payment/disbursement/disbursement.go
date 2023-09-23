@@ -1,4 +1,4 @@
-package withdrawalrequest
+package disbursement
 
 import (
 	"time"
@@ -8,8 +8,7 @@ import (
 
 type DisbursementRepository interface {
 	shared.EntityRepository[Disbursement]
-	SettledDisbursementsForPublisher(publisherID shared.ID) ([]Disbursement, error)
-	RequestedDisbursementsForPublisher(publisherID shared.ID) ([]Disbursement, error)
+	DisbursementsForPublisher(publisherID shared.ID, status DisbursementStatus) ([]Disbursement, error)
 }
 
 type DisbursementStatus = int
@@ -17,31 +16,38 @@ type DisbursementStatus = int
 const (
 	_ DisbursementStatus = iota
 	Requested
-	Settled
+	Confirmed
 	Rejected
+	Settled
 )
 
 type Disbursement struct {
-	ID                  shared.ID
-	Events              shared.Events
-	Status              DisbursementStatus
-	PublisherID         shared.ID
-	PaymentProfileID    shared.ID
-	Amount              float64
-	Time                time.Time
-	SettlementReference string
+	ID               shared.ID
+	Events           shared.Events
+	Status           DisbursementStatus
+	PublisherID      shared.ID
+	PaymentProfile   PaymentProfile
+	Amount           float64
+	Time             time.Time
+	PeriodStart      time.Time
+	PeriodEnd        time.Time
+	SettlementRemark string
 }
 
-func NewDisbursement(pubID shared.ID, paymentProfile shared.ID, amount float64) Disbursement {
-	return Disbursement{
-		ID:               shared.NewID(),
-		Events:           make(shared.Events),
-		Status:           Requested,
-		PublisherID:      pubID,
-		PaymentProfileID: paymentProfile,
-		Amount:           amount,
-		Time:             time.Now(),
+func NewDisbursement(pubID shared.ID, paymentProfile PaymentProfile, amount float64, start time.Time, end time.Time) Disbursement {
+	d := Disbursement{
+		ID:             shared.NewID(),
+		Events:         make(shared.Events),
+		Status:         Requested,
+		PublisherID:    pubID,
+		PaymentProfile: paymentProfile,
+		Amount:         amount,
+		Time:           time.Now(),
+		PeriodStart:    start,
+		PeriodEnd:      end,
 	}
+	d.Events.Emit("disbursement/requested", d)
+	return d
 }
 
 func (d *Disbursement) Settle(ref string) error {
@@ -50,8 +56,18 @@ func (d *Disbursement) Settle(ref string) error {
 	}
 	d.Status = Settled
 	d.Time = time.Now()
-	d.SettlementReference = ref
+	d.SettlementRemark = ref
 	d.Events.Emit("disbursement/settled", d)
+	return nil
+}
+
+func (d *Disbursement) Confirm() error {
+	if d.Status != Requested {
+		return shared.ErrInvalidOperation
+	}
+	d.Status = Confirmed
+	d.Time = time.Now()
+	d.Events.Emit("disbursement/confirmed", d)
 	return nil
 }
 

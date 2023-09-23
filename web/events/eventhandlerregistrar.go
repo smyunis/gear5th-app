@@ -12,6 +12,7 @@ type EventHandlerRegistrar struct {
 	adsPool                     adsinteractors.AdsPool
 	adsInteractor               adsinteractors.AdsInteractor
 	verificationEmailInteractor identityinteractors.VerificationEmailInteractor
+	disbursementInteractor      paymentinteractors.DisbursementInteractor
 	depositInteractor           paymentinteractors.DepositInteractor
 	earningInteractor           paymentinteractors.EarningInteractor
 }
@@ -22,12 +23,14 @@ func NewEventHandlerRegistrar(
 	adsInteractor adsinteractors.AdsInteractor,
 	depositInteractor paymentinteractors.DepositInteractor,
 	earningInteractor paymentinteractors.EarningInteractor,
+	disbursementInteractor paymentinteractors.DisbursementInteractor,
 	verificationEmailInteractor identityinteractors.VerificationEmailInteractor) EventHandlerRegistrar {
 	return EventHandlerRegistrar{
 		appEventDispatcher,
 		adsPool,
 		adsInteractor,
 		verificationEmailInteractor,
+		disbursementInteractor,
 		depositInteractor,
 		earningInteractor,
 	}
@@ -41,5 +44,8 @@ func (r *EventHandlerRegistrar) RegisterEventHandlers() error {
 
 	r.appEventDispatcher.AddHandler("impression/made", r.earningInteractor.OnImpression)
 	r.appEventDispatcher.AddHandler("impression/made", r.adsInteractor.IncrementImpressionCount)
+
+	r.appEventDispatcher.AddHandler("disbursement/requested", r.disbursementInteractor.OnRequestDisbursement)
+
 	return nil
 }

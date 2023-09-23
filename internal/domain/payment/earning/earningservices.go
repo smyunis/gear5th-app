@@ -11,6 +11,14 @@ func TotalEarningsAmount(earnings []Earning) float64 {
 	return sum
 }
 
+func CanDisburseEarnings(earnings []Earning) bool {
+	sum := 0.0
+	for _, e := range earnings {
+		sum += e.Amount
+	}
+	return sum > DisbursementRequestTreshold
+}
+
 func DailyRatePerImpression(totalDailyFund float64, totalImpressionCount int) float64 {
 	//TODO set appropriate amonut for this
 	const fixedRatePerImpression = 0.1
