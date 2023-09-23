@@ -3,13 +3,22 @@
 {{define "in-console-main"}}
 <div class="pb-8">
     <h2 class="text-darkest text-2xl font-bold pb-4">HTML integration code snippet</h2>
-    <p>Paste the following code into your site’s HTML. Do not add the same ad slot multiple times in the same page. Make sure the ad is visible and users of your site can interact
+    <p>Paste the following code into your site’s HTML. Do not add the same ad slot multiple times in the same page. Make
+        sure the ad is visible and users of your site can interact
         with it unambiguously.</p>
 </div>
-<div class="w-fit text-darkest border border-medium p-4 my-4 rounded-sm">
-    <code>
-        {{.HTMLSnippet}}
-    </code>
+<div class="flex flex-col p-4 my-4">
+    <div class="self-end">
+        <button type="button" onclick="copyContent()" class="p-1 font-bold text-sm bg-secondary text-white rounded-sm">
+            <i class='bx bx-copy-alt'></i>
+            Copy
+        </button>
+    </div>
+    <div class="w-fit text-darkest border border-medium p-4 rounded-sm">
+        <code id="snippet-code">
+            {{.HTMLSnippet}}
+        </code>
+    </div>
 </div>
 
 <div class="my-8">
@@ -19,5 +28,12 @@
         </button>
     </a>
 </div>
+
+<script>
+    let code = document.getElementById('snippet-code').textContent;
+    const copyContent = async () => {
+        await navigator.clipboard.writeText(code);
+    }
+</script>
 
 {{end}}
