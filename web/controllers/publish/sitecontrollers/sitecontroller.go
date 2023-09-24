@@ -26,6 +26,7 @@ type sitePresenterActiveSite struct {
 	SiteID           string
 	SiteAdsTxtRecord string
 	SiteURL          string
+	CanSiteMonetize  bool
 }
 type sitePresenter struct {
 	ActiveSites  []sitePresenterActiveSite
@@ -90,6 +91,7 @@ func (c *SiteController) onGet(ctx *fiber.Ctx) error {
 			IsSiteVerified:   s.IsVerified,
 			SiteAdsTxtRecord: adsTxtRecord.String(),
 			SiteURL:          siteURL.String(),
+			CanSiteMonetize:  s.CanMonetize(),
 		})
 	}
 	p := sitePresenter{

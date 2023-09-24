@@ -31,15 +31,25 @@
                     {{.SiteDomain}}<i class='bx bx-link-external text-xs align-top px-1'></i>
                 </a>
             </span>
-            {{if .IsSiteVerified}}
-            <span class="text-xs p-1 bg-green-50 text-green-900 border border-green-900 rounded-md">
-                <i class='bx bx-check-circle align-middle'></i>
-                Verified</span>
-            {{else}}
-            <span class="text-xs p-1 bg-red-50 text-red-900 border border-red-900 rounded-md">
-                <i class='bx bx-x-circle align-middle'></i>
-                Unverified</span>
-            {{end}}
+            <div>
+                {{if .IsSiteVerified}}
+                <span class="text-xs p-1 mx-2 bg-green-50 text-green-900 border border-green-900 rounded-md">
+                    <i class='bx bx-check-circle align-middle'></i>
+                    <span class="align-middle">Verified</span>
+                </span>
+                {{else}}
+                <span class="text-xs p-1 mx-2 bg-red-50 text-red-900 border border-red-900 rounded-md">
+                    <i class='bx bx-x-circle align-middle'></i>
+                    <span class="align-middle">Unverified</span>
+                </span>
+                {{end}}
+                {{if not .CanSiteMonetize}}
+                <span class="text-xs p-1 mx-2 bg-red-50 text-yellow-900 border border-yellow-900 rounded-md">
+                    <i class='bx bx-error-circle align-middle'></i>
+                    <span class="align-middle">Demonetized</span>
+                </span>
+                {{end}}
+            </div>
             <span class="">
                 <a href="/publish/sites/verify-site-prompt/{{.SiteID}}" title="verify site" class="mr-4">
                     <i class='text-primary bx bx-code-alt align- hover:text-secondary'></i>

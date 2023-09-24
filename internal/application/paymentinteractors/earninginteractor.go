@@ -12,6 +12,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/deposit"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/earning"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/site"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 )
 
@@ -19,6 +20,7 @@ type EarningInteractor struct {
 	earningRepository    earning.EarningRepository
 	depositRepository    deposit.DepositRepository
 	publisherRepository  publisher.PublisherRepository
+	siteRepository       site.SiteRepository
 	impressionRepository impression.ImpressionRepository
 	cacheStore           application.KeyValueStore
 	eventDispatcher      application.EventDispatcher
@@ -29,6 +31,7 @@ func NewEarningInteractor(
 	earningRepository earning.EarningRepository,
 	depositRepository deposit.DepositRepository,
 	publisherRepository publisher.PublisherRepository,
+	siteRepository site.SiteRepository,
 	impressionRepository impression.ImpressionRepository,
 	cacheStore application.KeyValueStore,
 	eventDispatcher application.EventDispatcher,
@@ -37,6 +40,7 @@ func NewEarningInteractor(
 		earningRepository,
 		depositRepository,
 		publisherRepository,
+		siteRepository,
 		impressionRepository,
 		cacheStore,
 		eventDispatcher,
@@ -75,6 +79,10 @@ func (i *EarningInteractor) CanRequestDisbursement(publisherID shared.ID) bool {
 func (i *EarningInteractor) OnImpression(newImpression any) {
 	imp := newImpression.(impression.Impression)
 
+	if !i.canSiteMonetize(imp.OriginSiteID) {
+		return
+	}
+
 	totalFund, err := i.totalDailyFund()
 	if err != nil {
 		return
@@ -94,6 +102,21 @@ func (i *EarningInteractor) OnImpression(newImpression any) {
 	}
 
 	i.eventDispatcher.DispatchAsync(impressionEarning.Events)
+}
+
+func (i *EarningInteractor) canSiteMonetize(siteID shared.ID) bool {
+	siteCanMonetizeCacheKey := fmt.Sprintf("site:%s:canMonetize", siteID.String())
+	sm, err := i.cacheStore.Get(siteCanMonetizeCacheKey)
+	siteCanMonetize, parseErr := strconv.ParseBool(sm)
+	if err != nil || parseErr != nil {
+		s, err := i.siteRepository.Get(context.Background(), siteID)
+		if err != nil {
+			return false
+		}
+		siteCanMonetize = s.CanMonetize()
+		i.cacheStore.Save(siteCanMonetizeCacheKey, strconv.FormatBool(siteCanMonetize), 12*time.Hour)
+	}
+	return siteCanMonetize
 }
 
 func (i *EarningInteractor) totalImpressionCount() (int, error) {
