@@ -59,10 +59,12 @@ func (r MongoDBDisbursementRepository) Save(ctx context.Context, e disbursement.
 	return nil
 }
 
-func (r MongoDBDisbursementRepository) DisbursementsForPublisher(publisherID shared.ID, status disbursement.DisbursementStatus) ([]disbursement.Disbursement, error) {
+func (r MongoDBDisbursementRepository) DisbursementsForPublisher(publisherID shared.ID) ([]disbursement.Disbursement, error) {
 	disbursements := r.db.Collection("disbursements")
 	cursor, err := disbursements.Find(context.Background(), bson.D{
-		{"publisherId", publisherID.String()}, {"status", status}})
+		{"publisherId", publisherID.String()}}, &options.FindOptions{
+		Sort: bson.D{{"time", -1}},
+	})
 	if err != nil {
 		return []disbursement.Disbursement{}, err
 	}

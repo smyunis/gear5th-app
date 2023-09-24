@@ -154,6 +154,6 @@ func (i *DisbursementInteractor) OnRequestDisbursement(disb any) {
 	}
 }
 
-func (i *DisbursementInteractor) SettledDisbursements(publisherID shared.ID) ([]disbursement.Disbursement, error) {
-	return i.disbursementRepository.DisbursementsForPublisher(publisherID, disbursement.Settled)
+func (i *DisbursementInteractor) DisbursementsForPublisher(publisherID shared.ID) ([]disbursement.Disbursement, error) {
+	return i.disbursementRepository.DisbursementsForPublisher(publisherID)
 }

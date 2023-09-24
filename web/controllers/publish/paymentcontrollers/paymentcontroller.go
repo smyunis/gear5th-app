@@ -68,10 +68,20 @@ func (c *PaymentController) paymentOnGet(ctx *fiber.Ctx) error {
 
 	p := &paymentPresenter{}
 
-	prevDisbursements, err := c.disbursementInteractor.SettledDisbursements(publisherID)
+	prevDisbursements, err := c.disbursementInteractor.DisbursementsForPublisher(publisherID)
 	if err != nil {
 		p.SettledDisbursements = make([]disbursement.Disbursement, 0)
 	}
+
+	// slices.SortFunc(prevDisbursements,func(a, b disbursement.Disbursement) int {
+	// 	if a.Time.After(b.Time) {
+	// 		return 1
+	// 	}
+	// 	if a.Time.After(b.Time) {
+	// 		return 1
+	// 	}
+
+	// })
 
 	p.SettledDisbursements = prevDisbursements
 	p.CurrentBalance = strconv.FormatFloat(balance, 'f', 2, 64)

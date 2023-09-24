@@ -8,7 +8,7 @@ import (
 
 type DisbursementRepository interface {
 	shared.EntityRepository[Disbursement]
-	DisbursementsForPublisher(publisherID shared.ID, status DisbursementStatus) ([]Disbursement, error)
+	DisbursementsForPublisher(publisherID shared.ID) ([]Disbursement, error)
 }
 
 type DisbursementStatus = int
