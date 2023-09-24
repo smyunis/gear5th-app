@@ -112,7 +112,7 @@ func mapMToDisbursement(res primitive.M) disbursement.Disbursement {
 	profileM := res["paymentProfile"].(primitive.M)
 	ph, _ := user.NewPhoneNumber(profileM["phoneNumber"].(string))
 	profile := disbursement.PaymentProfile{
-		PaymentMethod: disbursement.PaymentMethod(profileM["paymentMethod"].(int32)),
+		PaymentMethod: profileM["paymentMethod"].(string),
 		Account:       profileM["account"].(string),
 		FullName:      profileM["fullname"].(string),
 		PhoneNumber:   ph,

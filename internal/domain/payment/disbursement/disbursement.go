@@ -50,13 +50,13 @@ func NewDisbursement(pubID shared.ID, paymentProfile PaymentProfile, amount floa
 	return d
 }
 
-func (d *Disbursement) Settle(ref string) error {
-	if d.Status == Rejected {
+func (d *Disbursement) Settle(settlementRemark string) error {
+	if d.Status != Confirmed {
 		return shared.ErrInvalidOperation
 	}
 	d.Status = Settled
 	d.Time = time.Now()
-	d.SettlementRemark = ref
+	d.SettlementRemark = settlementRemark
 	d.Events.Emit("disbursement/settled", d)
 	return nil
 }
@@ -72,7 +72,7 @@ func (d *Disbursement) Confirm() error {
 }
 
 func (d *Disbursement) Reject() error {
-	if d.Status == Settled {
+	if d.Status != Requested {
 		return shared.ErrInvalidOperation
 	}
 	d.Status = Rejected

@@ -48,8 +48,8 @@ func (s DisbursementEmailService) SendRequestDisbursementConfirmation(email user
 }
 
 func (s DisbursementEmailService) buildConfirmURL(disbursementID, token string) string {
-	// <APP_URL>/payment/disbursement/{disbursementId}/confirm?token={token}
-	s.appURL.Path = fmt.Sprintf("/payment/disbursement/%s/confirm", disbursementID)
+	// <APP_URL>/publish/payments/disbursement/{disbursementId}/confirm?token={token}
+	s.appURL.Path = fmt.Sprintf("/publish/payments/disbursement/%s/confirm", disbursementID)
 	q := s.appURL.Query()
 	q.Set("token", token)
 	s.appURL.RawQuery = q.Encode()
@@ -57,8 +57,8 @@ func (s DisbursementEmailService) buildConfirmURL(disbursementID, token string) 
 }
 
 func (s DisbursementEmailService) buildRejectURL(disbursementID, token string) string {
-	// <APP_URL>/payment/disbursement/{disbursementId}/reject?token={token}
-	s.appURL.Path = fmt.Sprintf("/payment/disbursement/%s/reject", disbursementID)
+	// <APP_URL>/publish/payments/disbursement/{disbursementId}/reject?token={token}
+	s.appURL.Path = fmt.Sprintf("/publish/payments/disbursement/%s/reject", disbursementID)
 	q := s.appURL.Query()
 	q.Set("token", token)
 	s.appURL.RawQuery = q.Encode()

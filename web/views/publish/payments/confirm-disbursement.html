@@ -1,0 +1,23 @@
+{{define "title"}}Payment | gear5th{{end}}
+
+{{define "in-card-main"}}
+{{if .}}
+<div class="p-6">
+    <h2 class="text-2xl text-darkest font-bold pb-2">Request for disbursement confirmed</h2>
+    <p>
+        We will verify your request and deposit your earnings as soon as possible. We will be sure to notify you on the
+        progress. Thank you for working with us.
+    </p>
+</div>
+{{else}}
+<div class="p-6">
+    <h2 class="text-2xl text-darkest font-bold pb-2">Request for disbursement rejected</h2>
+    <p>
+        If you have not initated a request for disbursement from the publisher portal, it may be possible that your
+        account
+        is compromised, and someone else is trying to withdraw funds on your behalf. Change your password and keep your
+        credentials safe.
+    </p>
+</div>
+{{end}}
+{{end}}

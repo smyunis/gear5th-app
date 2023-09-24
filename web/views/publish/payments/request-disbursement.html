@@ -1,5 +1,55 @@
 {{define "title"}}Payment | gear5th{{end}}
 
 {{define "in-console-main"}}
-<p>hello</p>
+<div class="flex flex-col p-8 mb-8 border border-medium rounded-sm">
+    <div class="pb-6">
+        <h2 class="text-2xl text-darkest font-bold pb-2">Request disbursement</h2>
+        <p>
+            Submit you preffered payment options and an email will be sent to you with further instructions.
+        </p>
+    </div>
+</div>
+{{if .ErrorMessage}}
+{{template "error-alert" .ErrorMessage}}
+{{end}}
+<form method="post">
+    <div class="mb-4">
+        <label class="block text-xs">Payment method</label>
+        <select name="payment-method" {{if eq (len .AvailablePaymentMethods) 0}}disabled{{end}}
+            class="form-select max-sm:w-full w-96 p-2 rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+            {{range .AvailablePaymentMethods}}
+            <option value="{{.}}">{{.}}</option>
+            {{end}}
+        </select>
+    </div>
+    <div class="mb-4">
+        <label for="account" class="text-xs">Account number</label>
+        <input type="text" name="account" id="account" value="{{.Account}}" required
+            class="p-2 form-input max-sm:w-full w-96 block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+    <div class="mb-4">
+        <label for="fullname" class="text-xs">Fullname on account</label>
+        <input type="text" name="fullname" id="fullname" value="{{.Fullname}}" required
+            class="p-2 form-input max-sm:w-full w-96 block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+    <div class="mb-4">
+        <label for="phone-number" class="text-xs">Phone number</label>
+        <input type="tel" name="phone-number" id="phone-number" value="{{.PhoneNumber}}" required size="30"
+            maxlength="24"
+            class="text-medium p-2 form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+    <div class="flex items-center my-8">
+        <button type="submit" class="h-10 mr-4 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+            <i class='bx bx-money-withdraw align-middle'></i>
+            <span class="align-middle"> Request disbursement</span>
+        </button>
+        <a href="/publish/payments">
+            <button type="button"
+                class="h-10 align-middle text-primary border-2 border-primary bg-white px-4 py-2 rounded-sm hover:text-white hover:bg-primary hover:opacity-95">
+                Cancel
+            </button>
+        </a>
+
+    </div>
+</form>
 {{end}}
