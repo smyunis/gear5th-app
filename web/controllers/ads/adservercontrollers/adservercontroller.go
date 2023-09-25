@@ -65,6 +65,7 @@ func (c *AdServerController) adServerOnGet(ctx *fiber.Ctx) error {
 		return nil
 	}
 
+
 	ad, err := c.adsPool.Next(adslot.AdSlotTypeFromString(slot))
 	if err != nil {
 		c.logger.Error("ads/adserver", err)

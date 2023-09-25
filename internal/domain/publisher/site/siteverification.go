@@ -48,16 +48,11 @@ type AdsTxtVerificationService interface {
 	VerifyAdsTxt(site Site, record AdsTxtRecord) error
 }
 
-func VerifySiteHostname(site *Site, source url.URL) error {
+func VerifySiteHostname(site Site, source *url.URL) bool {
 	siteFqdn := site.URL.Hostname()
 	sourceFqdn := source.Hostname()
 
-	if siteFqdn != sourceFqdn {
-		return ErrSiteVerification
-	}
-
-	site.Verify()
-	return nil
+	return siteFqdn == sourceFqdn
 }
 
 func GetAdsTxtRecord(s Site) AdsTxtRecord {

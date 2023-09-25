@@ -2,9 +2,45 @@
 
 
 {{define "in-console-main"}}
-<h1>Home page yay</h1>
-<h2>{{.}}</h2>
 
 
 
+<div class="flex max-sm:flex-col sm:justify-between">
+    {{template "earning-card" .Day}}
+    {{template "earning-card" .SevenDays}}
+    {{template "earning-card" .Month}}
+
+    <div class="w-fit flex flex-col  p-4 rounded bg-primary text-lightest">
+        <span class="text-sm text-light">Current balance</span>
+        <span class="font-bold text-xl">{{printf "%.2f" .CurrentBalance}}
+            <span class="text-base">ETB</span>
+        </span>
+        <span class="font-bold">{{printf "%.1f" .BalanceTresholdPercentage}}%</span>
+        <span class="text-xs text-light">of threshold</span>
+    </div>
+</div>
+{{end}}
+
+
+{{define "earning-card"}}
+<div class="w-fit flex flex-col border border-medium p-4 rounded">
+    <span class="text-sm">{{.CurLabel}}</span>
+    <span class="font-bold text-xl">{{printf "%.2f" .Cur}}
+        <span class="text-base">ETB</span>
+    </span>
+    {{if isup .Prev .Cur}}
+    <span class="text-green-700 font-bold">
+        <i class='bx bxs-up-arrow-alt'></i>
+        <span>+{{sub .Prev .Cur }}</span>
+        <span>({{perdiff .Prev .Cur}}%)</span>
+    </span>
+    {{else}}
+    <span class="text-red-700 font-bold">
+        <i class='bx bxs-down-arrow-alt'></i>
+        <span>{{sub .Prev .Cur}}</span>
+        <span>({{perdiff .Prev .Cur}}%)</span>
+    </span>
+    {{end}}
+    <span class="text-xs">vs {{.PrevLabel}}</span>
+</div>
 {{end}}

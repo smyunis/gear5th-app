@@ -114,7 +114,7 @@ func (s *Site) DemonetizeForTimePeriod(period time.Duration) {
 }
 
 func (s *Site) CanMonetize() bool {
-	return s.CanServeAdPiece() && s.canMonetizeCurrently()
+	return s.canMonetizeCurrently()
 }
 
 func (s *Site) canMonetizeCurrently() bool {

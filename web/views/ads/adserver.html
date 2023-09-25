@@ -24,11 +24,12 @@
     <script>
         window.addEventListener("message", (e) => {
             if (e.data == "gear5th-ad-impression") {
-                makeImpression()
+
+                makeImpression(e.origin)
             }
         })
 
-        function makeImpression() {
+        function makeImpression(origin) {
             fetch("/ads/impression", {
                 method: "POST",
                 headers: {
@@ -40,6 +41,7 @@
                     "adSlotId": "{{.AdSlotID}}",
                     "publihserId": "{{.PublisherID}}",
                     "token": "{{.AdView.ViewIDToken}}",
+                    "origin": origin,
                 })
             })
         }

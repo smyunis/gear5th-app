@@ -68,6 +68,22 @@ func (i *EarningInteractor) CurrentBalance(publisherID shared.ID) (float64, erro
 	return bal, nil
 }
 
+func (i *EarningInteractor) Earnings(publisherID shared.ID, start time.Time, end time.Time) (float64, error) {
+	earningCacheKey := fmt.Sprintf("earning:%s:%s-%s", publisherID.String(), start.Format("20060102"), end.Format("20060102"))
+	b, err := i.cacheStore.Get(earningCacheKey)
+	e, parseErr := strconv.ParseFloat(b, 64)
+	if err != nil || parseErr != nil {
+		earnings, err := i.earningRepository.EarningsForPublisher(publisherID, start, end)
+		if err != nil {
+			return 0.0, err
+		}
+		e = earning.TotalEarningsAmount(earnings)
+		fs := strconv.FormatFloat(e, 'f', 2, 64)
+		i.cacheStore.Save(earningCacheKey, fs, 24*time.Hour)
+	}
+	return e, nil
+}
+
 func (i *EarningInteractor) CanRequestDisbursement(publisherID shared.ID) bool {
 	bal, err := i.CurrentBalance(publisherID)
 	if err != nil {

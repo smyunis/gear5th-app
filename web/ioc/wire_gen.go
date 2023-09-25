@@ -164,7 +164,18 @@ func InitHomeController() homecontrollers.HomeController {
 	envConfigurationProvider := infrastructure.NewEnvConfigurationProvider()
 	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
 	jwtAuthenticationMiddleware := middlewares.NewJwtAuthenticationMiddleware(jwtAccessTokenService)
-	homeController := homecontrollers.NewHomeController(jwtAuthenticationMiddleware)
+	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
+	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
+	mongoDBEarningRepository := earningrepository.NewMongoDBEarningRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBDepositRepository := depositrepository.NewMongoDBDepositRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBPublisherRepository := publisherrepository.NewMongoDBPublisherRepository(mongoDBStoreBootstrap)
+	mongoDBSiteRepository := siterepository.NewMongoDBSiteRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBImpressionRepository := impressionrepository.NewMongoDBImpressionRepository(mongoDBStoreBootstrap, appLogger)
+	redisBootstrapper := rediskeyvaluestore.NewRedisBootstrapper(envConfigurationProvider)
+	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
+	inMemoryEventDispatcher := application.NewAppEventDispatcher()
+	earningInteractor := paymentinteractors.NewEarningInteractor(mongoDBEarningRepository, mongoDBDepositRepository, mongoDBPublisherRepository, mongoDBSiteRepository, mongoDBImpressionRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
+	homeController := homecontrollers.NewHomeController(jwtAuthenticationMiddleware, earningInteractor)
 	return homeController
 }
 

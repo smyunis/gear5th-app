@@ -16,9 +16,9 @@ func TestSiteHostnameVerification(t *testing.T) {
 	s := site.NewSite(shared.NewID(), *siteUrl)
 	source, _ := url.Parse("https://dev.to/tooljet/build-an-aws-s3-browser-with-tooljet-56d4")
 
-	err := site.VerifySiteHostname(&s, *source)
+	vs := site.VerifySiteHostname(s, source)
 
-	if err != nil {
+	if !vs {
 		t.FailNow()
 	}
 }

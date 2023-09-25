@@ -14,6 +14,7 @@ type impressionPersenter struct {
 	SiteID      string `json:"siteId"`
 	AdSlotID    string `json:"adSlotId"`
 	PublihserID string `json:"publihserId"`
+	Origin      string `json:"origin"`
 }
 
 type ImpressionController struct {
@@ -44,7 +45,7 @@ func (c *ImpressionController) impressionOnPost(ctx *fiber.Ctx) error {
 		return nil
 	}
 
-	err = c.impressionInteractor.NewImpression(shared.ID(p.AdPieceID), shared.ID(p.SiteID), shared.ID(p.AdSlotID), shared.ID(p.PublihserID), p.Token)
+	err = c.impressionInteractor.NewImpression(shared.ID(p.AdPieceID), shared.ID(p.SiteID), shared.ID(p.AdSlotID), shared.ID(p.PublihserID), p.Token, p.Origin)
 	if err != nil {
 		c.logger.Error("impression/recieved", err)
 		return nil
