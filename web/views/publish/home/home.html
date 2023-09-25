@@ -17,9 +17,52 @@
     </div>
 </div>
 
-<div>
-    
+<div class="my-8">
+    <!--Tabs navigation-->
+    <ul class="mb-5 flex list-none flex-row flex-wrap border-b-0 pl-0">
+        <li class="flex-auto text-center">
+            <button
+                class="tabnav w-full my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-7 pb-3.5 pt-4 text-xs font-medium  leading-tight text-neutral-500 hover:isolate hover:border-transparent hover:bg-neutral-100 focus:isolate focus:border-transparent data-[te-nav-active]:border-primary data-[te-nav-active]:text-primary dark:text-neutral-400 dark:hover:bg-transparent dark:data-[te-nav-active]:border-primary-400 dark:data-[te-nav-active]:text-primary-400"
+                data-te-nav-active onclick="openTab(event,'tabs-impressions')">
+                Impressions
+            </button>
+        </li>
+        <li class="flex-auto text-center">
+            <button
+                class="tabnav w-full my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-7 pb-3.5 pt-4 text-xs font-medium  leading-tight text-neutral-500 hover:isolate hover:border-transparent hover:bg-neutral-100 focus:isolate focus:border-transparent data-[te-nav-active]:border-primary data-[te-nav-active]:text-primary dark:text-neutral-400 dark:hover:bg-transparent dark:data-[te-nav-active]:border-primary-400 dark:data-[te-nav-active]:text-primary-400"
+                onclick="openTab(event,'tabs-adclicks')">
+                Ad clicks
+            </button>
+        </li>
+
+    </ul>
+
+    <!--Tabs content-->
+    <div class="mb-6">
+        <div class="tabcontent hidden opacity-100 transition-opacity duration-150 ease-linear data-[te-tab-active]:block"
+            id="tabs-impressions" role="tabpanel" aria-labelledby="tabs-home-tab01" data-te-tab-active>
+            Tab 1 content
+        </div>
+        <div class="tabcontent hidden opacity-100 transition-opacity duration-150 ease-linear data-[te-tab-active]:block"
+            id="tabs-adclicks" role="tabpanel" aria-labelledby="tabs-profile-tab01">
+            Tab 2 content
+        </div>
+    </div>
 </div>
+<script>
+    function openTab(evt, tab) {
+        let tabcontent = document.getElementsByClassName("tabcontent");
+        for (let i = 0; i < tabcontent.length; i++) {
+            delete tabcontent[i].dataset.teTabActive
+        }
+        let tabnavs = document.getElementsByClassName("tabnav");
+        for (let i = 0; i < tabnavs.length; i++) {
+            delete tabnavs[i].dataset.teNavActive
+        }
+        document.getElementById(tab).dataset.teTabActive = ""
+        evt.currentTarget.dataset.teNavActive = ""
+    }
+</script>
 {{end}}
 
 
@@ -31,13 +74,13 @@
     </span>
     {{if isup .Prev .Cur}}
     <span class="text-green-700 font-bold">
-        <i class='bx bxs-upvote' ></i>
+        <i class='bx bxs-upvote'></i>
         <span>+{{sub .Prev .Cur }}</span>
         <span>({{perdiff .Prev .Cur}}%)</span>
     </span>
     {{else}}
     <span class="text-red-700 font-bold">
-        <i class='bx bxs-downvote' ></i>
+        <i class='bx bxs-downvote'></i>
         <span>{{sub .Prev .Cur}}</span>
         <span>({{perdiff .Prev .Cur}}%)</span>
     </span>
