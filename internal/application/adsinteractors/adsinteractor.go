@@ -128,7 +128,7 @@ func (i *AdsInteractor) siteCanServeAds(siteID shared.ID, origin string) bool {
 		if err != nil {
 			canServe = false
 		} else {
-			canServe = s.CanServeAdPiece() && site.VerifySiteHostname(s, originURL)
+			canServe = s.CanServeAdPiece() && s.IsSiteURL(originURL)
 		}
 
 		i.cacheStore.Save(siteCanServeStatusCacheKey, strconv.FormatBool(canServe), 12*time.Hour)

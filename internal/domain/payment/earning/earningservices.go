@@ -29,3 +29,11 @@ func DailyRatePerImpression(totalDailyFund float64, totalImpressionCount int) fl
 	infaltedRate := totalDailyFund / float64(totalImpressionCount)
 	return infaltedRate
 }
+
+func PercentOfDisbursementTreshold(earning float64) float64 {
+	p := (earning / DisbursementRequestTreshold) * 100
+	if p > 100 {
+		p = 100
+	}
+	return p
+}

@@ -131,3 +131,9 @@ func (s *Site) canMonetizeCurrently() bool {
 func (s *Site) lastMonietizationStatus() bool {
 	return s.MonetiaztionStatusHistory[len(s.MonetiaztionStatusHistory)-1].CanMonetize
 }
+
+func (s *Site) IsSiteURL(source *url.URL) bool {
+	siteFqdn := s.URL.Hostname()
+	sourceFqdn := source.Hostname()
+	return siteFqdn == sourceFqdn
+}
