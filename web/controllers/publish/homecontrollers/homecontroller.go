@@ -48,7 +48,7 @@ type earningCardPresenter struct {
 	PrevLabel string
 }
 
-type impressionsCountPresenter struct {
+type countPresenter struct {
 	Counts []int64
 	Days   []int
 	Label  string
@@ -61,7 +61,8 @@ type homePresenter struct {
 	CurrentBalance            float64
 	BalanceTresholdPercentage float64
 
-	ImpressionsCount impressionsCountPresenter
+	ImpressionsCount countPresenter
+	AdClicksCount    countPresenter
 }
 
 type HomeController struct {
@@ -115,6 +116,7 @@ func (c *HomeController) onGet(ctx *fiber.Ctx) error {
 	balancePer := earning.PercentOfDisbursementTreshold(currentBalance)
 
 	ic, err := c.impressionsCount(publisherID)
+	ac, err := c.adclicksCount(publisherID)
 
 	p := homePresenter{
 		CurrentBalance:            currentBalance,
@@ -123,6 +125,7 @@ func (c *HomeController) onGet(ctx *fiber.Ctx) error {
 		SevenDays:                 sevenDayEarning,
 		Month:                     monthEarning,
 		ImpressionsCount:          ic,
+		AdClicksCount:             ac,
 	}
 
 	return controllers.Render(ctx, homeTemplate, p)
@@ -197,7 +200,7 @@ func (c *HomeController) dayEarnings(publisherID shared.ID) (earningCardPresente
 	}, nil
 }
 
-func (c *HomeController) impressionsCount(publisherID shared.ID) (impressionsCountPresenter, error) {
+func (c *HomeController) impressionsCount(publisherID shared.ID) (countPresenter, error) {
 	now := time.Now()
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 
@@ -224,8 +227,42 @@ func (c *HomeController) impressionsCount(publisherID shared.ID) (impressionsCou
 	slices.Reverse(days)
 	slices.Reverse(labelMonths)
 
-	return impressionsCountPresenter{
+	return countPresenter{
 		Counts: impCount,
+		Days:   days,
+		Label:  strings.Join(labelMonths, "/"),
+	}, nil
+}
+
+func (c *HomeController) adclicksCount(publisherID shared.ID) (countPresenter, error) {
+	now := time.Now()
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+
+	var clicksCount []int64 = make([]int64, 30)
+	var days []int = make([]int, 30)
+	var labelMonths []string
+
+	for i := 0; i > -30; i-- {
+		count, err := c.adsInteractor.AdClicksCount(publisherID,
+			today.AddDate(0, 0, i-1), today.AddDate(0, 0, i))
+		if err != nil {
+			continue
+		}
+		clicksCount[i*-1] = count
+		days[i*-1] = today.AddDate(0, 0, i-1).Day()
+
+		m := today.AddDate(0, 0, i-1).Format("Jan")
+		if !slices.Contains(labelMonths, m) {
+			labelMonths = append(labelMonths, m)
+		}
+	}
+
+	slices.Reverse(clicksCount)
+	slices.Reverse(days)
+	slices.Reverse(labelMonths)
+
+	return countPresenter{
+		Counts: clicksCount,
 		Days:   days,
 		Label:  strings.Join(labelMonths, "/"),
 	}, nil

@@ -113,6 +113,23 @@ func (i *AdsInteractor) ImpressionsCount(publisherID shared.ID, start time.Time,
 
 }
 
+func (i *AdsInteractor) AdClicksCount(publisherID shared.ID, start time.Time, end time.Time) (int64, error) {
+	adclickCountCacheKey := fmt.Sprintf("adclicksCount:%s:%s-%s",
+		publisherID.String(), start.Format("20060102"), end.Format("20060102"))
+	ic, err := i.cacheStore.Get(adclickCountCacheKey)
+	ics, parseErr := strconv.ParseInt(ic, 10, 64)
+	
+	if err != nil || parseErr != nil {
+		c, err := i.adClickRepository.AdClicksCountForPublisher(publisherID, start, end)
+		if err != nil {
+			return 0, err
+		}
+		ics = int64(c)
+		i.cacheStore.Save(adclickCountCacheKey, strconv.FormatInt(ics, 10), 48*time.Hour)
+	}
+	return ics, nil
+}
+
 func (i *AdsInteractor) validateToken(token string) (string, error) {
 	if !i.digitalSignService.Validate(token) {
 		return "", application.ErrAuthorization

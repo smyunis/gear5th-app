@@ -49,7 +49,9 @@
         </div>
         <div class="tabcontent hidden opacity-100 transition-opacity duration-150 ease-linear data-[te-tab-active]:block"
             id="tabs-adclicks" role="tabpanel" aria-labelledby="tabs-profile-tab01">
-            Tab 2 content
+            <div>
+                <canvas id="adclicksChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
@@ -70,6 +72,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
     const impressionsCountCtx = document.getElementById('impressionsChart');
+    const adclicksCountCtx = document.getElementById('adclicksChart');
 
     new Chart(impressionsCountCtx, {
         type: 'line',
@@ -78,8 +81,30 @@
         datasets: [{
             label: {{.ImpressionsCount.Label }},
         data: {{.ImpressionsCount.Counts }},
-        borderWidth: 1
+        borderWidth: 1,
+        borderColor: '#e73636'
             }]
+        },
+        options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+    });
+
+    new Chart(adclicksCountCtx, {
+        type: 'line',
+        data: {
+            labels: {{.AdClicksCount.Days }},
+        datasets: [
+        {
+            label: {{.AdClicksCount.Label }},
+        data: {{.AdClicksCount.Counts }},
+        borderWidth: 1,
+        borderColor: '#e73636' }
+    ]
         },
         options: {
         scales: {

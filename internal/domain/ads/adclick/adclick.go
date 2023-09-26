@@ -9,6 +9,7 @@ import (
 type AdClickRepository interface {
 	shared.EntityRepository[AdClick]
 	AdClicksForPublisher(publisherID shared.ID, start time.Time, end time.Time) ([]AdClick, error)
+	AdClicksCountForPublisher(publisherID shared.ID, start time.Time, end time.Time) (int, error)
 }
 
 type AdClick struct {
@@ -25,7 +26,7 @@ func NewAdClick(viewID shared.ID, clickedAdPieceID shared.ID, originSiteID share
 	originAdSlotID shared.ID,
 	originPublisherID shared.ID) AdClick {
 	a := AdClick{
-		ID:               viewID,
+		ID:                viewID,
 		ClickedAdPieceID:  clickedAdPieceID,
 		OriginSiteID:      originSiteID,
 		OriginAdSlotID:    originAdSlotID,
@@ -36,4 +37,3 @@ func NewAdClick(viewID shared.ID, clickedAdPieceID shared.ID, originSiteID share
 	a.Events.Emit("ad/clicked", a)
 	return a
 }
-

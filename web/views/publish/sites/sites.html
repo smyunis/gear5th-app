@@ -1,18 +1,19 @@
 {{define "title"}}Sites | gear5th{{end}}
 
 {{define "in-console-main"}}
-<div class="flex flex-col p-8 mb-8 border border-medium rounded-sm">
+<div style="background-image: url('/assets/blurry-gradient.svg');"
+    class="text-lightest flex flex-col p-8 mb-8 border border-medium rounded-sm">
     <div class="pb-6">
-        <h2 class="text-2xl text-darkest font-bold pb-2">Sites</h2>
-        <p>
+        <h2 class="text-2xl font-bold pb-2">Sites</h2>
+        <p class="text-light">
             Add sites that you will be displaying ads in. Sites need to be verified before they could display ads
             and get monetized. Check out our
-            <a href="#" class="text-secondary underline font-bold">verification guide</a> to learn more.
+            <a href="#" class="text-lightest underline font-bold">verification guide</a> to learn more.
         </p>
     </div>
     <div class="self-end">
         <a href="/publish/sites/create-site">
-            <button type="button" class="h-10 mr-4 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+            <button type="button" class="shadow-md shadow-secondary h-10 mr-4 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
                 <i class='bx bx-plus-circle align-middle'></i>
                 <span class="align-middle"> New site</span>
             </button>

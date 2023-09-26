@@ -90,6 +90,18 @@ func (r MongoDBAdClickRepository) AdClicksForPublisher(publisherID shared.ID, st
 	return pubAdClicks, nil
 }
 
+func (r MongoDBAdClickRepository) AdClicksCountForPublisher(publisherID shared.ID, start time.Time, end time.Time) (int, error) {
+	adClicks := r.db.Collection("adClicks")
+	count, err := adClicks.CountDocuments(context.Background(),
+		bson.D{{"publisherId", publisherID.String()},
+			{"time", bson.M{"$gt": start}}, {"time", bson.M{"$lt": end}}})
+	if err != nil {
+		r.logger.Error("adclick/persistence/count-adclicks-for-publisher", err)
+		return 0, err
+	}
+	return int(count), nil
+}
+
 func mapAdClickToM(s adclick.AdClick) bson.M {
 	return bson.M{
 		"_id":         s.ID.String(),
