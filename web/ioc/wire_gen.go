@@ -175,7 +175,11 @@ func InitHomeController() homecontrollers.HomeController {
 	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
 	earningInteractor := paymentinteractors.NewEarningInteractor(mongoDBEarningRepository, mongoDBDepositRepository, mongoDBPublisherRepository, mongoDBSiteRepository, mongoDBImpressionRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
-	homeController := homecontrollers.NewHomeController(jwtAuthenticationMiddleware, earningInteractor)
+	mongoDBAdClickRepository := adclickrepository.NewMongoDBAdClickRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBAdSlotRepository := adslotrepository.NewMongoDBAdSlotRepository(mongoDBStoreBootstrap, appLogger)
+	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
+	adsInteractor := adsinteractors.NewAdsInteractor(mongoDBImpressionRepository, mongoDBAdClickRepository, mongoDBSiteRepository, mongoDBAdSlotRepository, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
+	homeController := homecontrollers.NewHomeController(jwtAuthenticationMiddleware, earningInteractor, adsInteractor)
 	return homeController
 }
 

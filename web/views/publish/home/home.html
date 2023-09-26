@@ -41,7 +41,11 @@
     <div class="mb-6">
         <div class="tabcontent hidden opacity-100 transition-opacity duration-150 ease-linear data-[te-tab-active]:block"
             id="tabs-impressions" role="tabpanel" aria-labelledby="tabs-home-tab01" data-te-tab-active>
-            Tab 1 content
+
+            <div>
+                <canvas id="impressionsChart"></canvas>
+            </div>
+
         </div>
         <div class="tabcontent hidden opacity-100 transition-opacity duration-150 ease-linear data-[te-tab-active]:block"
             id="tabs-adclicks" role="tabpanel" aria-labelledby="tabs-profile-tab01">
@@ -62,6 +66,29 @@
         document.getElementById(tab).dataset.teTabActive = ""
         evt.currentTarget.dataset.teNavActive = ""
     }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    const impressionsCountCtx = document.getElementById('impressionsChart');
+
+    new Chart(impressionsCountCtx, {
+        type: 'line',
+        data: {
+            labels: {{.ImpressionsCount.Days }},
+        datasets: [{
+            label: {{.ImpressionsCount.Label }},
+        data: {{.ImpressionsCount.Counts }},
+        borderWidth: 1
+            }]
+        },
+        options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+    });
 </script>
 {{end}}
 

@@ -105,7 +105,18 @@ func (r MongoDBImpressionRepository) DailyImpressionCount(day time.Time) (int, e
 	}
 
 	return int(count), nil
+}
 
+func (r MongoDBImpressionRepository) ImpressionsCountForPublisher(publisherID shared.ID, start time.Time, end time.Time) (int, error) {
+	impressions := r.db.Collection("impressions")
+	count, err := impressions.CountDocuments(context.Background(),
+		bson.D{{"publisherId", publisherID.String()},
+			{"time", bson.M{"$gt": start}}, {"time", bson.M{"$lt": end}}})
+	if err != nil {
+		r.logger.Error("impression/persistence/count-impressions-for-publisher", err)
+		return 0, err
+	}
+	return int(count), nil
 }
 
 func mapImpressionToM(s impression.Impression) bson.M {
@@ -130,3 +141,4 @@ func mapMToImpression(res primitive.M) impression.Impression {
 		Time:              res["time"].(primitive.DateTime).Time(),
 	}
 }
+

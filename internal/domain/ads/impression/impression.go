@@ -10,6 +10,7 @@ type ImpressionRepository interface {
 	shared.EntityRepository[Impression]
 	ImpressionsForPublisher(publisherID shared.ID, start time.Time, end time.Time) ([]Impression, error)
 	DailyImpressionCount(day time.Time) (int, error)
+	ImpressionsCountForPublisher(publisherID shared.ID, start time.Time, end time.Time) (int, error)
 }
 
 type Impression struct {

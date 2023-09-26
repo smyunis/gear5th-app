@@ -3,10 +3,13 @@ package homecontrollers
 import (
 	"html/template"
 	"math"
+	"slices"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"gitlab.com/gear5th/gear5th-app/internal/application/adsinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/paymentinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/earning"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
@@ -45,25 +48,36 @@ type earningCardPresenter struct {
 	PrevLabel string
 }
 
+type impressionsCountPresenter struct {
+	Counts []int64
+	Days   []int
+	Label  string
+}
+
 type homePresenter struct {
 	Day                       earningCardPresenter
 	SevenDays                 earningCardPresenter
 	Month                     earningCardPresenter
 	CurrentBalance            float64
 	BalanceTresholdPercentage float64
+
+	ImpressionsCount impressionsCountPresenter
 }
 
 type HomeController struct {
 	authMiddleware    middlewares.JwtAuthenticationMiddleware
 	earningInteractor paymentinteractors.EarningInteractor
+	adsInteractor     adsinteractors.AdsInteractor
 }
 
 func NewHomeController(
 	authMiddleware middlewares.JwtAuthenticationMiddleware,
-	earningInteractor paymentinteractors.EarningInteractor) HomeController {
+	earningInteractor paymentinteractors.EarningInteractor,
+	adsInteractor adsinteractors.AdsInteractor) HomeController {
 	return HomeController{
 		authMiddleware,
 		earningInteractor,
+		adsInteractor,
 	}
 }
 
@@ -100,12 +114,15 @@ func (c *HomeController) onGet(ctx *fiber.Ctx) error {
 
 	balancePer := earning.PercentOfDisbursementTreshold(currentBalance)
 
+	ic, err := c.impressionsCount(publisherID)
+
 	p := homePresenter{
 		CurrentBalance:            currentBalance,
 		BalanceTresholdPercentage: balancePer,
 		Day:                       dayEarning,
 		SevenDays:                 sevenDayEarning,
 		Month:                     monthEarning,
+		ImpressionsCount:          ic,
 	}
 
 	return controllers.Render(ctx, homeTemplate, p)
@@ -177,5 +194,39 @@ func (c *HomeController) dayEarnings(publisherID shared.ID) (earningCardPresente
 		Cur:       yesterdayEarning,
 		CurLabel:  "Yesterday",
 		PrevLabel: "previous day",
+	}, nil
+}
+
+func (c *HomeController) impressionsCount(publisherID shared.ID) (impressionsCountPresenter, error) {
+	now := time.Now()
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+
+	var impCount []int64 = make([]int64, 30)
+	var days []int = make([]int, 30)
+	var labelMonths []string
+
+	for i := 0; i > -30; i-- {
+		count, err := c.adsInteractor.ImpressionsCount(publisherID,
+			today.AddDate(0, 0, i-1), today.AddDate(0, 0, i))
+		if err != nil {
+			continue
+		}
+		impCount[i*-1] = count
+		days[i*-1] = today.AddDate(0, 0, i-1).Day()
+
+		m := today.AddDate(0, 0, i-1).Format("Jan")
+		if !slices.Contains(labelMonths, m) {
+			labelMonths = append(labelMonths, m)
+		}
+	}
+
+	slices.Reverse(impCount)
+	slices.Reverse(days)
+	slices.Reverse(labelMonths)
+
+	return impressionsCountPresenter{
+		Counts: impCount,
+		Days:   days,
+		Label:  strings.Join(labelMonths, "/"),
 	}, nil
 }
