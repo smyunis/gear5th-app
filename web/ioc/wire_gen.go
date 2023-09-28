@@ -32,7 +32,6 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/paymentpersistence/depositrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/paymentpersistence/disbursementrepository"
-	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/paymentpersistence/earningrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/adslotrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
@@ -166,7 +165,6 @@ func InitHomeController() homecontrollers.HomeController {
 	jwtAuthenticationMiddleware := middlewares.NewJwtAuthenticationMiddleware(jwtAccessTokenService)
 	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
-	mongoDBEarningRepository := earningrepository.NewMongoDBEarningRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBDepositRepository := depositrepository.NewMongoDBDepositRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBPublisherRepository := publisherrepository.NewMongoDBPublisherRepository(mongoDBStoreBootstrap)
 	mongoDBSiteRepository := siterepository.NewMongoDBSiteRepository(mongoDBStoreBootstrap, appLogger)
@@ -174,7 +172,7 @@ func InitHomeController() homecontrollers.HomeController {
 	redisBootstrapper := rediskeyvaluestore.NewRedisBootstrapper(envConfigurationProvider)
 	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
-	earningInteractor := paymentinteractors.NewEarningInteractor(mongoDBEarningRepository, mongoDBDepositRepository, mongoDBPublisherRepository, mongoDBSiteRepository, mongoDBImpressionRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
+	earningInteractor := paymentinteractors.NewEarningInteractor(mongoDBDepositRepository, mongoDBPublisherRepository, mongoDBSiteRepository, mongoDBImpressionRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
 	mongoDBAdClickRepository := adclickrepository.NewMongoDBAdClickRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBAdSlotRepository := adslotrepository.NewMongoDBAdSlotRepository(mongoDBStoreBootstrap, appLogger)
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
@@ -445,7 +443,6 @@ func InitPaymentController() paymentcontrollers.PaymentController {
 	jwtAuthenticationMiddleware := middlewares.NewJwtAuthenticationMiddleware(jwtAccessTokenService)
 	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
-	mongoDBEarningRepository := earningrepository.NewMongoDBEarningRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBDepositRepository := depositrepository.NewMongoDBDepositRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBPublisherRepository := publisherrepository.NewMongoDBPublisherRepository(mongoDBStoreBootstrap)
 	mongoDBSiteRepository := siterepository.NewMongoDBSiteRepository(mongoDBStoreBootstrap, appLogger)
@@ -453,12 +450,12 @@ func InitPaymentController() paymentcontrollers.PaymentController {
 	redisBootstrapper := rediskeyvaluestore.NewRedisBootstrapper(envConfigurationProvider)
 	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
-	earningInteractor := paymentinteractors.NewEarningInteractor(mongoDBEarningRepository, mongoDBDepositRepository, mongoDBPublisherRepository, mongoDBSiteRepository, mongoDBImpressionRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
+	earningInteractor := paymentinteractors.NewEarningInteractor(mongoDBDepositRepository, mongoDBPublisherRepository, mongoDBSiteRepository, mongoDBImpressionRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
 	mongoDBDisbursementRepository := disbursementrepository.NewMongoDBDisbursementRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
 	disbursementEmailService := disbursementemail.NewDisbursementEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
-	disbursementInteractor := paymentinteractors.NewDisbursementInteractor(mongoDBDisbursementRepository, mongoDBEarningRepository, mongoDBUserRepositoryCached, mongoDBPublisherRepository, disbursementEmailService, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
+	disbursementInteractor := paymentinteractors.NewDisbursementInteractor(mongoDBDisbursementRepository, mongoDBUserRepositoryCached, mongoDBPublisherRepository, earningInteractor, disbursementEmailService, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
 	paymentController := paymentcontrollers.NewPaymentController(jwtAuthenticationMiddleware, earningInteractor, disbursementInteractor, appLogger)
 	return paymentController
 }
@@ -469,7 +466,6 @@ func InitDisbursementController() paymentcontrollers.DisbursementController {
 	jwtAuthenticationMiddleware := middlewares.NewJwtAuthenticationMiddleware(jwtAccessTokenService)
 	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
-	mongoDBEarningRepository := earningrepository.NewMongoDBEarningRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBDepositRepository := depositrepository.NewMongoDBDepositRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBPublisherRepository := publisherrepository.NewMongoDBPublisherRepository(mongoDBStoreBootstrap)
 	mongoDBSiteRepository := siterepository.NewMongoDBSiteRepository(mongoDBStoreBootstrap, appLogger)
@@ -477,12 +473,12 @@ func InitDisbursementController() paymentcontrollers.DisbursementController {
 	redisBootstrapper := rediskeyvaluestore.NewRedisBootstrapper(envConfigurationProvider)
 	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
-	earningInteractor := paymentinteractors.NewEarningInteractor(mongoDBEarningRepository, mongoDBDepositRepository, mongoDBPublisherRepository, mongoDBSiteRepository, mongoDBImpressionRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
+	earningInteractor := paymentinteractors.NewEarningInteractor(mongoDBDepositRepository, mongoDBPublisherRepository, mongoDBSiteRepository, mongoDBImpressionRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
 	mongoDBDisbursementRepository := disbursementrepository.NewMongoDBDisbursementRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
 	disbursementEmailService := disbursementemail.NewDisbursementEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
-	disbursementInteractor := paymentinteractors.NewDisbursementInteractor(mongoDBDisbursementRepository, mongoDBEarningRepository, mongoDBUserRepositoryCached, mongoDBPublisherRepository, disbursementEmailService, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
+	disbursementInteractor := paymentinteractors.NewDisbursementInteractor(mongoDBDisbursementRepository, mongoDBUserRepositoryCached, mongoDBPublisherRepository, earningInteractor, disbursementEmailService, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
 	disbursementController := paymentcontrollers.NewDisbursementController(jwtAuthenticationMiddleware, earningInteractor, disbursementInteractor, appLogger)
 	return disbursementController
 }
@@ -505,13 +501,12 @@ func InitEventsRegistrar() events.EventHandlerRegistrar {
 	adsInteractor := adsinteractors.NewAdsInteractor(mongoDBImpressionRepository, mongoDBAdClickRepository, mongoDBSiteRepository, mongoDBAdSlotRepository, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
 	mongoDBDepositRepository := depositrepository.NewMongoDBDepositRepository(mongoDBStoreBootstrap, appLogger)
 	depositInteractor := paymentinteractors.NewDepositInteractor(mongoDBDepositRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
-	mongoDBEarningRepository := earningrepository.NewMongoDBEarningRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBPublisherRepository := publisherrepository.NewMongoDBPublisherRepository(mongoDBStoreBootstrap)
-	earningInteractor := paymentinteractors.NewEarningInteractor(mongoDBEarningRepository, mongoDBDepositRepository, mongoDBPublisherRepository, mongoDBSiteRepository, mongoDBImpressionRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
+	earningInteractor := paymentinteractors.NewEarningInteractor(mongoDBDepositRepository, mongoDBPublisherRepository, mongoDBSiteRepository, mongoDBImpressionRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
 	mongoDBDisbursementRepository := disbursementrepository.NewMongoDBDisbursementRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
 	disbursementEmailService := disbursementemail.NewDisbursementEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
-	disbursementInteractor := paymentinteractors.NewDisbursementInteractor(mongoDBDisbursementRepository, mongoDBEarningRepository, mongoDBUserRepositoryCached, mongoDBPublisherRepository, disbursementEmailService, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
+	disbursementInteractor := paymentinteractors.NewDisbursementInteractor(mongoDBDisbursementRepository, mongoDBUserRepositoryCached, mongoDBPublisherRepository, earningInteractor, disbursementEmailService, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
 	verifcationEmailSender := identityemail.NewVerifcationEmailSender(envConfigurationProvider, hs256HMACValidationService, appLogger)
 	verificationEmailInteractor := identityinteractors.NewVerificationEmailInteractor(verifcationEmailSender, appLogger)
 	eventHandlerRegistrar := events.NewEventHandlerRegistrar(inMemoryEventDispatcher, adsPool, adsInteractor, depositInteractor, earningInteractor, disbursementInteractor, verificationEmailInteractor)

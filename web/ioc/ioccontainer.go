@@ -17,7 +17,6 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/deposit"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/disbursement"
-	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/earning"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/adslot"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/site"
@@ -41,7 +40,6 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/userrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/paymentpersistence/depositrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/paymentpersistence/disbursementrepository"
-	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/paymentpersistence/earningrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/adslotrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
@@ -97,8 +95,6 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(impression.ImpressionRepository), new(impressionrepository.MongoDBImpressionRepository)),
 	depositrepository.NewMongoDBDepositRepository,
 	wire.Bind(new(deposit.DepositRepository), new(depositrepository.MongoDBDepositRepository)),
-	earningrepository.NewMongoDBEarningRepository,
-	wire.Bind(new(earning.EarningRepository), new(earningrepository.MongoDBEarningRepository)),
 	disbursementrepository.NewMongoDBDisbursementRepository,
 	wire.Bind(new(disbursement.DisbursementRepository), new(disbursementrepository.MongoDBDisbursementRepository)),
 

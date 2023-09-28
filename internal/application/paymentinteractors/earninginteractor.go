@@ -17,7 +17,7 @@ import (
 )
 
 type EarningInteractor struct {
-	earningRepository    earning.EarningRepository
+	// earningRepository    earning.EarningRepository
 	depositRepository    deposit.DepositRepository
 	publisherRepository  publisher.PublisherRepository
 	siteRepository       site.SiteRepository
@@ -28,7 +28,7 @@ type EarningInteractor struct {
 }
 
 func NewEarningInteractor(
-	earningRepository earning.EarningRepository,
+	// earningRepository earning.EarningRepository,
 	depositRepository deposit.DepositRepository,
 	publisherRepository publisher.PublisherRepository,
 	siteRepository site.SiteRepository,
@@ -37,7 +37,7 @@ func NewEarningInteractor(
 	eventDispatcher application.EventDispatcher,
 	logger application.Logger) EarningInteractor {
 	return EarningInteractor{
-		earningRepository,
+		// earningRepository,
 		depositRepository,
 		publisherRepository,
 		siteRepository,
@@ -48,6 +48,7 @@ func NewEarningInteractor(
 	}
 }
 
+// TODO when settling settle from beg of day
 func (i *EarningInteractor) CurrentBalance(publisherID shared.ID) (float64, error) {
 	p, err := i.publisherRepository.Get(context.Background(), publisherID)
 	if err != nil {
@@ -57,13 +58,17 @@ func (i *EarningInteractor) CurrentBalance(publisherID shared.ID) (float64, erro
 	b, err := i.cacheStore.Get(balanceCacheKey)
 	bal, parseErr := strconv.ParseFloat(b, 64)
 	if err != nil || parseErr != nil {
-		earnings, err := i.earningRepository.EarningsForPublisher(publisherID, p.LastDisbursement, time.Now())
+
+		lastDisbursement, _ := shared.TimeEdges(p.LastDisbursement, time.Now())
+		today, _ := shared.TimeEdges(time.Now(), time.Now())
+
+		bal, err = i.Earnings(publisherID, lastDisbursement, today)
 		if err != nil {
 			return 0.0, err
 		}
-		bal = earning.TotalEarningsAmount(earnings)
+
 		fs := strconv.FormatFloat(bal, 'f', 2, 64)
-		i.cacheStore.Save(balanceCacheKey, fs, 2*time.Hour)
+		i.cacheStore.Save(balanceCacheKey, fs, 168*time.Hour)
 	}
 	return bal, nil
 }
@@ -71,17 +76,35 @@ func (i *EarningInteractor) CurrentBalance(publisherID shared.ID) (float64, erro
 func (i *EarningInteractor) Earnings(publisherID shared.ID, start time.Time, end time.Time) (float64, error) {
 	earningCacheKey := fmt.Sprintf("earning:%s:%s-%s", publisherID.String(), start.Format("20060102"), end.Format("20060102"))
 	b, err := i.cacheStore.Get(earningCacheKey)
-	e, parseErr := strconv.ParseFloat(b, 64)
+	earn, parseErr := strconv.ParseFloat(b, 64)
 	if err != nil || parseErr != nil {
-		earnings, err := i.earningRepository.EarningsForPublisher(publisherID, start, end)
-		if err != nil {
-			return 0.0, err
+
+		// s, e := shared.TimeEdges(start, end)
+
+		sum := 0.0
+
+		for in := 0; start.AddDate(0, 0, in).Before(end); in++ {
+			day := start.AddDate(0, 0, in)
+			dailyImpCount, err := i.impressionRepository.ImpressionsCountForPublisher(publisherID,
+				day, day.AddDate(0, 0, 1))
+			if err != nil {
+				return 0.0, err
+			}
+			dailyFund, err := i.totalDailyFund(day)
+			if err != nil {
+				return 0.0, err
+			}
+			totalImpCount, err := i.totalImpressionCount(day)
+			if err != nil {
+				return 0.0, err
+			}
+			sum += earning.TotalEarningsAmount(dailyFund, totalImpCount, dailyImpCount)
 		}
-		e = earning.TotalEarningsAmount(earnings)
-		fs := strconv.FormatFloat(e, 'f', 2, 64)
-		i.cacheStore.Save(earningCacheKey, fs, 24*time.Hour)
+		earn = sum
+		fs := strconv.FormatFloat(earn, 'f', 2, 64)
+		i.cacheStore.Save(earningCacheKey, fs, 168*time.Hour)
 	}
-	return e, nil
+	return earn, nil
 }
 
 func (i *EarningInteractor) CanRequestDisbursement(publisherID shared.ID) bool {
@@ -89,81 +112,36 @@ func (i *EarningInteractor) CanRequestDisbursement(publisherID shared.ID) bool {
 	if err != nil {
 		return false
 	}
-	return bal > earning.DisbursementRequestTreshold
+	return earning.CanDisburseEarnings(bal)
 }
 
-func (i *EarningInteractor) OnImpression(newImpression any) {
-	imp := newImpression.(impression.Impression)
-
-	if !i.canSiteMonetize(imp.OriginSiteID) {
-		return
-	}
-
-	totalFund, err := i.totalDailyFund()
-	if err != nil {
-		return
-	}
-
-	totalImpressions, err := i.totalImpressionCount()
-	if err != nil {
-		return
-	}
-
-	dailyRate := earning.DailyRatePerImpression(totalFund, totalImpressions)
-	impressionEarning := earning.NewEarning(imp.OriginPublisherID, earning.Impression, dailyRate, imp.AdPieceID, imp.OriginAdSlotID, imp.OriginSiteID)
-	err = i.earningRepository.Save(context.Background(), impressionEarning)
-	if err != nil {
-		i.logger.Error("earning/save", err)
-		return
-	}
-
-	i.eventDispatcher.DispatchAsync(impressionEarning.Events)
-}
-
-func (i *EarningInteractor) canSiteMonetize(siteID shared.ID) bool {
-	siteCanMonetizeCacheKey := fmt.Sprintf("site:%s:canMonetize", siteID.String())
-	sm, err := i.cacheStore.Get(siteCanMonetizeCacheKey)
-	siteCanMonetize, parseErr := strconv.ParseBool(sm)
-	if err != nil || parseErr != nil {
-		s, err := i.siteRepository.Get(context.Background(), siteID)
-		if err != nil {
-			return false
-		}
-		siteCanMonetize = s.CanMonetize()
-		i.cacheStore.Save(siteCanMonetizeCacheKey, strconv.FormatBool(siteCanMonetize), 12*time.Hour)
-	}
-	return siteCanMonetize
-}
-
-func (i *EarningInteractor) totalImpressionCount() (int, error) {
-	today := time.Now()
-	c, err := i.cacheStore.Get(adsinteractors.DailyImpressionCountCacheKey(today))
+func (i *EarningInteractor) totalImpressionCount(day time.Time) (int, error) {
+	c, err := i.cacheStore.Get(adsinteractors.DailyImpressionCountCacheKey(day))
 	totalImpressions, parseErr := strconv.Atoi(c)
 	if err != nil || parseErr != nil {
-		totalImpressions, err = i.impressionRepository.DailyImpressionCount(today)
+		totalImpressions, err = i.impressionRepository.DailyImpressionCount(day)
 		if err != nil {
 			i.logger.Error("impressions/dailyimpressioncount", err)
 			return 0, err
 		}
 		cs := strconv.Itoa(totalImpressions)
-		i.cacheStore.Save(adsinteractors.DailyImpressionCountCacheKey(today), cs, 24*time.Hour)
+		i.cacheStore.Save(adsinteractors.DailyImpressionCountCacheKey(day), cs, 168*time.Hour)
 	}
 	return totalImpressions, nil
 }
 
-func (i *EarningInteractor) totalDailyFund() (float64, error) {
-	today := time.Now()
-	tf, err := i.cacheStore.Get(DailyDepositedFundCacheKey(today))
+func (i *EarningInteractor) totalDailyFund(day time.Time) (float64, error) {
+	tf, err := i.cacheStore.Get(DailyDepositedFundCacheKey(day))
 	totalFund, parseErr := strconv.ParseFloat(tf, 64)
 	if err != nil || parseErr != nil {
-		deposits, err := i.depositRepository.DailyDisposits(today)
+		deposits, err := i.depositRepository.DailyDisposits(day)
 		if err != nil {
 			i.logger.Error("deposit/new/dailydeposits", err)
 			return 0.0, err
 		}
-		totalFund = deposit.TotalDailyFund(today, deposits)
+		totalFund = deposit.TotalDailyFund(day, deposits)
 		fs := strconv.FormatFloat(totalFund, 'f', 2, 64)
-		err = i.cacheStore.Save(DailyDepositedFundCacheKey(today), fs, 24*time.Hour)
+		err = i.cacheStore.Save(DailyDepositedFundCacheKey(day), fs, 168*time.Hour)
 		if err != nil {
 			i.logger.Error("deposit/dailyfund/cachesave", err)
 		}

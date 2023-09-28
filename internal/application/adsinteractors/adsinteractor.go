@@ -57,6 +57,10 @@ func (i *AdsInteractor) NewImpression(adPieceID shared.ID, siteID shared.ID, adS
 	if !i.siteCanServeAds(siteID, origin) {
 		return application.ErrRequirementFailed
 	}
+	
+	if !i.canSiteMonetize(siteID) {
+		return application.ErrRequirementFailed
+	}
 
 	if !i.adSlotCanServeAds(adSlotID) {
 		return application.ErrRequirementFailed
@@ -100,7 +104,7 @@ func (i *AdsInteractor) ImpressionsCount(publisherID shared.ID, start time.Time,
 		publisherID.String(), start.Format("20060102"), end.Format("20060102"))
 	ic, err := i.cacheStore.Get(impressionCountCacheKey)
 	ics, parseErr := strconv.ParseInt(ic, 10, 64)
-	
+
 	if err != nil || parseErr != nil {
 		c, err := i.impressionRepository.ImpressionsCountForPublisher(publisherID, start, end)
 		if err != nil {
@@ -118,7 +122,7 @@ func (i *AdsInteractor) AdClicksCount(publisherID shared.ID, start time.Time, en
 		publisherID.String(), start.Format("20060102"), end.Format("20060102"))
 	ic, err := i.cacheStore.Get(adclickCountCacheKey)
 	ics, parseErr := strconv.ParseInt(ic, 10, 64)
-	
+
 	if err != nil || parseErr != nil {
 		c, err := i.adClickRepository.AdClicksCountForPublisher(publisherID, start, end)
 		if err != nil {
@@ -206,4 +210,19 @@ func (i *AdsInteractor) IncrementImpressionCount(e any) {
 
 func DailyImpressionCountCacheKey(day time.Time) string {
 	return fmt.Sprintf("dailyimpressioncount:%s", day.Format("20060102"))
+}
+
+func (i *AdsInteractor) canSiteMonetize(siteID shared.ID) bool {
+	siteCanMonetizeCacheKey := fmt.Sprintf("site:%s:canMonetize", siteID.String())
+	sm, err := i.cacheStore.Get(siteCanMonetizeCacheKey)
+	siteCanMonetize, parseErr := strconv.ParseBool(sm)
+	if err != nil || parseErr != nil {
+		s, err := i.siteRepository.Get(context.Background(), siteID)
+		if err != nil {
+			return false
+		}
+		siteCanMonetize = s.CanMonetize()
+		i.cacheStore.Save(siteCanMonetizeCacheKey, strconv.FormatBool(siteCanMonetize), 12*time.Hour)
+	}
+	return siteCanMonetize
 }

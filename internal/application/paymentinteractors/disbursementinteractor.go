@@ -7,7 +7,6 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/disbursement"
-	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/earning"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 )
@@ -18,9 +17,9 @@ type DisbursementEmailService interface {
 
 type DisbursementInteractor struct {
 	disbursementRepository   disbursement.DisbursementRepository
-	earningRepository        earning.EarningRepository
 	userRepository           user.UserRepository
 	publisherRepository      publisher.PublisherRepository
+	earningInteractor        EarningInteractor
 	disbursementEmailService DisbursementEmailService
 	cacheStore               application.KeyValueStore
 	digiSignService          application.DigitalSignatureService
@@ -30,9 +29,9 @@ type DisbursementInteractor struct {
 
 func NewDisbursementInteractor(
 	disbursementRepository disbursement.DisbursementRepository,
-	earningRepository earning.EarningRepository,
 	userRepository user.UserRepository,
 	publisherRepository publisher.PublisherRepository,
+	earningInteractor EarningInteractor,
 	disbursementEmailService DisbursementEmailService,
 	cacheStore application.KeyValueStore,
 	digiSignService application.DigitalSignatureService,
@@ -40,9 +39,9 @@ func NewDisbursementInteractor(
 	logger application.Logger) DisbursementInteractor {
 	return DisbursementInteractor{
 		disbursementRepository,
-		earningRepository,
 		userRepository,
 		publisherRepository,
+		earningInteractor,
 		disbursementEmailService,
 		cacheStore,
 		digiSignService,
@@ -59,20 +58,17 @@ func (i *DisbursementInteractor) RequestDisbursement(publisherID shared.ID,
 		return err
 	}
 
-	earnings, err := i.earningRepository.EarningsForPublisher(publisherID,
-		pub.LastDisbursement, time.Now())
+	if i.earningInteractor.CanRequestDisbursement(publisherID) {
+		return application.ErrRequirementFailed
+	}
+
+	currentBalance, err := i.earningInteractor.CurrentBalance(publisherID)
 	if err != nil {
 		return err
 	}
 
-	if !earning.CanDisburseEarnings(earnings) {
-		return application.ErrRequirementFailed
-	}
-
-	totalEarning := earning.TotalEarningsAmount(earnings)
-
 	d := disbursement.NewDisbursement(publisherID,
-		paymentProfile, totalEarning, pub.LastDisbursement, time.Now())
+		paymentProfile, currentBalance, pub.LastDisbursement, time.Now())
 
 	err = i.disbursementRepository.Save(context.Background(), d)
 	if err != nil {

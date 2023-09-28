@@ -42,7 +42,6 @@ func (r *EventHandlerRegistrar) RegisterEventHandlers() error {
 	r.appEventDispatcher.AddHandler("campaign/adpieceadded", r.adsPool.OnNewAdPiece)
 	r.appEventDispatcher.AddHandler("deposit/made", r.depositInteractor.OnNewDeposit)
 
-	r.appEventDispatcher.AddHandler("impression/made", r.earningInteractor.OnImpression)
 	r.appEventDispatcher.AddHandler("impression/made", r.adsInteractor.IncrementImpressionCount)
 
 	r.appEventDispatcher.AddHandler("disbursement/requested", r.disbursementInteractor.OnRequestDisbursement)

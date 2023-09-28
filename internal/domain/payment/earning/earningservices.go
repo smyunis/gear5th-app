@@ -1,22 +1,16 @@
 package earning
 
+
 // TODO
 const DisbursementRequestTreshold = 4500
 
-func TotalEarningsAmount(earnings []Earning) float64 {
-	sum := 0.0
-	for _, e := range earnings {
-		sum += e.Amount
-	}
-	return sum
+func TotalEarningsAmount(totalDailyFund float64, totalImpressionCount int, impressionCount int) float64 {
+	rpi := DailyRatePerImpression(totalDailyFund, totalImpressionCount) 
+	return rpi * float64(impressionCount)
 }
 
-func CanDisburseEarnings(earnings []Earning) bool {
-	sum := 0.0
-	for _, e := range earnings {
-		sum += e.Amount
-	}
-	return sum > DisbursementRequestTreshold
+func CanDisburseEarnings(currentBalance float64) bool {
+	return currentBalance > DisbursementRequestTreshold
 }
 
 func DailyRatePerImpression(totalDailyFund float64, totalImpressionCount int) float64 {
