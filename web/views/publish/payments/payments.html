@@ -72,12 +72,14 @@
                     Rejected
                 </span>
                 {{else if eq .Status 2}}
-                <span class="text-xs max-h-fit p-1 bg-blue-50 text-blue-900 border border-blue-900 rounded-md">
+                <span class="text-xs max-h-fit p-1 bg-blue-50 text-blue-900 border border-blue-900 rounded-md"
+                title="your request is accepted and will be settled soon">
                     <i class='bx bx-check-circle align-middle'></i>
                     Confirmed
                 </span>
                 {{else if eq .Status 1}}
-                <span class="text-xs max-h-fit p-1 bg-yellow-50 text-yellow-900 border border-yellow-900 rounded-md">
+                <span class="text-xs max-h-fit p-1 bg-yellow-50 text-yellow-900 border border-yellow-900 rounded-md"
+                title="check your email and click on confirmation link">
                     <i class='bx bx-error-circle align-middle'></i>
                     Pending confirmation
                 </span>

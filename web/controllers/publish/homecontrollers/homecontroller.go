@@ -116,7 +116,13 @@ func (c *HomeController) onGet(ctx *fiber.Ctx) error {
 	balancePer := earning.PercentOfDisbursementTreshold(currentBalance)
 
 	ic, err := c.impressionsCount(publisherID)
+	if err != nil {
+		return ctx.Redirect("/pages/error.html")
+	}
 	ac, err := c.adclicksCount(publisherID)
+	if err != nil {
+		return ctx.Redirect("/pages/error.html")
+	}
 
 	p := homePresenter{
 		CurrentBalance:            currentBalance,
