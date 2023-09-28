@@ -138,8 +138,8 @@ func (c *HomeController) onGet(ctx *fiber.Ctx) error {
 }
 
 func (c *HomeController) monthEarning(publisherID shared.ID) (earningCardPresenter, error) {
-	now := time.Now()
-	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+
+	today,_ := shared.DayTimeEdges(time.Now())
 
 	lastMonthEarning, err := c.earningInteractor.Earnings(publisherID,
 		today.AddDate(0, -1, 0), today)
@@ -161,8 +161,8 @@ func (c *HomeController) monthEarning(publisherID shared.ID) (earningCardPresent
 }
 
 func (c *HomeController) sevenDayEarning(publisherID shared.ID) (earningCardPresenter, error) {
-	now := time.Now()
-	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+
+	today,_ := shared.DayTimeEdges(time.Now())
 
 	lastSevenDaysEarning, err := c.earningInteractor.Earnings(publisherID,
 		today.AddDate(0, 0, -7), today)
@@ -184,8 +184,8 @@ func (c *HomeController) sevenDayEarning(publisherID shared.ID) (earningCardPres
 }
 
 func (c *HomeController) dayEarnings(publisherID shared.ID) (earningCardPresenter, error) {
-	now := time.Now()
-	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+
+	today,_ := shared.DayTimeEdges(time.Now())
 
 	yesterdayEarning, err := c.earningInteractor.Earnings(publisherID,
 		today.AddDate(0, 0, -1), today)

@@ -31,7 +31,7 @@
         <div class="sm:px-8 flex-grow flex items-center justify-end">
             <div class="text-2xl">
                 <button type="button"><i class="bx bx-help-circle px-4" title="help"></i></button>
-                <button type="button"><i class="bx bx-log-out px-4" title="sign out"></i></button>
+                <button type="button" onclick="signOut()"><i class="bx bx-log-out px-4" title="sign out"></i></button>
             </div>
 
         </div>
@@ -118,6 +118,11 @@
                 break;
             default:
                 break;
+        }
+
+        function signOut() {
+            document.cookie = 'gear5th-access-token=; Max-Age=-99999999;';
+            window.location.href = "/publish/identity/signin";
         }
     </script>
 

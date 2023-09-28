@@ -13,3 +13,5 @@ func DayTimeEdges(day time.Time) (time.Time, time.Time) {
 	e := time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, time.UTC).AddDate(0, 0, 1)
 	return s, e
 }
+
+
