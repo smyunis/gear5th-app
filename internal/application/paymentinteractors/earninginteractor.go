@@ -111,3 +111,24 @@ func (i *EarningInteractor) CanRequestDisbursement(publisherID shared.ID) bool {
 	}
 	return earning.CanDisburseEarnings(bal)
 }
+
+func (i *EarningInteractor) DailyRatePerImpression(day time.Time) (float64, error) {
+	dailyRatePerImpressionCacheKey := fmt.Sprintf("rpi:%s", day.Format("20060102"))
+	rpis, err := i.cacheStore.Get(dailyRatePerImpressionCacheKey)
+	rpi, parseErr := strconv.ParseFloat(rpis, 64)
+	if err != nil || parseErr != nil {
+		dailyFund, err := i.depositInteractor.TotalDailyFund(day)
+		if err != nil {
+			return 0.0, err
+		}
+		totalImpCount, err := i.adsInteractor.TotalImpressionCount(day)
+		if err != nil {
+			return 0.0, err
+		}
+
+		rpi = earning.DailyRatePerImpression(dailyFund, totalImpCount)
+		fs := strconv.FormatFloat(rpi, 'f', 2, 64)
+		i.cacheStore.Save(dailyRatePerImpressionCacheKey, fs, 168*time.Hour)
+	}
+	return rpi, nil
+}

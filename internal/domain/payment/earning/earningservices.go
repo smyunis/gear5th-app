@@ -3,6 +3,8 @@ package earning
 
 // TODO
 const DisbursementRequestTreshold = 4500
+const FixedRatePerImpression = 0.1
+
 
 func TotalEarningsAmount(totalDailyFund float64, totalImpressionCount int, impressionCount int) float64 {
 	rpi := DailyRatePerImpression(totalDailyFund, totalImpressionCount) 
@@ -15,10 +17,9 @@ func CanDisburseEarnings(currentBalance float64) bool {
 
 func DailyRatePerImpression(totalDailyFund float64, totalImpressionCount int) float64 {
 	//TODO set appropriate amonut for this
-	const fixedRatePerImpression = 0.1
 
-	if (float64(totalImpressionCount) * fixedRatePerImpression) <= totalDailyFund {
-		return fixedRatePerImpression
+	if (float64(totalImpressionCount) * FixedRatePerImpression) <= totalDailyFund {
+		return FixedRatePerImpression
 	}
 	infaltedRate := totalDailyFund / float64(totalImpressionCount)
 	return infaltedRate

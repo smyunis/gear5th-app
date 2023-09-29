@@ -923,6 +923,10 @@ select {
   top: 0px;
 }
 
+.clear-left {
+  clear: left;
+}
+
 .mx-2 {
   margin-left: 0.5rem;
   margin-right: 0.5rem;

@@ -534,7 +534,9 @@ func InitAdminDashboardController() admindashboard.AdminDashboardController {
 	adsInteractor := adsinteractors.NewAdsInteractor(mongoDBImpressionRepository, mongoDBAdClickRepository, mongoDBSiteRepository, mongoDBAdSlotRepository, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
 	mongoDBDepositRepository := depositrepository.NewMongoDBDepositRepository(mongoDBStoreBootstrap, appLogger)
 	depositInteractor := paymentinteractors.NewDepositInteractor(mongoDBDepositRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
-	adminDashboardController := admindashboard.NewAdminDashboardController(adminAuthenticationMiddleware, adsInteractor, depositInteractor, appLogger)
+	mongoDBPublisherRepository := publisherrepository.NewMongoDBPublisherRepository(mongoDBStoreBootstrap)
+	earningInteractor := paymentinteractors.NewEarningInteractor(adsInteractor, depositInteractor, mongoDBPublisherRepository, mongoDBSiteRepository, mongoDBImpressionRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
+	adminDashboardController := admindashboard.NewAdminDashboardController(adminAuthenticationMiddleware, adsInteractor, depositInteractor, earningInteractor, appLogger)
 	return adminDashboardController
 }
 

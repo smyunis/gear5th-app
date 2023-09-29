@@ -1,6 +1,52 @@
 {{define "title"}}Admin Console | gear5th{{end}}
 
 {{define "in-main"}}
-<p>In dashboard admin yay</p>
-{{.}}
+
+<div>
+    <h2 class="py-4 font-bold text-2xl">Yesterday</h2>
+    <div class="flex max-sm:flex-col gap-2 sm:justify-between">
+        <div class="w-full sm:w-fit flex flex-col border border-medium p-4 rounded">
+            <span class="text-sm">Daily fund</span>
+            <span class="font-bold text-xl">{{printf "%.2f" .YesterdayDailyFund}}
+                <span class="text-base">ETB</span>
+            </span>
+
+        </div>
+
+        <div class="w-full sm:w-fit flex flex-col border border-medium p-4 rounded">
+            <span class="text-sm">RPI</span>
+            <span class="font-bold text-xl">{{printf "%.2f" .YesterdayRPI}}
+                <span class="text-base">ETB</span>
+            </span>
+            {{if .RPIInfation}}
+            <span class="text-xs text-yellow-700">
+                <i class='bx bx-error'></i>
+                Adjusted rate
+            </span>
+            {{else}}
+            <span class="text-xs text-green-700">
+                <i class='bx bx-check-circle'></i>
+                Fixed rate
+            </span>
+            {{end}}
+        </div>
+        <div class="w-full sm:w-fit flex flex-col border border-medium p-4 rounded">
+            <span class="text-sm">Impression count</span>
+            <span class="font-bold text-xl">
+                {{.YesterdayImpressionCount}}
+            </span>
+        </div>
+        <div class="w-full sm:w-fit flex flex-col border border-medium p-4 rounded">
+            <span class="text-sm">Profit</span>
+            <span class="font-bold text-xl">
+                <span>{{printf "%.2f" .Profit}} <span class="text-base">ETB</span></span>
+            </span>
+            <span 
+                {{if le .ProfitMargin 0.00}}class="text-sm text-red-700"{{else}}
+                class="text-sm font-bold text-green-700" {{end}}>
+                {{printf "%.2f" .ProfitMargin}}%</span>
+            
+        </div>
+    </div>
+</div>
 {{end}}
