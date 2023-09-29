@@ -7,6 +7,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/application/adsinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/adslot"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 	"gitlab.com/gear5th/gear5th-app/web/controllers"
 )
 
@@ -27,15 +28,18 @@ type adServerPresenter struct {
 }
 
 type AdServerController struct {
-	adsPool adsinteractors.AdsPool
-	logger  application.Logger
+	adsPool       adsinteractors.AdsPool
+	adsInteractor adsinteractors.AdsInteractor
+	logger        application.Logger
 }
 
 func NewAdServerController(
 	adsPool adsinteractors.AdsPool,
+	adsInteractor adsinteractors.AdsInteractor,
 	logger application.Logger) AdServerController {
 	return AdServerController{
 		adsPool,
+		adsInteractor,
 		logger,
 	}
 }
@@ -65,6 +69,19 @@ func (c *AdServerController) adServerOnGet(ctx *fiber.Ctx) error {
 		return nil
 	}
 
+	reqHeaders := ctx.GetReqHeaders()
+	origin, ok := reqHeaders["Referer"]
+	if !ok {
+		return nil
+	}
+
+	if !c.adsInteractor.SiteCanServeAds(shared.ID(siteID), origin) {
+		return nil
+	}
+
+	if !c.adsInteractor.AdSlotCanServeAds(shared.ID(slotID)) {
+		return nil
+	}
 
 	ad, err := c.adsPool.Next(adslot.AdSlotTypeFromString(slot))
 	if err != nil {

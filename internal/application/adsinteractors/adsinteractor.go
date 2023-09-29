@@ -54,7 +54,7 @@ func (i *AdsInteractor) NewImpression(adPieceID shared.ID, siteID shared.ID, adS
 		return application.ErrRequirementFailed
 	}
 
-	if !i.siteCanServeAds(siteID, origin) {
+	if !i.SiteCanServeAds(siteID, origin) {
 		return application.ErrRequirementFailed
 	}
 	
@@ -62,7 +62,7 @@ func (i *AdsInteractor) NewImpression(adPieceID shared.ID, siteID shared.ID, adS
 		return application.ErrRequirementFailed
 	}
 
-	if !i.adSlotCanServeAds(adSlotID) {
+	if !i.AdSlotCanServeAds(adSlotID) {
 		return application.ErrRequirementFailed
 	}
 
@@ -151,7 +151,7 @@ func (i *AdsInteractor) validateToken(token string) (string, error) {
 	return viewID, nil
 }
 
-func (i *AdsInteractor) siteCanServeAds(siteID shared.ID, origin string) bool {
+func (i *AdsInteractor) SiteCanServeAds(siteID shared.ID, origin string) bool {
 
 	siteCanServeStatusCacheKey := fmt.Sprintf("site:%s:canServeAds", siteID.String())
 	sv, err := i.cacheStore.Get(siteCanServeStatusCacheKey)
@@ -170,12 +170,12 @@ func (i *AdsInteractor) siteCanServeAds(siteID shared.ID, origin string) bool {
 			canServe = s.CanServeAdPiece() && s.IsSiteURL(originURL)
 		}
 
-		i.cacheStore.Save(siteCanServeStatusCacheKey, strconv.FormatBool(canServe), 12*time.Hour)
+		i.cacheStore.Save(siteCanServeStatusCacheKey, strconv.FormatBool(canServe), 3*time.Hour)
 	}
 	return canServe
 }
 
-func (i *AdsInteractor) adSlotCanServeAds(slotID shared.ID) bool {
+func (i *AdsInteractor) AdSlotCanServeAds(slotID shared.ID) bool {
 	adSlotCanServeCacheKey := fmt.Sprintf("adslot:%s:canServeAdPiece", slotID.String())
 	sv, err := i.cacheStore.Get(adSlotCanServeCacheKey)
 	canServe, parseErr := strconv.ParseBool(sv)

@@ -391,7 +391,13 @@ func InitAdServerController() adservercontrollers.AdServerController {
 	mongoDBAdPieceRepository := adpiecerepository.NewMongoDBAdPieceRepository(mongoDBStoreBootstrap, appLogger)
 	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
 	adsPool := adsinteractors.NewAdsPool(redisKeyValueStore, mongoDBCampaignRepository, mongoDBAdPieceRepository, hs256HMACValidationService, appLogger)
-	adServerController := adservercontrollers.NewAdServerController(adsPool, appLogger)
+	mongoDBImpressionRepository := impressionrepository.NewMongoDBImpressionRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBAdClickRepository := adclickrepository.NewMongoDBAdClickRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBSiteRepository := siterepository.NewMongoDBSiteRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBAdSlotRepository := adslotrepository.NewMongoDBAdSlotRepository(mongoDBStoreBootstrap, appLogger)
+	inMemoryEventDispatcher := application.NewAppEventDispatcher()
+	adsInteractor := adsinteractors.NewAdsInteractor(mongoDBImpressionRepository, mongoDBAdClickRepository, mongoDBSiteRepository, mongoDBAdSlotRepository, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
+	adServerController := adservercontrollers.NewAdServerController(adsPool, adsInteractor, appLogger)
 	return adServerController
 }
 

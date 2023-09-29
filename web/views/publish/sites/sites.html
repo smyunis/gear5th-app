@@ -64,6 +64,9 @@
         <dialog class="p-16 rounded-sm shadow-md" id="remove-site-dialog-{{.SiteID}}">
             <h2 class="text-darkest text-xl font-bold">Are you sure you want to remove this site?</h2>
             <p class="text-dark">{{.SiteDomain}}</p>
+            <p class="my-2 text-red-600 text-sm">
+                <i class='bx bx-error mr-1'></i>
+                All ads on this site will no longer be displayed once site is removed</p>
             <div class="flex items-center gap-4 mt-8">
                 <a href="/publish/sites/remove/{{.SiteID}}">
                     <button class="h-10 text-white bg-red-700 px-4 py-2 rounded-sm hover:opacity-95">
