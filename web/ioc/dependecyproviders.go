@@ -4,6 +4,8 @@ package ioc
 
 import (
 	"github.com/google/wire"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/admin/admindashboard"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/admin/adminidentity"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/adclickcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/adservercontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/impressioncontrollers"
@@ -142,6 +144,16 @@ func InitPaymentController() paymentcontrollers.PaymentController {
 func InitDisbursementController() paymentcontrollers.DisbursementController {
 	wire.Build(Container)
 	return paymentcontrollers.DisbursementController{}
+}
+
+func InitAdminIdentityController() adminidentity.AdminIdentityController {
+	wire.Build(Container)
+	return adminidentity.AdminIdentityController{}
+}
+
+func InitAdminDashboardController() admindashboard.AdminDashboardController {
+	wire.Build(Container)
+	return admindashboard.AdminDashboardController{}
 }
 
 // Event Handlers

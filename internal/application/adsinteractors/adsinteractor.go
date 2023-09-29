@@ -57,7 +57,7 @@ func (i *AdsInteractor) NewImpression(adPieceID shared.ID, siteID shared.ID, adS
 	if !i.SiteCanServeAds(siteID, origin) {
 		return application.ErrRequirementFailed
 	}
-	
+
 	if !i.canSiteMonetize(siteID) {
 		return application.ErrRequirementFailed
 	}
@@ -192,14 +192,27 @@ func (i *AdsInteractor) AdSlotCanServeAds(slotID shared.ID) bool {
 	return canServe
 }
 
+func (i *AdsInteractor) TotalImpressionCount(day time.Time) (int, error) {
+	c, err := i.cacheStore.Get(DailyImpressionCountCacheKey(day))
+	totalImpressions, parseErr := strconv.Atoi(c)
+	if err != nil || parseErr != nil {
+		totalImpressions, err = i.fetchTotalImpressionCount(day)
+		if err != nil {
+			return 0, err
+		}
+		cs := strconv.Itoa(totalImpressions)
+		i.cacheStore.Save(DailyImpressionCountCacheKey(day), cs, 168*time.Hour)
+	}
+	return totalImpressions, nil
+}
+
 func (i *AdsInteractor) IncrementImpressionCount(e any) {
 	today := time.Now()
 	c, err := i.cacheStore.Get(DailyImpressionCountCacheKey(today))
 	totalImpressions, parseErr := strconv.Atoi(c)
 	if err != nil || parseErr != nil {
-		totalImpressions, err = i.impressionRepository.DailyImpressionCount(today)
+		totalImpressions, err = i.fetchTotalImpressionCount(today)
 		if err != nil {
-			i.logger.Error("impressions/dailyimpressioncount", err)
 			return
 		}
 	}
@@ -208,8 +221,17 @@ func (i *AdsInteractor) IncrementImpressionCount(e any) {
 	i.cacheStore.Save(DailyImpressionCountCacheKey(today), cs, 24*time.Hour)
 }
 
+func (i *AdsInteractor) fetchTotalImpressionCount(day time.Time) (int, error) {
+	totalImpressions, err := i.impressionRepository.DailyImpressionCount(day)
+	if err != nil {
+		i.logger.Error("impressions/dailyimpressioncount", err)
+		return 0, err
+	}
+	return totalImpressions, nil
+}
+
 func DailyImpressionCountCacheKey(day time.Time) string {
-	return fmt.Sprintf("dailyimpressioncount:%s", day.Format("20060102"))
+	return fmt.Sprintf("impressioncount:%s", day.Format("20060102"))
 }
 
 func (i *AdsInteractor) canSiteMonetize(siteID shared.ID) bool {

@@ -41,7 +41,6 @@ func NewManagedUserInteractor(
 	}
 }
 
-
 func (m *ManagedUserInteractor) SignIn(email user.Email, password string) (string, error) {
 	u, err := m.CredentialsValid(email, password)
 	if err != nil {
@@ -53,6 +52,22 @@ func (m *ManagedUserInteractor) SignIn(email user.Email, password string) (strin
 
 	if !u.IsEmailVerified {
 		return "", ErrEmailNotVerified
+	}
+
+	return m.tokenGenerator.Generate(u.ID)
+}
+
+func (m *ManagedUserInteractor) AdminSignIn(email user.Email, password string) (string, error) {
+	u, err := m.CredentialsValid(email, password)
+	if err != nil {
+		if errors.Is(err, application.ErrEntityNotFound) {
+			return "", application.ErrAuthorization
+		}
+		return "", err
+	}
+
+	if !u.HasRole(user.Administrator) {
+		return "", application.ErrAuthorization
 	}
 
 	return m.tokenGenerator.Generate(u.ID)

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{block "title" .}}{{end}}</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/tailwind.dist.css">
+</head>
+
+<body class="bg-lightest text-dark font-roboto">
+
+    <header class="flex justify-between w-screen h-16 fixed top-0 left-0 bg-white border-b border-light">
+
+        <div class="sm:hidden">
+            <button type="button" onclick="sidenavOpen()"> <i class="bx bx-menu p-4 text-2xl"></i></button>
+        </div>
+
+        <div class="max-sm:hidden">
+            <a href="/admin/dashboard" class="flex items-center px-8 h-full w-80  border-r border-light ">
+                <span class="inline-block h-12 w-12"><img src="/assets/logo.png" alt="logo"></span>
+                <span class="px-2 font-bold text-primary text-xl">Admin Console</span>
+            </a>
+        </div>
+
+
+        <div class="sm:px-8 flex-grow flex items-center justify-end">
+            <div class="text-2xl">
+                <button type="button" onclick="signOut()"><i class="bx bx-log-out px-4" title="sign out"></i></button>
+            </div>
+
+        </div>
+
+    </header>
+
+    <div class="flex">
+        <nav id="sidenav"
+            class="fixed hidden sm:flex flex-col justify-between mt-16 h-screen w-80 border-r py-8 border-light bg-white">
+            <div>
+                <ul>
+                    <li>
+                        <a id="nav-dash" href="/admin/dashboard" class="sidebarnav-item">
+                            <i class='bx bxs-dashboard text-xl' ></i>
+                            <span class="px-4">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a id="nav-pub-sites" href="/admin/publishers/sites" class="sidebarnav-item">
+                            <i class="bx bx-layout text-xl"></i>
+                            <span class="px-4">Publisher Sites</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a id="nav-pub-payments" href="/admin/publishers/payments" class="sidebarnav-item">
+                            <i class='bx bx-money text-xl'></i>
+                            <span class="px-4">Publisher Payments</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a id="nav-advertisers" href="/admin/advertisers" class="sidebarnav-item">
+                            <i class='bx bx-user-circle text-xl'></i>
+                            <span class="px-4">Advertisers</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+            <div class="mx-auto py-12 text-center">
+                <a href="#" target="_blank" class="text-xs">
+                    <span class="underline">Terms and conditions of service</span>
+                    <i class='bx bx-link-external'></i>
+                </a>
+            </div>
+        </nav>
+
+        <!-- main console -->
+        <div class="sm:flex-grow mt-16 sm:ml-80 sm:p-12">
+            <div class="bg-white w-full h-full p-4 sm:p-12 rounded-sm shadow-medium shadow-md">
+                {{block "in-main" .}}{{end}}
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function sidenavOpen() {
+            let sidenav = document.getElementById("sidenav")
+            sidenav.classList.toggle("hidden")
+        }
+
+        let sitePath = window.location.pathname
+
+        switch (true) {
+            case sitePath.includes("/dashboard"):
+                document.querySelector("#nav-dash").classList.add("active-sidebarnav-item")
+                break;
+            case sitePath.includes("/publishers/sites"):
+                document.querySelector("#nav-pub-sites").classList.add("active-sidebarnav-item")
+                break;
+            case sitePath.includes("/publishers/payments"):
+                document.querySelector("#nav-pub-payments").classList.add("active-sidebarnav-item")
+                break;
+            case sitePath.includes("/advertisers"):
+                document.querySelector("#nav-advertisers").classList.add("active-sidebarnav-item")
+                break;
+            default:
+                break;
+        }
+
+        function signOut() {
+            document.cookie = 'gear5th-admin-access-token=; Max-Age=-99999999;';
+            window.location.href = "/admin/identity/signin";
+        }
+    </script>
+
+</body>
+
+</html>

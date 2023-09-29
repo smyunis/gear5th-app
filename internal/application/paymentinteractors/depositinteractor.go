@@ -45,14 +45,32 @@ func (i *DepositInteractor) AcceptDeposit(advertiserID shared.ID, amount float64
 func (i *DepositInteractor) OnNewDeposit(newDeposit any) {
 	dep := newDeposit.(deposit.Deposit)
 
-	err := i.loadTotalDailyFund(dep)
+	err := i.updateTotalDailyFund(dep)
 	if err != nil {
 		return
 	}
-
 }
 
-func (i *DepositInteractor) loadTotalDailyFund(dep deposit.Deposit) error {
+func (i *DepositInteractor) TotalDailyFund(day time.Time) (float64, error) {
+	tf, err := i.cacheStore.Get(DailyDepositedFundCacheKey(day))
+	totalFund, parseErr := strconv.ParseFloat(tf, 64)
+	if err != nil || parseErr != nil {
+		deposits, err := i.depositRepository.DailyDisposits(day)
+		if err != nil {
+			i.logger.Error("deposit/new/dailydeposits", err)
+			return 0.0, err
+		}
+		totalFund = deposit.TotalDailyFund(day, deposits)
+		fs := strconv.FormatFloat(totalFund, 'f', 2, 64)
+		err = i.cacheStore.Save(DailyDepositedFundCacheKey(day), fs, 24*time.Hour)
+		if err != nil {
+			i.logger.Error("deposit/dailyfund/cachesave", err)
+		}
+	}
+	return totalFund, nil
+}
+
+func (i *DepositInteractor) updateTotalDailyFund(dep deposit.Deposit) error {
 	today := time.Now()
 	tf, err := i.cacheStore.Get(DailyDepositedFundCacheKey(today))
 	totalFund, parseErr := strconv.ParseFloat(tf, 64)

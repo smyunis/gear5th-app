@@ -9,6 +9,7 @@ import (
 
 const ActorUserID = "actor-userid"
 const AccessTokenCookieName = "gear5th-access-token"
+const AdminAccessTokenCookieName = "gear5th-admin-access-token"
 const AdvertiserToken = "advertiser-token"
 
 func CardMainLayoutTemplate() *template.Template {
@@ -25,6 +26,17 @@ func AdvertiserMainLayoutTemplate() *template.Template {
 	mainTmpl := template.Must(template.ParseFiles("web/views/advertiser/layouts/main.html"))
 	return template.Must(mainTmpl.ParseGlob("web/views/components/*.html"))
 }
+
+func AdminMainLayoutTemplate() *template.Template {
+	mainTmpl := template.Must(template.ParseFiles("web/views/admin/layouts/main.html"))
+	return template.Must(mainTmpl.ParseGlob("web/views/components/*.html"))
+}
+
+func AdminCardLayoutTemplate() *template.Template {
+	mainTmpl := template.Must(template.ParseFiles("web/views/admin/layouts/card-main.html"))
+	return template.Must(mainTmpl.ParseGlob("web/views/components/*.html"))
+}
+
 
 func Render(ctx *fiber.Ctx, t *template.Template, binding any) error {
 	ctx.Set("Content-Type", "text/html")

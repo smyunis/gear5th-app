@@ -9,7 +9,6 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/application/adsinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/ads/impression"
-	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/deposit"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/earning"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/site"
@@ -17,8 +16,8 @@ import (
 )
 
 type EarningInteractor struct {
-	// earningRepository    earning.EarningRepository
-	depositRepository    deposit.DepositRepository
+	adsInteractor        adsinteractors.AdsInteractor
+	depositInteractor    DepositInteractor
 	publisherRepository  publisher.PublisherRepository
 	siteRepository       site.SiteRepository
 	impressionRepository impression.ImpressionRepository
@@ -28,8 +27,8 @@ type EarningInteractor struct {
 }
 
 func NewEarningInteractor(
-	// earningRepository earning.EarningRepository,
-	depositRepository deposit.DepositRepository,
+	adsInteractor adsinteractors.AdsInteractor,
+	depositInteractor DepositInteractor,
 	publisherRepository publisher.PublisherRepository,
 	siteRepository site.SiteRepository,
 	impressionRepository impression.ImpressionRepository,
@@ -37,8 +36,8 @@ func NewEarningInteractor(
 	eventDispatcher application.EventDispatcher,
 	logger application.Logger) EarningInteractor {
 	return EarningInteractor{
-		// earningRepository,
-		depositRepository,
+		adsInteractor,
+		depositInteractor,
 		publisherRepository,
 		siteRepository,
 		impressionRepository,
@@ -79,8 +78,6 @@ func (i *EarningInteractor) Earnings(publisherID shared.ID, start time.Time, end
 	earn, parseErr := strconv.ParseFloat(b, 64)
 	if err != nil || parseErr != nil {
 
-		// s, e := shared.TimeEdges(start, end)
-
 		sum := 0.0
 
 		for in := 0; start.AddDate(0, 0, in).Before(end); in++ {
@@ -90,11 +87,11 @@ func (i *EarningInteractor) Earnings(publisherID shared.ID, start time.Time, end
 			if err != nil {
 				return 0.0, err
 			}
-			dailyFund, err := i.totalDailyFund(day)
+			dailyFund, err := i.depositInteractor.TotalDailyFund(day)
 			if err != nil {
 				return 0.0, err
 			}
-			totalImpCount, err := i.totalImpressionCount(day)
+			totalImpCount, err := i.adsInteractor.TotalImpressionCount(day)
 			if err != nil {
 				return 0.0, err
 			}
@@ -113,38 +110,4 @@ func (i *EarningInteractor) CanRequestDisbursement(publisherID shared.ID) bool {
 		return false
 	}
 	return earning.CanDisburseEarnings(bal)
-}
-
-func (i *EarningInteractor) totalImpressionCount(day time.Time) (int, error) {
-	c, err := i.cacheStore.Get(adsinteractors.DailyImpressionCountCacheKey(day))
-	totalImpressions, parseErr := strconv.Atoi(c)
-	if err != nil || parseErr != nil {
-		totalImpressions, err = i.impressionRepository.DailyImpressionCount(day)
-		if err != nil {
-			i.logger.Error("impressions/dailyimpressioncount", err)
-			return 0, err
-		}
-		cs := strconv.Itoa(totalImpressions)
-		i.cacheStore.Save(adsinteractors.DailyImpressionCountCacheKey(day), cs, 168*time.Hour)
-	}
-	return totalImpressions, nil
-}
-
-func (i *EarningInteractor) totalDailyFund(day time.Time) (float64, error) {
-	tf, err := i.cacheStore.Get(DailyDepositedFundCacheKey(day))
-	totalFund, parseErr := strconv.ParseFloat(tf, 64)
-	if err != nil || parseErr != nil {
-		deposits, err := i.depositRepository.DailyDisposits(day)
-		if err != nil {
-			i.logger.Error("deposit/new/dailydeposits", err)
-			return 0.0, err
-		}
-		totalFund = deposit.TotalDailyFund(day, deposits)
-		fs := strconv.FormatFloat(totalFund, 'f', 2, 64)
-		err = i.cacheStore.Save(DailyDepositedFundCacheKey(day), fs, 168*time.Hour)
-		if err != nil {
-			i.logger.Error("deposit/dailyfund/cachesave", err)
-		}
-	}
-	return totalFund, nil
 }
