@@ -13,6 +13,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/domain/ads/adclick"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/ads/impression"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/advertiser/adpiece"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/advertiser/advertiser"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/advertiser/campaign"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/deposit"
@@ -33,6 +34,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/adspersistence/adclickrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/adspersistence/impressionrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/adpiecerepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/advertiserrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/campaignrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/filestore"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
@@ -101,6 +103,8 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(deposit.DepositRepository), new(depositrepository.MongoDBDepositRepository)),
 	disbursementrepository.NewMongoDBDisbursementRepository,
 	wire.Bind(new(disbursement.DisbursementRepository), new(disbursementrepository.MongoDBDisbursementRepository)),
+	advertiserrepository.NewMongoDBAdvertiserRepository,
+	wire.Bind(new(advertiser.AdvertiserRepository), new(advertiserrepository.MongoDBAdvertiserRepository)),
 
 	//Infrastructures
 	infrastructure.NewAppHTTPClient,

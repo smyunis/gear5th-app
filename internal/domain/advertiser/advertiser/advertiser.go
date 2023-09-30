@@ -7,15 +7,21 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 )
 
-type Advertiser struct {
-	UserID    shared.ID
-	Name  string
+type AdvertiserRepository interface {
+	shared.EntityRepository[Advertiser]
+	Advertisers() ([]Advertiser, error)
 }
 
-func NewAdvertiser(name string) Advertiser {
+type Advertiser struct {
+	UserID shared.ID
+	Name   string
+	Note   string
+}
+
+func NewAdvertiser(userID shared.ID, name string) Advertiser {
 	return Advertiser{
-		UserID:    shared.NewID(),
-		Name:  name,
+		UserID: userID,
+		Name:   name,
 	}
 }
 

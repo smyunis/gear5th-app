@@ -6,6 +6,7 @@ import (
 
 	"slices"
 
+	"gitlab.com/gear5th/gear5th-app/internal/domain/advertiser/advertiser"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
 )
@@ -86,6 +87,11 @@ func (u *User) AsOAuthUser(userAccountID string, provider OAuthProvider) OAuthUs
 func (u *User) SignUpPublisher() publisher.Publisher {
 	u.addRoleIfNotExists(Publisher)
 	return publisher.NewPublisher(u.ID)
+}
+
+func (u *User) SignUpAdvertiser(name string) advertiser.Advertiser {
+	u.addRoleIfNotExists(Advertiser)
+	return advertiser.NewAdvertiser(u.ID, name)
 }
 
 func (u *User) VerifyEmail() {
