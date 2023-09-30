@@ -89,6 +89,37 @@ func (r MongoDBDepositRepository) DailyDisposits(day time.Time) ([]deposit.Depos
 	return todayDeposits, nil
 }
 
+func (r MongoDBDepositRepository) DepositsForAdvertiser(advertiserID shared.ID) ([]deposit.Deposit, error) {
+	deposits := r.db.Collection("deposits")
+	cursor, err := deposits.Find(context.Background(), bson.D{
+		{"advertiserId", advertiserID.String()}}, &options.FindOptions{
+		Sort: bson.D{{"depositTime", -1}},
+	})
+	if err != nil {
+		return []deposit.Deposit{}, err
+	}
+
+	todayDeposits := make([]deposit.Deposit, 0)
+	for cursor.Next(context.Background()) {
+		var res bson.M
+		err := cursor.Decode(&res)
+		if err != nil {
+			if errors.Is(err, mongo.ErrNoDocuments) {
+				return []deposit.Deposit{}, application.ErrEntityNotFound
+			}
+			r.logger.Error("deposits/persistence/deposits-for-advertiser", err)
+			return []deposit.Deposit{}, err
+		}
+		s := mapMToDeposit(res)
+		todayDeposits = append(todayDeposits, s)
+	}
+	if err := cursor.Err(); err != nil {
+		r.logger.Error("deposits/persistence/deposits-for-advertiser", err)
+		return []deposit.Deposit{}, err
+	}
+	return todayDeposits, nil
+}
+
 func mapDepositToM(s deposit.Deposit) bson.M {
 	return bson.M{
 		"_id":          s.ID.String(),
@@ -111,4 +142,3 @@ func mapMToDeposit(res primitive.M) deposit.Deposit {
 		End:          res["end"].(primitive.DateTime).Time(),
 	}
 }
-

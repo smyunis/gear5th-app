@@ -98,3 +98,7 @@ func (i *DepositInteractor) updateTotalDailyFund(dep deposit.Deposit) error {
 func DailyDepositedFundCacheKey(day time.Time) string {
 	return fmt.Sprintf("dailyfund:%s", day.Format("20060102"))
 }
+
+func (i *DepositInteractor) DepoistsForAdvertiser(advertiserID shared.ID) ([]deposit.Deposit, error) {
+	return i.depositRepository.DepositsForAdvertiser(advertiserID)
+}

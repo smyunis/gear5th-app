@@ -10,6 +10,7 @@ import (
 type DepositRepository interface {
 	shared.EntityRepository[Deposit]
 	DailyDisposits(day time.Time) ([]Deposit, error)
+	DepositsForAdvertiser(advertiserID shared.ID) ([]Deposit, error)
 }
 
 type Deposit struct {
@@ -35,7 +36,7 @@ func NewDeposit(advertiserID shared.ID, amount float64, start time.Time, end tim
 		End:          end,
 		Amount:       amount,
 	}
-	d.Events.Emit("deposit/made",d)
+	d.Events.Emit("deposit/made", d)
 	return d
 }
 

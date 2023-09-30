@@ -25,6 +25,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/adspersistence/adclickrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/adspersistence/impressionrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/adpiecerepository"
+	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/advertiserrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/advertiserpersistence/campaignrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/filestore"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/identitypersistence/manageduserrepository"
@@ -575,17 +576,20 @@ func InitAdminAdvertisersController() adminadvertisers.AdminAdvertisersControlle
 	adminAuthenticationMiddleware := middlewares.NewAdminAuthenticationMiddleware(jwtAccessTokenService)
 	mongoDBStoreBootstrap := mongodbpersistence.NewMongoDBStoreBootstrap(envConfigurationProvider)
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
-	mongoDBCampaignRepository := campaignrepository.NewMongoDBCampaignRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBAdvertiserRepository := advertiserrepository.NewMongoDBAdvertiserRepository(mongoDBStoreBootstrap, appLogger)
 	redisBootstrapper := rediskeyvaluestore.NewRedisBootstrapper(envConfigurationProvider)
 	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
 	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
+	mongoDBAdvertiserSignUpUnitOfWork := advertiserrepository.NewMongoDBAdvertiserSignUpUnitOfWork(mongoDBAdvertiserRepository, mongoDBUserRepositoryCached, mongoDBStoreBootstrap, appLogger)
+	inMemoryEventDispatcher := application.NewAppEventDispatcher()
+	advertiserInteractor := advertiserinteractors.NewAdvertiserInteractor(mongoDBAdvertiserRepository, mongoDBUserRepositoryCached, mongoDBAdvertiserSignUpUnitOfWork, inMemoryEventDispatcher)
+	mongoDBCampaignRepository := campaignrepository.NewMongoDBCampaignRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBAdPieceRepository := adpiecerepository.NewMongoDBAdPieceRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBGridFSFileStore := filestore.NewMongoDBGridFSFileStore(mongoDBStoreBootstrap)
-	inMemoryEventDispatcher := application.NewAppEventDispatcher()
 	campaignInteractor := advertiserinteractors.NewCampaignInteractor(mongoDBCampaignRepository, mongoDBUserRepositoryCached, mongoDBAdPieceRepository, mongoDBGridFSFileStore, inMemoryEventDispatcher)
 	mongoDBDepositRepository := depositrepository.NewMongoDBDepositRepository(mongoDBStoreBootstrap, appLogger)
 	depositInteractor := paymentinteractors.NewDepositInteractor(mongoDBDepositRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
-	adminAdvertisersController := adminadvertisers.NewAdminAdvertisersController(adminAuthenticationMiddleware, campaignInteractor, depositInteractor, appLogger)
+	adminAdvertisersController := adminadvertisers.NewAdminAdvertisersController(adminAuthenticationMiddleware, advertiserInteractor, campaignInteractor, depositInteractor, appLogger)
 	return adminAdvertisersController
 }
 

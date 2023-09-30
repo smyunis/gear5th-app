@@ -953,11 +953,6 @@ select {
   margin-bottom: 2rem;
 }
 
-.mx-8 {
-  margin-left: 2rem;
-  margin-right: 2rem;
-}
-
 .mb-4 {
   margin-bottom: 1rem;
 }
@@ -992,6 +987,10 @@ select {
 
 .mt-8 {
   margin-top: 2rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
 }
 
 .mt-2 {
@@ -1158,10 +1157,6 @@ select {
 
 .gap-8 {
   gap: 2rem;
-}
-
-.gap-12 {
-  gap: 3rem;
 }
 
 .self-end {
@@ -1857,14 +1852,6 @@ select {
 
   .sm\:gap-8 {
     gap: 2rem;
-  }
-
-  .sm\:gap-12 {
-    gap: 3rem;
-  }
-
-  .sm\:gap-11 {
-    gap: 2.75rem;
   }
 
   .sm\:p-12 {

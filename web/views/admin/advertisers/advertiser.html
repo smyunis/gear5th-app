@@ -1,0 +1,114 @@
+{{define "title"}}Admin Console | gear5th{{end}}
+
+{{define "in-main"}}
+<a href="/admin/advertisers" class="pb-2 text-secondary hover:underline">
+    <i class='bx bx-arrow-back'></i>
+    Back
+</a>
+<div>
+    <h2 class="text-darkest text-2xl font-bold">Adveritser</h2>
+    <p class="text-sm">{{.User.ID}}</p>
+</div>
+<div class="flex flex-col gap-8">
+    <div class="flex flex-col my-2">
+        <span class="text-xs">Name</span>
+        <span class="text-darkest mb-4 font-bold">{{.Advertiser.Name}}</span>
+
+        <span class="text-xs">Email</span>
+        <span class="text-darkest mb-4 font-bold">{{.User.Email.String}}</span>
+
+        <span class="text-xs">Phone number</span>
+        <span class="text-darkest mb-4 font-bold">{{.User.PhoneNumber.String}}</span>
+
+        <span class="text-xs">Note</span>
+        <span class="text-darkest mb-4 font-bold">{{.Advertiser.Note}}</span>
+    </div>
+</div>
+
+<div>
+    <h2 class="text-darkest font-bold text-lg my-2">Campaigns</h2>
+    
+</div>
+
+
+<div>
+    <h2 class="text-darkest font-bold text-lg my-2">Deposits</h2>
+    <div class="flex justify-between border border-medium p-4 my-4">
+        
+            <form id="new-deposit-form" method="post"
+            class="w-full"
+                action="/admin/advertisers/{{.User.ID}}/deposit">
+                <div class="flex items-center justify-between">
+                    <div class="mb-4">
+                        <label for="amount" class="text-xs">Amount</label>
+                        <input type="number" name="amount" id="amount" required
+                            class="p-2 form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+                    </div>
+                    <div class="mb-4">
+                        <label for="start" class="text-xs">Start</label>
+                        <input type="date" name="start" id="start" required
+                            class="p-2 block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+                    </div>
+                    <div class="mb-4">
+                        <label for="end" class="text-xs">End</label>
+                        <input type="date" name="end" id="end" required
+                            class="p-2 block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+                    </div>
+                </div>
+                <div class="">
+                    <button type="button" onclick="makeDeposit()"
+                        class="h-10 text-white bg-primary px-4 rounded-sm hover:opacity-95">
+                        <i class='bx bx-money-withdraw align-middle'></i>
+                        <span class="align-middle">Accept deposit</span>
+                    </button>
+                </div>
+            </form>
+            <script>
+                function makeDeposit() {
+                    const f = document.getElementById("new-deposit-form")
+                    if (confirm("Are you sure you want to make this deposit?")) {
+                        f.submit()
+                    }
+                }
+            </script>
+       
+
+    </div>
+    <table class="table-auto border text-darkest border-medium border-collapse">
+        <thead class="">
+            <tr>
+                <th class="p-2 border border-medium">Time</th>
+                <th class="p-2 border border-medium">Amount</th>
+                <th class="p-2 border border-medium">Period</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Deposits}}
+            <tr class="text-sm">
+                <td class="p-2 text-sm border border-medium font-bold">
+                    <span class="text-xs">{{.DepositTime.Format "03:04 PM"}}</span>
+                    <span class="">{{.DepositTime.Format "02/01/2006"}}</span>
+                </td>
+                <td class="border border-medium p-2 font-bold">
+                    {{printf "%.2f" .Amount}}
+                    <span class="text-sm">ETB</span>
+                </td>
+                <td class="p-2 text-sm border border-medium">
+                    <span class="font-bold">
+                        <span class="text-xs">{{.Start.Format "03:04 PM"}}</span>
+                        <span class="">{{.Start.Format "02/01/2006"}}</span>
+                    </span>
+                    -
+                    <span class="font-bold">
+                        <span class="text-xs">{{.End.Format "03:04 PM"}}</span>
+                        <span class="">{{.End.Format "02/01/2006"}}</span>
+                    </span>
+                </td>
+
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+
+{{end}}

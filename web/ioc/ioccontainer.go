@@ -105,6 +105,10 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(disbursement.DisbursementRepository), new(disbursementrepository.MongoDBDisbursementRepository)),
 	advertiserrepository.NewMongoDBAdvertiserRepository,
 	wire.Bind(new(advertiser.AdvertiserRepository), new(advertiserrepository.MongoDBAdvertiserRepository)),
+	advertiserrepository.NewMongoDBAdvertiserSignUpUnitOfWork,
+	wire.Bind(new(advertiserinteractors.AdvertiserSignUpUnitOfWork), new(advertiserrepository.MongoDBAdvertiserSignUpUnitOfWork)),
+
+
 
 	//Infrastructures
 	infrastructure.NewAppHTTPClient,
@@ -160,6 +164,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	paymentinteractors.NewDepositInteractor,
 	paymentinteractors.NewEarningInteractor,
 	paymentinteractors.NewDisbursementInteractor,
+	advertiserinteractors.NewAdvertiserInteractor,
 
 	//Middlewares
 	middlewares.NewJwtAuthenticationMiddleware,

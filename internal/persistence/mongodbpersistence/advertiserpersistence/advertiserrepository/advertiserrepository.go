@@ -60,7 +60,9 @@ func (r MongoDBAdvertiserRepository) Save(ctx context.Context, e advertiser.Adve
 
 func (r MongoDBAdvertiserRepository) Advertisers() ([]advertiser.Advertiser, error) {
 	advertisers := r.db.Collection("advertisers")
-	cursor, err := advertisers.Find(context.Background(), bson.D{})
+	cursor, err := advertisers.Find(context.Background(), bson.D{}, &options.FindOptions{
+		Sort: bson.D{{"name", 1}},
+	})
 	if err != nil {
 		return []advertiser.Advertiser{}, err
 	}
@@ -85,7 +87,6 @@ func (r MongoDBAdvertiserRepository) Advertisers() ([]advertiser.Advertiser, err
 	}
 	return allAdvertisers, nil
 }
-
 
 func mapAdvertiserToM(s advertiser.Advertiser) bson.M {
 	return bson.M{

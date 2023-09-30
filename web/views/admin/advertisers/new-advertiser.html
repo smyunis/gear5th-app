@@ -1,0 +1,43 @@
+{{define "title"}}Admin Console | gear5th{{end}}
+
+{{define "in-main"}}
+<h2 class="text-darkest font-bold text-xl py-2">New advertiser</h2>
+{{if .ErrorMessage}}
+{{template "error-alert" .ErrorMessage}}
+{{end}}
+<form method="post">
+    <div class="mb-4">
+        <label for="name" class="text-xs">Name</label>
+        <input type="text" name="name" id="name" value="{{.Name}}" required
+            class="p-2 form-input block w-full rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+    <div class="mb-4">
+        <label for="email" class="text-xs">Email</label>
+        <input type="email" name="email" id="email" value="{{.Email}}" required
+            class="p-2 form-input block w-full rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+    <div class="mb-4">
+        <label for="phone-number" class="text-xs">Phone number</label>
+        <input type="tel" name="phone-number" id="phone-number" value="{{.PhoneNumber}}" required size="30"
+            maxlength="24"
+            class="text-medium p-2 form-input block w-full rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+    <div class="mb-4">
+        <label for="note" class="text-xs">Note</label>
+        <textarea name="note" class="form-textarea block w-full rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0"></textarea>
+    </div>
+
+    <div class="flex items-center">
+        <button type="submit" class="h-10 mr-4 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+            Add advertiser
+        </button>
+        <a href="/admin/advertisers">
+            <button type="button"
+                class="h-10 text-primary border-2 border-primary bg-white px-4 py-2 rounded-sm hover:text-white hover:bg-primary hover:opacity-95">
+                Cancel
+            </button>
+        </a>
+
+    </div>
+</form>
+{{end}}

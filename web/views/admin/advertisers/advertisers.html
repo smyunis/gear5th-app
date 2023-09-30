@@ -1,6 +1,43 @@
 {{define "title"}}Admin Console | gear5th{{end}}
 
 {{define "in-main"}}
-adv
-{{.}}
+<div class="flex">
+    <div class="self-end">
+        <a href="/admin/advertisers/new-advertiser">
+            <button type="button" class="h-10 mr-4 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+                <i class='bx bx-plus-circle align-middle'></i>
+                <span class="align-middle">New advertiser</span>
+            </button>
+        </a>
+    </div>
+</div>
+<h2 class="text-xl font-bold mb-8 text-darkest">Adverisers</h2>
+<table class="table-auto border border-medium border-collapse">
+    <thead class="">
+        <tr>
+            <th class="p-2 border border-medium">ID</th>
+            <th class="p-2 border border-medium">Name</th>
+            <th class="p-2 border border-medium">Note</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        {{range .}}
+        <tr class="text-sm">
+            <td class="p-2 text-sm border border-medium ">
+                <a href="/admin/advertisers/{{.UserID}}" class="underline hover:text-secondary">
+                    {{.UserID}}
+                </a>
+            </td>
+            <td class="p-2 text-sm border border-medium">
+                <span class="">{{.Name}}</span>
+            </td>
+            <td class="border border-medium p-2">
+                <span class="">{{.Note}}</span>
+            </td>
+
+        </tr>
+        {{end}}
+    </tbody>
+</table>
 {{end}}
