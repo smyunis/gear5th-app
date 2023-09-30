@@ -5,6 +5,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/application/adsinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/identityinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/paymentinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/application/publisherinteractors"
 )
 
 type EventHandlerRegistrar struct {
@@ -15,6 +16,7 @@ type EventHandlerRegistrar struct {
 	disbursementInteractor      paymentinteractors.DisbursementInteractor
 	depositInteractor           paymentinteractors.DepositInteractor
 	earningInteractor           paymentinteractors.EarningInteractor
+	publisherInteractor         publisherinteractors.PublisherInteractor
 }
 
 func NewEventHandlerRegistrar(
@@ -24,6 +26,7 @@ func NewEventHandlerRegistrar(
 	depositInteractor paymentinteractors.DepositInteractor,
 	earningInteractor paymentinteractors.EarningInteractor,
 	disbursementInteractor paymentinteractors.DisbursementInteractor,
+	publisherInteractor publisherinteractors.PublisherInteractor,
 	verificationEmailInteractor identityinteractors.VerificationEmailInteractor) EventHandlerRegistrar {
 	return EventHandlerRegistrar{
 		appEventDispatcher,
@@ -33,6 +36,7 @@ func NewEventHandlerRegistrar(
 		disbursementInteractor,
 		depositInteractor,
 		earningInteractor,
+		publisherInteractor,
 	}
 }
 
@@ -45,6 +49,7 @@ func (r *EventHandlerRegistrar) RegisterEventHandlers() error {
 	r.appEventDispatcher.AddHandler("impression/made", r.adsInteractor.IncrementImpressionCount)
 
 	r.appEventDispatcher.AddHandler("disbursement/requested", r.disbursementInteractor.OnRequestDisbursement)
+	r.appEventDispatcher.AddHandler("disbursement/settled", r.publisherInteractor.OnDisbursementSettled)
 
 	return nil
 }

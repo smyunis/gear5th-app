@@ -9,6 +9,7 @@ import (
 type DisbursementRepository interface {
 	shared.EntityRepository[Disbursement]
 	DisbursementsForPublisher(publisherID shared.ID) ([]Disbursement, error)
+	DisbursementsWithStatus(status DisbursementStatus) ([]Disbursement, error)
 }
 
 type DisbursementStatus = int
@@ -55,7 +56,6 @@ func (d *Disbursement) Settle(settlementRemark string) error {
 		return shared.ErrInvalidOperation
 	}
 	d.Status = Settled
-	d.Time = time.Now()
 	d.SettlementRemark = settlementRemark
 	d.Events.Emit("disbursement/settled", d)
 	return nil
@@ -66,7 +66,6 @@ func (d *Disbursement) Confirm() error {
 		return shared.ErrInvalidOperation
 	}
 	d.Status = Confirmed
-	d.Time = time.Now()
 	d.Events.Emit("disbursement/confirmed", d)
 	return nil
 }
@@ -76,7 +75,6 @@ func (d *Disbursement) Reject() error {
 		return shared.ErrInvalidOperation
 	}
 	d.Status = Rejected
-	d.Time = time.Now()
 	d.Events.Emit("disbursement/rejected", d)
 	return nil
 }

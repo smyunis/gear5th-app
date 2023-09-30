@@ -135,6 +135,23 @@ func (i *DisbursementInteractor) RejectDisbursement(disbursementID shared.ID, to
 	return nil
 }
 
+func (i *DisbursementInteractor) SettleDisbursement(disbursementID shared.ID, remark string) error {
+	d,err := i.disbursementRepository.Get(context.Background(),disbursementID)
+	if err != nil {
+		return err
+	}
+
+	d.Settle(remark)
+
+	err = i.disbursementRepository.Save(context.Background(),d)
+	if err != nil {
+		return err
+	}
+
+	i.eventDispatcher.DispatchAsync(d.Events)
+	return nil
+}
+
 func (i *DisbursementInteractor) OnRequestDisbursement(disb any) {
 	d := disb.(disbursement.Disbursement)
 
@@ -152,4 +169,33 @@ func (i *DisbursementInteractor) OnRequestDisbursement(disb any) {
 
 func (i *DisbursementInteractor) DisbursementsForPublisher(publisherID shared.ID) ([]disbursement.Disbursement, error) {
 	return i.disbursementRepository.DisbursementsForPublisher(publisherID)
+}
+
+func (i *DisbursementInteractor) DisbursementsWithStatus(status disbursement.DisbursementStatus) ([]disbursement.Disbursement, error) {
+	return i.disbursementRepository.DisbursementsWithStatus(status)
+}
+
+type DisbursementDetail struct {
+	Disbursement disbursement.Disbursement
+	User         user.User
+	Publisher    publisher.Publisher
+}
+
+func (i *DisbursementInteractor) Disbursement(disbursementID shared.ID) (DisbursementDetail, error) {
+	d, err := i.disbursementRepository.Get(context.Background(), disbursementID)
+	if err != nil {
+		return DisbursementDetail{}, err
+	}
+
+	u, err := i.userRepository.Get(context.Background(), d.PublisherID)
+	if err != nil {
+		return DisbursementDetail{}, err
+	}
+
+	p, err := i.publisherRepository.Get(context.Background(), u.ID)
+	if err != nil {
+		return DisbursementDetail{}, err
+	}
+
+	return DisbursementDetail{d, u, p}, nil
 }

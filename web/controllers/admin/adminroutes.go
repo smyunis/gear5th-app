@@ -15,4 +15,10 @@ func Routes(app *fiber.App) {
 	dashController := ioc.InitAdminDashboardController()
 	dashController.AddRoutes(&route)
 
+	pubPay := ioc.InitAdminPublisherPaymentsController()
+	pubPay.AddRoutes(&route)
+
+	adv := ioc.InitAdminAdvertisersController()
+	adv.AddRoutes(&route)
+
 }

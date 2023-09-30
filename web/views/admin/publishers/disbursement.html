@@ -1,0 +1,62 @@
+{{define "title"}}Admin Console | gear5th{{end}}
+
+{{define "in-main"}}
+<div class="mb-4">
+    <h2 class="text-darkest font-bold text-xl">
+        Disbursement
+    </h2>
+    <span class="text-dark text-sm">{{.Disbursement.ID}}</span>
+</div>
+<div class="flex sm:flex-col sm:gap-8 pt-2 pb-8 text-darkest">
+    <div class="flex flex-col">
+        <span class="text-xs">Disbursement details</span>
+        <span class="text-dark">{{.Disbursement.PaymentProfile.PaymentMethod}}</span>
+        <span class="font-bold text-lg">{{.Disbursement.PaymentProfile.Account}}</span>
+        <span class="">{{.Disbursement.PaymentProfile.FullName}}</span>
+        <span class="text-dark">{{.Disbursement.PaymentProfile.PhoneNumber}}</span>
+        <span class="font-bold text-xl">
+            {{printf "%.2f" .Disbursement.Amount}}
+            <span class="text-base">ETB</span>
+        </span>
+    </div>
+    <div class="flex flex-col">
+        <span class="text-xs">Publisher details</span>
+        <span class="underline hover:text-secondary"> <a href="mailto:{{.User.Email.String}}">{{.User.Email.String}}</a>
+        </span>
+        <span> {{.User.PhoneNumber.String}}</span>
+        <span class="pt-4 text-xs text-dark">Last disbursement</span>
+        <span class="text-dark">{{.Publisher.LastDisbursement.Format "02-Jan-2006 03:04 PM"}}</span>
+    </div>
+</div>
+
+<form id="settle-form" method="post" action="/admin/publishers/payments/disbursement/{{.Disbursement.ID}}/settle">
+    <input type="hidden" name="settle" value="{{.Disbursement.ID}}">
+    <div class="mb-4">
+        <label class="text-xs">Settlement remark</label>
+        <input type="text" name="set-remark" id="set-remark" required
+            class="p-2 w-96 form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+    </div>
+    <div class="flex items-center">
+        <button type="button" onclick="onSettleSubmit()"
+            class="h-10 mr-4 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+            Settle
+        </button>
+
+        <a href="/admin/publishers/payments">
+            <button type="button"
+                class="h-10 text-primary border-2 border-primary bg-white px-4 py-2 rounded-sm hover:text-white hover:bg-primary hover:opacity-95">
+                Cancel
+            </button>
+        </a>
+    </div>
+</form>
+<script>
+    function onSettleSubmit() {
+        if (confirm("Are you sure you want to settle this disbursement request?")) {
+            const f = document.getElementById("settle-form")
+            f.submit()
+        }
+    }
+</script>
+
+{{end}}

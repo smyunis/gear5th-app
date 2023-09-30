@@ -6,7 +6,6 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	publisherTestSetup()
 	siteTestSetup()
 	os.Exit(m.Run())
 }

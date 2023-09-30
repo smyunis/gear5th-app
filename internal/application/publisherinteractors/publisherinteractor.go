@@ -7,39 +7,44 @@ import (
 
 	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/disbursement"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/publisher/publisher"
 )
 
 type PublisherSignUpUnitOfWork interface {
 	Save(ctx context.Context, usr user.User, managedUser user.ManagedUser, pub publisher.Publisher) error
 	SaveOAuthUser(ctx context.Context, usr user.User, oauthUser user.OAuthUser, pub publisher.Publisher) error
-	UserRepository() user.UserRepository
 }
 
-type PublisherSignUpInteractor struct {
-	eventDispatcher    application.EventDispatcher
-	unitOfWork         PublisherSignUpUnitOfWork
-	googleOAuthService user.GoogleOAuthService
-	logger             application.Logger
+type PublisherInteractor struct {
+	eventDispatcher     application.EventDispatcher
+	unitOfWork          PublisherSignUpUnitOfWork
+	userRepository      user.UserRepository
+	publisherRepository publisher.PublisherRepository
+	googleOAuthService  user.GoogleOAuthService
+	logger              application.Logger
 }
 
-func NewPublisherSignUpInteractor(
+func NewPublisherInteractor(
 	eventDispatcher application.EventDispatcher,
 	unitOfWork PublisherSignUpUnitOfWork,
+	userRepository user.UserRepository,
+	publisherRepository publisher.PublisherRepository,
 	googleOAuthService user.GoogleOAuthService,
-	logger application.Logger) PublisherSignUpInteractor {
-	return PublisherSignUpInteractor{
+	logger application.Logger) PublisherInteractor {
+	return PublisherInteractor{
 		eventDispatcher,
 		unitOfWork,
+		userRepository,
+		publisherRepository,
 		googleOAuthService,
 		logger,
 	}
 }
 
-func (i *PublisherSignUpInteractor) ManagedUserSignUp(usr user.User, managedUser user.ManagedUser) error {
+func (i *PublisherInteractor) ManagedUserSignUp(usr user.User, managedUser user.ManagedUser) error {
 
-	userRepository := i.unitOfWork.UserRepository()
-	existingUser, err := userRepository.UserWithEmail(context.Background(), usr.Email)
+	existingUser, err := i.userRepository.UserWithEmail(context.Background(), usr.Email)
 
 	if err == nil {
 		usr = existingUser
@@ -65,7 +70,7 @@ func (i *PublisherSignUpInteractor) ManagedUserSignUp(usr user.User, managedUser
 
 }
 
-func (i *PublisherSignUpInteractor) OAuthUserSignUp(token string) error {
+func (i *PublisherInteractor) OAuthUserSignUp(token string) error {
 	userDetails, err := i.googleOAuthService.ValidateToken(token)
 	if err != nil {
 		return err
@@ -76,8 +81,7 @@ func (i *PublisherSignUpInteractor) OAuthUserSignUp(token string) error {
 		return err
 	}
 
-	userRepository := i.unitOfWork.UserRepository()
-	existingUser, err := userRepository.UserWithEmail(context.Background(), userEmail)
+	existingUser, err := i.userRepository.UserWithEmail(context.Background(), userEmail)
 	if err == nil {
 		if existingUser.HasRole(user.Publisher) {
 			return application.ErrConflictFound
@@ -100,4 +104,22 @@ func (i *PublisherSignUpInteractor) OAuthUserSignUp(token string) error {
 
 	return nil
 
+}
+
+func (i *PublisherInteractor) OnDisbursementSettled(e any) {
+	d := e.(*disbursement.Disbursement)
+
+	p, err := i.publisherRepository.Get(context.Background(), d.PublisherID)
+	if err != nil {
+		i.logger.Error("publisher/get", err)
+		return
+	}
+
+	p.LastDisbursement = d.Time
+
+	err = i.publisherRepository.Save(context.Background(), p)
+	if err != nil {
+		i.logger.Error("publisher/save", err)
+		return
+	}
 }

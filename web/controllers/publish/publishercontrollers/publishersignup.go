@@ -35,11 +35,11 @@ type publisherSignUp struct {
 }
 
 type PublisherSignUpController struct {
-	interactor publisherinteractors.PublisherSignUpInteractor
+	interactor publisherinteractors.PublisherInteractor
 	logger     application.Logger
 }
 
-func NewPublisherSignUpController(interactor publisherinteractors.PublisherSignUpInteractor,
+func NewPublisherSignUpController(interactor publisherinteractors.PublisherInteractor,
 	logger application.Logger) PublisherSignUpController {
 	return PublisherSignUpController{
 		interactor,

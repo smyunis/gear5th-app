@@ -47,7 +47,6 @@ func NewEarningInteractor(
 	}
 }
 
-// TODO when settling settle from beg of day
 func (i *EarningInteractor) CurrentBalance(publisherID shared.ID) (float64, error) {
 	p, err := i.publisherRepository.Get(context.Background(), publisherID)
 	if err != nil {
@@ -67,7 +66,7 @@ func (i *EarningInteractor) CurrentBalance(publisherID shared.ID) (float64, erro
 		}
 
 		fs := strconv.FormatFloat(bal, 'f', 2, 64)
-		i.cacheStore.Save(balanceCacheKey, fs, 168*time.Hour)
+		i.cacheStore.Save(balanceCacheKey, fs, 2*time.Hour)
 	}
 	return bal, nil
 }

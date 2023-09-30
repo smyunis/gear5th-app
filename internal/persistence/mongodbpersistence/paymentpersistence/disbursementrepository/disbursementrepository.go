@@ -90,6 +90,38 @@ func (r MongoDBDisbursementRepository) DisbursementsForPublisher(publisherID sha
 	return publisherDisbursements, nil
 }
 
+func (r MongoDBDisbursementRepository) DisbursementsWithStatus(status disbursement.DisbursementStatus) ([]disbursement.Disbursement, error) {
+	disbursements := r.db.Collection("disbursements")
+	cursor, err := disbursements.Find(context.Background(), bson.D{
+		{"status", status}}, &options.FindOptions{
+		Sort: bson.D{{"time", 1}},
+	})
+
+	if err != nil {
+		return []disbursement.Disbursement{}, err
+	}
+
+	disbursmentsForStatus := make([]disbursement.Disbursement, 0)
+	for cursor.Next(context.Background()) {
+		var res bson.M
+		err := cursor.Decode(&res)
+		if err != nil {
+			if errors.Is(err, mongo.ErrNoDocuments) {
+				return []disbursement.Disbursement{}, application.ErrEntityNotFound
+			}
+			r.logger.Error("disbursements/persistence/disbursements-for-status", err)
+			return []disbursement.Disbursement{}, err
+		}
+		s := mapMToDisbursement(res)
+		disbursmentsForStatus = append(disbursmentsForStatus, s)
+	}
+	if err := cursor.Err(); err != nil {
+		r.logger.Error("disbursements/persistence/disbursements-for-status", err)
+		return []disbursement.Disbursement{}, err
+	}
+	return disbursmentsForStatus, nil
+}
+
 func mapDisbursementToM(s disbursement.Disbursement) bson.M {
 	return bson.M{
 		"_id":              s.ID.String(),
@@ -133,3 +165,4 @@ func mapMToDisbursement(res primitive.M) disbursement.Disbursement {
 		PaymentProfile:   profile,
 	}
 }
+

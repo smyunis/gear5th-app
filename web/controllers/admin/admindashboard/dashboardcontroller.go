@@ -2,7 +2,6 @@ package admindashboard
 
 import (
 	"html/template"
-	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -18,12 +17,7 @@ var adminDashboardTemplate *template.Template
 
 func init() {
 	adminDashboardTemplate = template.Must(
-		controllers.AdminMainLayoutTemplate().Funcs(template.FuncMap{
-			"mul": func(a, b float64) string {
-				prod := a * b
-				return strconv.FormatFloat(prod, 'f', 2, 64)
-			},
-		}).ParseFiles(
+		controllers.AdminMainLayoutTemplate().ParseFiles(
 			"web/views/admin/dashboard/dashboard.html"))
 }
 

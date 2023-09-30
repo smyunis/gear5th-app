@@ -44,8 +44,10 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publisherrepository"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/publishersignupunitofwork"
 	"gitlab.com/gear5th/gear5th-app/internal/persistence/mongodbpersistence/publisherpersistence/siterepository"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/admin/adminadvertisers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/admin/admindashboard"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/admin/adminidentity"
+	"gitlab.com/gear5th/gear5th-app/web/controllers/admin/adminpublisherpayments"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/adclickcontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/adservercontrollers"
 	"gitlab.com/gear5th/gear5th-app/web/controllers/ads/impressioncontrollers"
@@ -144,7 +146,7 @@ var Container wire.ProviderSet = wire.NewSet(
 	identityinteractors.NewVerificationEmailInteractor,
 	identityinteractors.NewOAuthUserInteractor,
 	identityinteractors.NewUserAccountInteractor,
-	publisherinteractors.NewPublisherSignUpInteractor,
+	publisherinteractors.NewPublisherInteractor,
 	publisherinteractors.NewSiteInteractor,
 	publisherinteractors.NewAdSlotInteractor,
 	advertiserinteractors.NewAdPieceInteractor,
@@ -187,6 +189,8 @@ var Container wire.ProviderSet = wire.NewSet(
 
 	adminidentity.NewAdminIdentityController,
 	admindashboard.NewAdminDashboardController,
+	adminpublisherpayments.NewAdminPublisherPaymentsController,
+	adminadvertisers.NewAdminAdvertisersController,
 
 	application.NewAppEventDispatcher,
 	wire.Bind(new(application.EventDispatcher), new(application.InMemoryEventDispatcher)),
