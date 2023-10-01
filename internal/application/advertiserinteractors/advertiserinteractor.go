@@ -14,20 +14,23 @@ type AdvertiserSignUpUnitOfWork interface {
 }
 
 type AdvertiserInteractor struct {
-	advertiserRepository advertiser.AdvertiserRepository
-	userRepository       user.UserRepository
-	advertiserSignUpUoW  AdvertiserSignUpUnitOfWork
-	eventDispatcher      application.EventDispatcher
+	advertiserRepository    advertiser.AdvertiserRepository
+	userRepository          user.UserRepository
+	advertiserSignUpUoW     AdvertiserSignUpUnitOfWork
+	digitalSignatureService application.DigitalSignatureService
+	eventDispatcher         application.EventDispatcher
 }
 
 func NewAdvertiserInteractor(advertiserRepository advertiser.AdvertiserRepository,
 	userRepository user.UserRepository,
 	advertiserSignUpUoW AdvertiserSignUpUnitOfWork,
+	digitalSignatureService application.DigitalSignatureService,
 	eventDispatcher application.EventDispatcher) AdvertiserInteractor {
 	return AdvertiserInteractor{
 		advertiserRepository,
 		userRepository,
 		advertiserSignUpUoW,
+		digitalSignatureService,
 		eventDispatcher,
 	}
 }
@@ -67,3 +70,8 @@ func (i *AdvertiserInteractor) Advertiser(advertiserID shared.ID) (AdveritserDet
 	}
 	return AdveritserDetails{u, a}, nil
 }
+
+func (i *AdvertiserInteractor) GenerateAdvertiserToken(advertiserID shared.ID) (string, error) {
+	return i.digitalSignatureService.Generate(advertiserID.String())
+}
+

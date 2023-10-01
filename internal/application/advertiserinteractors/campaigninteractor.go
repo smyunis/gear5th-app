@@ -42,14 +42,6 @@ func (i *CampaignInteractor) Campaign(campaignID shared.ID) (campaign.Campaign, 
 	return i.campaignRepository.Get(context.Background(), campaignID)
 }
 
-func (i *CampaignInteractor) Advertiser(advertiserID shared.ID) (user.User, error) {
-	u, err := i.userRepository.Get(context.Background(), advertiserID)
-	if err != nil {
-		return user.User{}, err
-	}
-
-	return u, nil
-}
 
 func (i *CampaignInteractor) StartCampaign(actorID shared.ID, name string, start, end time.Time) error {
 

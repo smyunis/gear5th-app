@@ -383,7 +383,10 @@ func InitCampaignController() campaigncontrollers.CampaignController {
 	mongoDBGridFSFileStore := filestore.NewMongoDBGridFSFileStore(mongoDBStoreBootstrap)
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
 	campaignInteractor := advertiserinteractors.NewCampaignInteractor(mongoDBCampaignRepository, mongoDBUserRepositoryCached, mongoDBAdPieceRepository, mongoDBGridFSFileStore, inMemoryEventDispatcher)
-	campaignController := campaigncontrollers.NewCampaignController(advertiserRefferalMiddleware, campaignInteractor, mongoDBGridFSFileStore, appLogger)
+	mongoDBAdvertiserRepository := advertiserrepository.NewMongoDBAdvertiserRepository(mongoDBStoreBootstrap, appLogger)
+	mongoDBAdvertiserSignUpUnitOfWork := advertiserrepository.NewMongoDBAdvertiserSignUpUnitOfWork(mongoDBAdvertiserRepository, mongoDBUserRepositoryCached, mongoDBStoreBootstrap, appLogger)
+	advertiserInteractor := advertiserinteractors.NewAdvertiserInteractor(mongoDBAdvertiserRepository, mongoDBUserRepositoryCached, mongoDBAdvertiserSignUpUnitOfWork, hs256HMACValidationService, inMemoryEventDispatcher)
+	campaignController := campaigncontrollers.NewCampaignController(advertiserRefferalMiddleware, campaignInteractor, advertiserInteractor, mongoDBGridFSFileStore, appLogger)
 	return campaignController
 }
 
@@ -581,8 +584,9 @@ func InitAdminAdvertisersController() adminadvertisers.AdminAdvertisersControlle
 	redisKeyValueStore := rediskeyvaluestore.NewRedisKeyValueStore(redisBootstrapper)
 	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
 	mongoDBAdvertiserSignUpUnitOfWork := advertiserrepository.NewMongoDBAdvertiserSignUpUnitOfWork(mongoDBAdvertiserRepository, mongoDBUserRepositoryCached, mongoDBStoreBootstrap, appLogger)
+	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
 	inMemoryEventDispatcher := application.NewAppEventDispatcher()
-	advertiserInteractor := advertiserinteractors.NewAdvertiserInteractor(mongoDBAdvertiserRepository, mongoDBUserRepositoryCached, mongoDBAdvertiserSignUpUnitOfWork, inMemoryEventDispatcher)
+	advertiserInteractor := advertiserinteractors.NewAdvertiserInteractor(mongoDBAdvertiserRepository, mongoDBUserRepositoryCached, mongoDBAdvertiserSignUpUnitOfWork, hs256HMACValidationService, inMemoryEventDispatcher)
 	mongoDBCampaignRepository := campaignrepository.NewMongoDBCampaignRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBAdPieceRepository := adpiecerepository.NewMongoDBAdPieceRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBGridFSFileStore := filestore.NewMongoDBGridFSFileStore(mongoDBStoreBootstrap)

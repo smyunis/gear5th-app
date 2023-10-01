@@ -5,9 +5,13 @@
     <i class='bx bx-arrow-back'></i>
     Back
 </a>
-<div>
+<div class="pb-8">
     <h2 class="text-darkest text-2xl font-bold">Adveritser</h2>
     <p class="text-sm">{{.User.ID}}</p>
+    <a href="/advertiser/campaign?token={{.Token}}" target="_blank" class="text-darkest underline hover:text-secondary">
+        Advertiser campaigns
+        <i class='bx bx-link-external text-sm'></i>
+    </a>
 </div>
 <div class="flex flex-col gap-8">
     <div class="flex flex-col my-2">
@@ -25,53 +29,128 @@
     </div>
 </div>
 
-<div>
+<div class="py-4">
     <h2 class="text-darkest font-bold text-lg my-2">Campaigns</h2>
-    
+    <div class="flex justify-between border border-medium p-4 my-4">
+        <form id="new-campaign-form" method="post" class="w-full" action="/admin/advertisers/{{.User.ID}}/campaign">
+            <div class="flex items-center justify-between">
+                <div class="mb-4">
+                    <label for="name" class="text-xs">Name</label>
+                    <input type="text" name="name" id="name" required
+                        class="p-2 form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+                </div>
+                <div class="mb-4">
+                    <label for="start" class="text-xs">Start</label>
+                    <input type="date" name="start" id="start" required
+                        class="p-2 block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+                </div>
+                <div class="mb-4">
+                    <label for="end" class="text-xs">End</label>
+                    <input type="date" name="end" id="end" required
+                        class="p-2 block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+                </div>
+            </div>
+            <div class="">
+                <button type="submit" class="h-10 text-white bg-primary px-4 rounded-sm hover:opacity-95">
+                    <span class="align-middle">New campaign</span>
+                </button>
+            </div>
+        </form>
+    </div>
+    <div>
+        <table class="table-auto border text-darkest border-medium border-collapse">
+            <thead class="">
+                <tr>
+                    <th class="p-2 border border-medium">Name</th>
+                    <th class="p-2 border border-medium">Period</th>
+                    <th class="p-2 border border-medium">Is running</th>
+                    <th class="p-2 border border-medium"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Campaigns}}
+                <tr class="text-sm">
+                    <td class="p-2 text-sm border border-medium font-bold">
+                        {{.Name}}
+                    </td>
+                    <td class="p-2 text-sm border border-medium">
+                        <span class="font-bold">
+                            <span class="">{{.Start.Format "02/01/2006"}}</span>
+                        </span>
+                        -
+                        <span class="font-bold">
+                            <span class="">{{.End.Format "02/01/2006"}}</span>
+                        </span>
+                    </td>
+                    <td class="border border-medium p-2 font-bold">
+                        {{.IsRunning}}
+                    </td>
+                    <td class="border border-medium p-2 font-bold">
+                        {{if .IsRunning}}
+                        <form id="quit-campaign-{{.ID}}-form" method="post" action="/admin/advertisers/{{$.User.ID}}/campaign/{{.ID}}/quit">
+                            <input type="hidden" name="remove" value="{{.ID}}">
+                            <button type="button" onclick='quitCampaign("quit-campaign-{{.ID}}-form")'
+                                class="underline hover:text-secondary">
+                                Quit campaign
+                            </button>
+                        </form>
+                        {{end}}
+                    </td>
+                </tr>
+                {{end}}
+                <script>
+                    function quitCampaign(formId) {
+                        if (confirm("Are you sure you want to quit this campaign?")) {
+                            document.getElementById(formId).submit()
+                        }
+                    }
+                </script>
+            </tbody>
+        </table>
+    </div>
+
 </div>
 
 
 <div>
     <h2 class="text-darkest font-bold text-lg my-2">Deposits</h2>
     <div class="flex justify-between border border-medium p-4 my-4">
-        
-            <form id="new-deposit-form" method="post"
-            class="w-full"
-                action="/admin/advertisers/{{.User.ID}}/deposit">
-                <div class="flex items-center justify-between">
-                    <div class="mb-4">
-                        <label for="amount" class="text-xs">Amount</label>
-                        <input type="number" name="amount" id="amount" required
-                            class="p-2 form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
-                    </div>
-                    <div class="mb-4">
-                        <label for="start" class="text-xs">Start</label>
-                        <input type="date" name="start" id="start" required
-                            class="p-2 block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
-                    </div>
-                    <div class="mb-4">
-                        <label for="end" class="text-xs">End</label>
-                        <input type="date" name="end" id="end" required
-                            class="p-2 block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
-                    </div>
+
+        <form id="new-deposit-form" method="post" class="w-full" action="/admin/advertisers/{{.User.ID}}/deposit">
+            <div class="flex items-center justify-between">
+                <div class="mb-4">
+                    <label for="amount" class="text-xs">Amount</label>
+                    <input type="number" name="amount" id="amount" required
+                        class="p-2 form-input block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
                 </div>
-                <div class="">
-                    <button type="button" onclick="makeDeposit()"
-                        class="h-10 text-white bg-primary px-4 rounded-sm hover:opacity-95">
-                        <i class='bx bx-money-withdraw align-middle'></i>
-                        <span class="align-middle">Accept deposit</span>
-                    </button>
+                <div class="mb-4">
+                    <label for="start" class="text-xs">Start</label>
+                    <input type="date" name="start" id="start" required
+                        class="p-2 block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
                 </div>
-            </form>
-            <script>
-                function makeDeposit() {
-                    const f = document.getElementById("new-deposit-form")
-                    if (confirm("Are you sure you want to make this deposit?")) {
-                        f.submit()
-                    }
+                <div class="mb-4">
+                    <label for="end" class="text-xs">End</label>
+                    <input type="date" name="end" id="end" required
+                        class="p-2 block rounded-sm border-medium focus:border-darkest focus:outline-none focus:ring-0">
+                </div>
+            </div>
+            <div class="">
+                <button type="button" onclick="makeDeposit()"
+                    class="h-10 text-white bg-primary px-4 rounded-sm hover:opacity-95">
+                    <i class='bx bx-money-withdraw align-middle'></i>
+                    <span class="align-middle">Accept deposit</span>
+                </button>
+            </div>
+        </form>
+        <script>
+            function makeDeposit() {
+                const f = document.getElementById("new-deposit-form")
+                if (confirm("Are you sure you want to make this deposit?")) {
+                    f.submit()
                 }
-            </script>
-       
+            }
+        </script>
+
 
     </div>
     <table class="table-auto border text-darkest border-medium border-collapse">
@@ -95,12 +174,10 @@
                 </td>
                 <td class="p-2 text-sm border border-medium">
                     <span class="font-bold">
-                        <span class="text-xs">{{.Start.Format "03:04 PM"}}</span>
                         <span class="">{{.Start.Format "02/01/2006"}}</span>
                     </span>
                     -
                     <span class="font-bold">
-                        <span class="text-xs">{{.End.Format "03:04 PM"}}</span>
                         <span class="">{{.End.Format "02/01/2006"}}</span>
                     </span>
                 </td>

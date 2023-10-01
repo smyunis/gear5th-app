@@ -8,6 +8,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/application/advertiserinteractors"
 	"gitlab.com/gear5th/gear5th-app/internal/application/paymentinteractors"
+	"gitlab.com/gear5th/gear5th-app/internal/domain/advertiser/campaign"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/deposit"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/shared"
@@ -62,8 +63,10 @@ func (c *AdminAdvertisersController) AddRoutes(router *fiber.Router) {
 	(*router).Add(fiber.MethodGet, "/advertisers", c.advertisersOnGet)
 	(*router).Add(fiber.MethodGet, "/advertisers/new-advertiser", c.newAdvertiserOnGet)
 	(*router).Add(fiber.MethodPost, "/advertisers/new-advertiser", c.newAdvertiserOnPost)
-	(*router).Add(fiber.MethodGet, "/advertisers/:advertiserId", c.advertiserOnGet)
+	(*router).Add(fiber.MethodPost, "/advertisers/:advertiserId/campaign/:campaignId/quit", c.quitCampaignOnPost)
+	(*router).Add(fiber.MethodPost, "/advertisers/:advertiserId/campaign", c.newCampaignOnPost)
 	(*router).Add(fiber.MethodPost, "/advertisers/:advertiserId/deposit", c.acceptDepositOnPost)
+	(*router).Add(fiber.MethodGet, "/advertisers/:advertiserId", c.advertiserOnGet)
 }
 
 func (c *AdminAdvertisersController) advertisersOnGet(ctx *fiber.Ctx) error {
@@ -78,7 +81,9 @@ func (c *AdminAdvertisersController) advertisersOnGet(ctx *fiber.Ctx) error {
 
 type advertieserDetailsPresenter struct {
 	advertiserinteractors.AdveritserDetails
-	Deposits []deposit.Deposit
+	Deposits  []deposit.Deposit
+	Campaigns []campaign.Campaign
+	Token     string
 }
 
 func (c *AdminAdvertisersController) advertiserOnGet(ctx *fiber.Ctx) error {
@@ -100,8 +105,22 @@ func (c *AdminAdvertisersController) advertiserOnGet(ctx *fiber.Ctx) error {
 		p.Deposits = make([]deposit.Deposit, 0)
 		return controllers.Render(ctx, adminAdvertiserTemplate, p)
 	}
-
 	p.Deposits = deps
+
+	campaigns, err := c.campaignInteractor.CampaignsForAdvertiser(shared.ID(advertiserID))
+	if err != nil {
+		p.Campaigns = make([]campaign.Campaign, 0)
+		return controllers.Render(ctx, adminAdvertiserTemplate, p)
+	}
+
+	p.Campaigns = campaigns
+
+	token, err := c.advertiserInteractor.GenerateAdvertiserToken(shared.ID(advertiserID))
+	if err != nil {
+		return controllers.Render(ctx, adminAdvertiserTemplate, p)
+	}
+
+	p.Token = token
 
 	return controllers.Render(ctx, adminAdvertiserTemplate, p)
 }
@@ -144,7 +163,7 @@ func (c *AdminAdvertisersController) newAdvertiserOnPost(ctx *fiber.Ctx) error {
 	return ctx.Redirect("/admin/advertisers")
 }
 
-type makeDepositPresenter struct {
+type acceptDepositPresenter struct {
 	Amount       float64 `form:"amount"`
 	Start        string  `form:"start"`
 	End          string  `form:"end"`
@@ -157,7 +176,7 @@ func (c *AdminAdvertisersController) acceptDepositOnPost(ctx *fiber.Ctx) error {
 		return ctx.Redirect("/pages/error.html")
 	}
 
-	p := &makeDepositPresenter{}
+	p := &acceptDepositPresenter{}
 	err := ctx.BodyParser(p)
 	if err != nil {
 		return ctx.Redirect("/pages/error.html")
@@ -173,6 +192,58 @@ func (c *AdminAdvertisersController) acceptDepositOnPost(ctx *fiber.Ctx) error {
 	}
 
 	err = c.depositInteractor.AcceptDeposit(shared.ID(advertiserID), p.Amount, s, e)
+	if err != nil {
+		return ctx.Redirect("/pages/error.html")
+	}
+
+	return ctx.Redirect("/admin/advertisers/" + advertiserID)
+}
+
+type newCampaignPresenter struct {
+	Name  string `form:"name"`
+	Start string `form:"start"`
+	End   string `form:"end"`
+}
+
+func (c *AdminAdvertisersController) newCampaignOnPost(ctx *fiber.Ctx) error {
+	advertiserID := ctx.Params("advertiserId", "")
+	if advertiserID == "" {
+		return ctx.Redirect("/pages/error.html")
+	}
+
+	p := &newCampaignPresenter{}
+	err := ctx.BodyParser(p)
+	if err != nil {
+		return ctx.Redirect("/pages/error.html")
+	}
+
+	s, err := time.Parse("2006-01-02", p.Start)
+	if err != nil {
+		return ctx.Redirect("/pages/error.html")
+	}
+	e, err := time.Parse("2006-01-02", p.End)
+	if err != nil {
+		return ctx.Redirect("/pages/error.html")
+	}
+
+	err = c.campaignInteractor.StartCampaign(shared.ID(advertiserID), p.Name, s, e)
+	if err != nil {
+		return ctx.Redirect("/pages/error.html")
+	}
+
+	return ctx.Redirect("/admin/advertisers/" + advertiserID)
+}
+
+func (c *AdminAdvertisersController) quitCampaignOnPost(ctx *fiber.Ctx) error {
+	advertiserID := ctx.Params("advertiserId", "")
+	if advertiserID == "" {
+		return ctx.Redirect("/pages/error.html")
+	}
+	campaignID := ctx.Params("campaignId", "")
+	if advertiserID == "" {
+		return ctx.Redirect("/pages/error.html")
+	}
+	err := c.campaignInteractor.QuitCampaign(shared.ID(advertiserID), shared.ID(campaignID))
 	if err != nil {
 		return ctx.Redirect("/pages/error.html")
 	}

@@ -1,12 +1,15 @@
 {{define "title"}}Advertiser | gear5th{{end}}
 
 {{define "in-main"}}
-<div class="flex justify-between pt-9 pb-4">
-    <span class="text-2xl text-darkest font-bold">Your campaigns</span>
-    <p>{{.AdvertiserEmail}}</p>
+<div style="background-image: url('/assets/blurry-gradient.svg');" class="flex justify-between text-lightest mt-4 p-8">
+    <span class="text-2xl font-bold">Your campaigns</span>
+    <div class="flex flex-col">
+        <span class="">{{.Advertiser.Advertiser.Name}}</span>
+        <span class="text-light text-sm">{{.Advertiser.User.Email.String}}</span>
+    </div>
 </div>
-<div>
-    <ul>
+<div class="border border-light p-4 my-8">
+    <ul class="py-8">
         {{range .Campaigns}}
         <li class="flex justify-between p-2 border-b border-light">
             <a href="/advertiser/adpiece?campaignId={{.ID}}&token={{$.Token}}"

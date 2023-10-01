@@ -31,26 +31,29 @@ type advertiserCampigns struct {
 }
 
 type campaignPresenter struct {
-	Campaigns       []advertiserCampigns
-	Token           string
-	AdvertiserEmail string
+	Campaigns  []advertiserCampigns
+	Token      string
+	Advertiser advertiserinteractors.AdveritserDetails
 }
 
 type CampaignController struct {
-	advertiserRefferal middlewares.AdvertiserRefferalMiddleware
-	campaignInteractor advertiserinteractors.CampaignInteractor
-	store              application.FileStore
-	logger             application.Logger
+	advertiserRefferal   middlewares.AdvertiserRefferalMiddleware
+	campaignInteractor   advertiserinteractors.CampaignInteractor
+	advertiserInteractor advertiserinteractors.AdvertiserInteractor
+	store                application.FileStore
+	logger               application.Logger
 }
 
 func NewCampaignController(
 	advertiserRefferal middlewares.AdvertiserRefferalMiddleware,
 	campaignInteractor advertiserinteractors.CampaignInteractor,
+	advertiserInteractor advertiserinteractors.AdvertiserInteractor,
 	store application.FileStore,
 	logger application.Logger) CampaignController {
 	return CampaignController{
 		advertiserRefferal,
 		campaignInteractor,
+		advertiserInteractor,
 		store,
 		logger,
 	}
@@ -73,7 +76,7 @@ func (c *CampaignController) campaignOnGet(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Redirect("/pages/error.html")
 	}
-	ad, err := c.campaignInteractor.Advertiser(advertiserID)
+	ad, err := c.advertiserInteractor.Advertiser(advertiserID)
 	if err != nil {
 		return ctx.Redirect("/pages/error.html")
 	}
@@ -102,7 +105,7 @@ func (c *CampaignController) campaignOnGet(ctx *fiber.Ctx) error {
 	p := &campaignPresenter{
 		advertiserCamps,
 		token,
-		ad.Email.String(),
+		ad,
 	}
 
 	return controllers.Render(ctx, campaignTemplate, p)
