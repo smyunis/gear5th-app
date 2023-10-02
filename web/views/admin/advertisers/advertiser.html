@@ -83,11 +83,15 @@
                         </span>
                     </td>
                     <td class="border border-medium p-2 font-bold">
-                        {{.IsRunning}}
+
+                        <span {{if .IsRunning}} class="text-green-700" {{end}} class="text-red-700">
+                            {{.IsRunning}}
+                        </span>
                     </td>
                     <td class="border border-medium p-2 font-bold">
                         {{if .IsRunning}}
-                        <form id="quit-campaign-{{.ID}}-form" method="post" action="/admin/advertisers/{{$.User.ID}}/campaign/{{.ID}}/quit">
+                        <form id="quit-campaign-{{.ID}}-form" method="post"
+                            action="/admin/advertisers/{{$.User.ID}}/campaign/{{.ID}}/quit">
                             <input type="hidden" name="remove" value="{{.ID}}">
                             <button type="button" onclick='quitCampaign("quit-campaign-{{.ID}}-form")'
                                 class="underline hover:text-secondary">

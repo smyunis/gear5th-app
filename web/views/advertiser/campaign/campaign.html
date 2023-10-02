@@ -12,8 +12,10 @@
     <ul class="py-8">
         {{range .Campaigns}}
         <li class="flex justify-between p-2 border-b border-light">
-            <a href="/advertiser/adpiece?campaignId={{.ID}}&token={{$.Token}}"
-                class="text-secondary underline">{{.Name}}</a>
+            <div class="sm:w-1/5">
+                <a href="/advertiser/adpiece?campaignId={{.ID}}&token={{$.Token}}"
+                    class="text-secondary underline">{{.Name}}</a>
+            </div>
             <div class="flex flex-col">
                 <span>
                     <span class="font-bold">{{.Start}}</span>

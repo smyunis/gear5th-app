@@ -1075,6 +1075,10 @@ select {
   width: 100vw;
 }
 
+.w-1\/3 {
+  width: 33.333333%;
+}
+
 .max-w-\[200px\] {
   max-width: 200px;
 }
@@ -1438,10 +1442,6 @@ select {
 
 .pt-4 {
   padding-top: 1rem;
-}
-
-.pt-8 {
-  padding-top: 2rem;
 }
 
 .pt-9 {
@@ -1824,6 +1824,14 @@ select {
   .sm\:w-fit {
     width: -moz-fit-content;
     width: fit-content;
+  }
+
+  .sm\:w-1\/3 {
+    width: 33.333333%;
+  }
+
+  .sm\:w-1\/5 {
+    width: 20%;
   }
 
   .sm\:flex-grow {
