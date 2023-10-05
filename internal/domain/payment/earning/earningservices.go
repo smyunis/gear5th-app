@@ -2,7 +2,7 @@ package earning
 
 
 // TODO
-const DisbursementRequestTreshold = 4500
+const DisbursementRequestTreshold = 2
 const FixedRatePerImpression = 0.1
 
 

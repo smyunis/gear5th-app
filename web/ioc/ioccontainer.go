@@ -27,6 +27,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/googleoauth"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/tokens"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/keyvaluestore/rediskeyvaluestore"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/disbursementemail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
@@ -129,10 +130,13 @@ var Container wire.ProviderSet = wire.NewSet(
 	wire.Bind(new(user.GoogleOAuthService), new(googleoauth.GoogleOAuthServiceImpl)),
 
 	// Mail
+	mail.NewSMTPMailSender,
+	wire.Bind(new(mail.MailSender), new(mail.SMTPMailSender)),
+
 	identityemail.NewVerifcationEmailSender,
-	identityemail.NewRequestPassordResetEmailService,
-	wire.Bind(new(identityinteractors.RequestPasswordResetEmailService), new(identityemail.RequestPassordResetEmailService)),
-	wire.Bind(new(identityinteractors.VerificationEmailService), new(identityemail.VerifcationEmailSender)),
+	identityemail.NewRequestPasswordResetEmailService,
+	wire.Bind(new(identityinteractors.RequestPasswordResetEmailService), new(identityemail.RequestPasswordResetEmailService)),
+	wire.Bind(new(identityinteractors.VerificationEmailService), new(identityemail.VerificationEmailSender)),
 	disbursementemail.NewDisbursementEmailService,
 	wire.Bind(new(paymentinteractors.DisbursementEmailService), new(disbursementemail.DisbursementEmailService)),
 

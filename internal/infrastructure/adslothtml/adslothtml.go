@@ -46,7 +46,6 @@ func NewAdSlotHTMLSnippetService(config infrastructure.ConfigurationProvider) Ad
 }
 
 func (a AdSlotHTMLSnippetService) GenerateHTML(s site.Site, slot adslot.AdSlot) (string, error) {
-	var htmlStringBuilder strings.Builder
 
 	adServerURL := a.appURL.JoinPath("/ads/adserver")
 	q := adServerURL.Query()
@@ -61,6 +60,8 @@ func (a AdSlotHTMLSnippetService) GenerateHTML(s site.Site, slot adslot.AdSlot) 
 		AdSlot:      slot,
 		AdServerURL: adServerURL,
 	}
+	
+	var htmlStringBuilder strings.Builder
 	err := adSlotHTMLTemplate.ExecuteTemplate(&htmlStringBuilder, "adslot-integration-snippet", p)
 	if err != nil {
 		return "", err

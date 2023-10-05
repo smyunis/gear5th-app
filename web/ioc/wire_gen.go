@@ -18,6 +18,7 @@ import (
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/googleoauth"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/identity/tokens"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/keyvaluestore/rediskeyvaluestore"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/disbursementemail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail/identityemail"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/siteverification"
@@ -75,10 +76,11 @@ func InitManagedUserController() identitycontrollers.UserSignInController {
 	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
-	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
-	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
-	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepositoryCached, mongoDBMangageUserRepository, jwtAccessTokenService, requestPassordResetEmailService, hs256HMACValidationService)
+	smtpMailSender := mail.NewSMTPMailSender(envConfigurationProvider, appLogger)
+	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
+	requestPasswordResetEmailService := identityemail.NewRequestPasswordResetEmailService(envConfigurationProvider, smtpMailSender, hs256HMACValidationService, appLogger)
+	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepositoryCached, mongoDBMangageUserRepository, jwtAccessTokenService, requestPasswordResetEmailService, hs256HMACValidationService)
 	userSignInController := identitycontrollers.NewUserSignInController(managedUserInteractor, appLogger)
 	return userSignInController
 }
@@ -122,10 +124,11 @@ func InitRequestPasswordResetController() identitycontrollers.RequestPasswordRes
 	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
-	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
-	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
-	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepositoryCached, mongoDBMangageUserRepository, jwtAccessTokenService, requestPassordResetEmailService, hs256HMACValidationService)
+	smtpMailSender := mail.NewSMTPMailSender(envConfigurationProvider, appLogger)
+	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
+	requestPasswordResetEmailService := identityemail.NewRequestPasswordResetEmailService(envConfigurationProvider, smtpMailSender, hs256HMACValidationService, appLogger)
+	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepositoryCached, mongoDBMangageUserRepository, jwtAccessTokenService, requestPasswordResetEmailService, hs256HMACValidationService)
 	requestPasswordResetController := identitycontrollers.NewRequestPasswordResetController(managedUserInteractor, appLogger)
 	return requestPasswordResetController
 }
@@ -139,10 +142,11 @@ func InitVerifyEmailController() identitycontrollers.VerifyEmailController {
 	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
-	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
-	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
-	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepositoryCached, mongoDBMangageUserRepository, jwtAccessTokenService, requestPassordResetEmailService, hs256HMACValidationService)
+	smtpMailSender := mail.NewSMTPMailSender(envConfigurationProvider, appLogger)
+	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
+	requestPasswordResetEmailService := identityemail.NewRequestPasswordResetEmailService(envConfigurationProvider, smtpMailSender, hs256HMACValidationService, appLogger)
+	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepositoryCached, mongoDBMangageUserRepository, jwtAccessTokenService, requestPasswordResetEmailService, hs256HMACValidationService)
 	verifyEmailController := identitycontrollers.NewVerifyEmailController(managedUserInteractor, appLogger)
 	return verifyEmailController
 }
@@ -156,10 +160,11 @@ func InitResetPasswordController() identitycontrollers.ResetPasswordController {
 	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
-	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
-	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
-	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepositoryCached, mongoDBMangageUserRepository, jwtAccessTokenService, requestPassordResetEmailService, hs256HMACValidationService)
+	smtpMailSender := mail.NewSMTPMailSender(envConfigurationProvider, appLogger)
+	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
+	requestPasswordResetEmailService := identityemail.NewRequestPasswordResetEmailService(envConfigurationProvider, smtpMailSender, hs256HMACValidationService, appLogger)
+	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepositoryCached, mongoDBMangageUserRepository, jwtAccessTokenService, requestPasswordResetEmailService, hs256HMACValidationService)
 	resetPasswordController := identitycontrollers.NewResetPasswordController(managedUserInteractor, appLogger)
 	return resetPasswordController
 }
@@ -473,7 +478,8 @@ func InitPaymentController() paymentcontrollers.PaymentController {
 	earningInteractor := paymentinteractors.NewEarningInteractor(adsInteractor, depositInteractor, mongoDBPublisherRepository, mongoDBSiteRepository, mongoDBImpressionRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
 	mongoDBDisbursementRepository := disbursementrepository.NewMongoDBDisbursementRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
-	disbursementEmailService := disbursementemail.NewDisbursementEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
+	smtpMailSender := mail.NewSMTPMailSender(envConfigurationProvider, appLogger)
+	disbursementEmailService := disbursementemail.NewDisbursementEmailService(envConfigurationProvider, smtpMailSender, hs256HMACValidationService, appLogger)
 	disbursementInteractor := paymentinteractors.NewDisbursementInteractor(mongoDBDisbursementRepository, mongoDBUserRepositoryCached, mongoDBPublisherRepository, earningInteractor, disbursementEmailService, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
 	paymentController := paymentcontrollers.NewPaymentController(jwtAuthenticationMiddleware, earningInteractor, disbursementInteractor, appLogger)
 	return paymentController
@@ -500,7 +506,8 @@ func InitDisbursementController() paymentcontrollers.DisbursementController {
 	earningInteractor := paymentinteractors.NewEarningInteractor(adsInteractor, depositInteractor, mongoDBPublisherRepository, mongoDBSiteRepository, mongoDBImpressionRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
 	mongoDBDisbursementRepository := disbursementrepository.NewMongoDBDisbursementRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
-	disbursementEmailService := disbursementemail.NewDisbursementEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
+	smtpMailSender := mail.NewSMTPMailSender(envConfigurationProvider, appLogger)
+	disbursementEmailService := disbursementemail.NewDisbursementEmailService(envConfigurationProvider, smtpMailSender, hs256HMACValidationService, appLogger)
 	disbursementInteractor := paymentinteractors.NewDisbursementInteractor(mongoDBDisbursementRepository, mongoDBUserRepositoryCached, mongoDBPublisherRepository, earningInteractor, disbursementEmailService, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
 	disbursementController := paymentcontrollers.NewDisbursementController(jwtAuthenticationMiddleware, earningInteractor, disbursementInteractor, appLogger)
 	return disbursementController
@@ -515,10 +522,11 @@ func InitAdminIdentityController() adminidentity.AdminIdentityController {
 	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	jwtAccessTokenService := tokens.NewJwtAccessTokenService(envConfigurationProvider)
-	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
 	appLogger := infrastructure.NewAppLogger(envConfigurationProvider)
-	requestPassordResetEmailService := identityemail.NewRequestPassordResetEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
-	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepositoryCached, mongoDBMangageUserRepository, jwtAccessTokenService, requestPassordResetEmailService, hs256HMACValidationService)
+	smtpMailSender := mail.NewSMTPMailSender(envConfigurationProvider, appLogger)
+	hs256HMACValidationService := tokens.NewHS256HMACValidationService()
+	requestPasswordResetEmailService := identityemail.NewRequestPasswordResetEmailService(envConfigurationProvider, smtpMailSender, hs256HMACValidationService, appLogger)
+	managedUserInteractor := identityinteractors.NewManagedUserInteractor(inMemoryEventDispatcher, mongoDBUserRepositoryCached, mongoDBMangageUserRepository, jwtAccessTokenService, requestPasswordResetEmailService, hs256HMACValidationService)
 	adminIdentityController := adminidentity.NewAdminIdentityController(managedUserInteractor, appLogger)
 	return adminIdentityController
 }
@@ -567,7 +575,8 @@ func InitAdminPublisherPaymentsController() adminpublisherpayments.AdminPublishe
 	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
 	mongoDBPublisherRepository := publisherrepository.NewMongoDBPublisherRepository(mongoDBStoreBootstrap)
 	earningInteractor := paymentinteractors.NewEarningInteractor(adsInteractor, depositInteractor, mongoDBPublisherRepository, mongoDBSiteRepository, mongoDBImpressionRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
-	disbursementEmailService := disbursementemail.NewDisbursementEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
+	smtpMailSender := mail.NewSMTPMailSender(envConfigurationProvider, appLogger)
+	disbursementEmailService := disbursementemail.NewDisbursementEmailService(envConfigurationProvider, smtpMailSender, hs256HMACValidationService, appLogger)
 	disbursementInteractor := paymentinteractors.NewDisbursementInteractor(mongoDBDisbursementRepository, mongoDBUserRepositoryCached, mongoDBPublisherRepository, earningInteractor, disbursementEmailService, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
 	adminPublisherPaymentsController := adminpublisherpayments.NewAdminPublisherPaymentsController(adminAuthenticationMiddleware, adsInteractor, depositInteractor, disbursementInteractor, earningInteractor, appLogger)
 	return adminPublisherPaymentsController
@@ -619,15 +628,16 @@ func InitEventsRegistrar() events.EventHandlerRegistrar {
 	earningInteractor := paymentinteractors.NewEarningInteractor(adsInteractor, depositInteractor, mongoDBPublisherRepository, mongoDBSiteRepository, mongoDBImpressionRepository, redisKeyValueStore, inMemoryEventDispatcher, appLogger)
 	mongoDBDisbursementRepository := disbursementrepository.NewMongoDBDisbursementRepository(mongoDBStoreBootstrap, appLogger)
 	mongoDBUserRepositoryCached := userrepository.NewMongoDBUserRepositoryCached(mongoDBStoreBootstrap, redisKeyValueStore)
-	disbursementEmailService := disbursementemail.NewDisbursementEmailService(envConfigurationProvider, hs256HMACValidationService, appLogger)
+	smtpMailSender := mail.NewSMTPMailSender(envConfigurationProvider, appLogger)
+	disbursementEmailService := disbursementemail.NewDisbursementEmailService(envConfigurationProvider, smtpMailSender, hs256HMACValidationService, appLogger)
 	disbursementInteractor := paymentinteractors.NewDisbursementInteractor(mongoDBDisbursementRepository, mongoDBUserRepositoryCached, mongoDBPublisherRepository, earningInteractor, disbursementEmailService, redisKeyValueStore, hs256HMACValidationService, inMemoryEventDispatcher, appLogger)
 	mongoDBMangageUserRepository := manageduserrepository.NewMongoDBMangageUserRepository(mongoDBStoreBootstrap)
 	mongoDBOAuthUserRepository := oauthuserrepository.NewMongoDBOAuthUserRepository(mongoDBStoreBootstrap)
 	mongoDBPublisherSignUpUnitOfWork := publishersignupunitofwork.NewMongoDBPublisherSignUpUnitOfWork(mongoDBStoreBootstrap, mongoDBUserRepositoryCached, mongoDBMangageUserRepository, mongoDBOAuthUserRepository, mongoDBPublisherRepository)
 	googleOAuthServiceImpl := googleoauth.NewGoogleOAuthService()
 	publisherInteractor := publisherinteractors.NewPublisherInteractor(inMemoryEventDispatcher, mongoDBPublisherSignUpUnitOfWork, mongoDBUserRepositoryCached, mongoDBPublisherRepository, googleOAuthServiceImpl, appLogger)
-	verifcationEmailSender := identityemail.NewVerifcationEmailSender(envConfigurationProvider, hs256HMACValidationService, appLogger)
-	verificationEmailInteractor := identityinteractors.NewVerificationEmailInteractor(verifcationEmailSender, appLogger)
+	verificationEmailSender := identityemail.NewVerifcationEmailSender(envConfigurationProvider, hs256HMACValidationService, smtpMailSender, appLogger)
+	verificationEmailInteractor := identityinteractors.NewVerificationEmailInteractor(verificationEmailSender, appLogger)
 	eventHandlerRegistrar := events.NewEventHandlerRegistrar(inMemoryEventDispatcher, adsPool, adsInteractor, depositInteractor, earningInteractor, disbursementInteractor, publisherInteractor, verificationEmailInteractor)
 	return eventHandlerRegistrar
 }

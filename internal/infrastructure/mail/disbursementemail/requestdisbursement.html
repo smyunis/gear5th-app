@@ -1,0 +1,53 @@
+{{define "title"}}Confirm disbursement{{end}}
+
+{{define "heading"}}gear5th Advertising{{end}}
+{{define "in-mail-main"}}
+<div class="py-8">
+    <p class="font-bold text-lg text-darkest py-2">
+        Confirm disbursement request
+    </p>
+    <p class="text-sm">
+        A request for withdrawal was made for your earnings. It's currently pending your confirmation.
+        Once you confirm, we will analyze your request and make your deposit. We might make contact if necessary. If you
+        are not the one who requested disbursement on the publisher console, it may be
+        possible that your account has been compromised. Please take the necessary steps to recover your account and
+        secure your new credentials.
+    </p>
+</div>
+<div class="border border-medium p-4">
+    <div class="py-2">
+        <span class="block text-xs">Payment Method</span>
+        <span class="text-darkest font-bold">{{.Disbursement.PaymentProfile.PaymentMethod}}</span>
+    </div>
+    <div class="py-2">
+        <span class="block text-xs">Account</span>
+        <span class="text-darkest font-bold">{{.Disbursement.PaymentProfile.Account}}</span>
+    </div>
+    <div class="py-2">
+        <span class="block text-xs">Full name</span>
+        <span class="text-darkest font-bold">{{.Disbursement.PaymentProfile.FullName}}</span>
+    </div>
+    <div class="py-2">
+        <span class="block text-xs">Phone number</span>
+        <span class="text-darkest font-bold">{{.Disbursement.PaymentProfile.PhoneNumber}}</span>
+    </div>
+    <div class="py-2">
+        <span class="block text-xs">Amount</span>
+        <span class="text-darkest font-bold">{{printf "%.2f" .Disbursement.Amount}} ETB</span>
+    </div>
+</div>
+<div class="w-full pt-4">
+    <div class="w-fit mx-auto pb-8">
+        <a href="{{.ConfirmLink}}">
+            <button type="button" class="font-bold h-10 text-white bg-primary px-4 py-2 rounded-sm hover:opacity-95">
+                Confirm disbursement
+            </button>
+        </a>
+        <a href="{{.RejectLink}}">
+            <button type="button" class="font-bold h-10 text-white bg-red-700 px-4 py-2 rounded-sm hover:opacity-95">
+                Reject disbursement
+            </button>
+        </a>
+    </div>
+</div>
+{{end}}

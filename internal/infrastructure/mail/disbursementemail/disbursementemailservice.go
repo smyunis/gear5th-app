@@ -1,22 +1,44 @@
 package disbursementemail
 
 import (
+	_ "embed"
 	"fmt"
+	"html/template"
 	"net/url"
+	"strings"
 
 	"gitlab.com/gear5th/gear5th-app/internal/application"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/identity/user"
 	"gitlab.com/gear5th/gear5th-app/internal/domain/payment/disbursement"
 	"gitlab.com/gear5th/gear5th-app/internal/infrastructure"
+	"gitlab.com/gear5th/gear5th-app/internal/infrastructure/mail"
 )
+
+//go:embed requestdisbursement.html
+var requestDisbursementTemplateFile string
+
+var requestDisbursementTemplate *template.Template
+
+func init() {
+	requestDisbursementTemplate = template.Must(
+		mail.EmailMainLayoutTemplate().Parse(requestDisbursementTemplateFile))
+}
+
+type disbursementRequestPresenter struct {
+	ConfirmLink  string
+	RejectLink   string
+	Disbursement disbursement.Disbursement
+}
 
 type DisbursementEmailService struct {
 	appURL             *url.URL
+	mailSender         mail.MailSender
 	digitalSignService application.DigitalSignatureService
 	logger             application.Logger
 }
 
 func NewDisbursementEmailService(config infrastructure.ConfigurationProvider,
+	mailSender mail.MailSender,
 	digitalSignService application.DigitalSignatureService,
 	logger application.Logger) DisbursementEmailService {
 	appurlstr := config.Get("APP_URL", "https://gear5th.com")
@@ -27,6 +49,7 @@ func NewDisbursementEmailService(config infrastructure.ConfigurationProvider,
 
 	return DisbursementEmailService{
 		a,
+		mailSender,
 		digitalSignService,
 		logger,
 	}
@@ -41,6 +64,36 @@ func (s DisbursementEmailService) SendRequestDisbursementConfirmation(email user
 
 	confirmURL := s.buildConfirmURL(d.ID.String(), token)
 	rejectURL := s.buildRejectURL(d.ID.String(), token)
+
+	p := disbursementRequestPresenter{
+		ConfirmLink: confirmURL,
+		RejectLink:  rejectURL,
+		Disbursement: d,
+	}
+
+	var htmlStringBuilder strings.Builder
+	err = requestDisbursementTemplate.ExecuteTemplate(&htmlStringBuilder, "email-main", p)
+	if err != nil {
+		s.logger.Error("mail/request-disbursement/parse-html", err)
+		return err
+	}
+
+	msg := mail.Message{
+		From: "no-reply@localhost",
+		To:   email.String(),
+		Headers: map[string]string{
+			"To":           email.String(),
+			"Content-Type": "text/html",
+			"Subject":      "Confirm disbursement",
+		},
+		Body: htmlStringBuilder.String(),
+	}
+
+	err = s.mailSender.SendMail(msg)
+	if err != nil {
+		s.logger.Error("mail/request-disbursement/send", err)
+		return err
+	}
 
 	s.logger.Info("mail/disbursement", fmt.Sprintf("Send confirm disbursement Email to %s <-> %s\n", email.String(), confirmURL))
 	s.logger.Info("mail/disbursement", fmt.Sprintf("Send reject disbursement Email to %s <-> %s\n", email.String(), rejectURL))

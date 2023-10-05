@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <title>{{block "title" .}}{{end}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="http://localhost:5071/styles/tailwind.dist.css">
+</head>
+
+<body class="bg-lightest text-dark font-roboto ">
+
+    <div class="h-full w-full sm:px-20">
+        <div class="w-full sm:w-[600px] mx-auto px-9 py-8 bg-white rounded-sm sm:shadow-sm sm:shadow-medium">
+            <div class="w-full">
+                <div class="w-full flex items-start">
+                    <img src="http://localhost:5071/assets/logo.png" alt="gear5th logo" class="bg-white w-12 h-12">
+                    <div style="background-image: url('http://localhost:5071/assets/blurry-gradient.svg');"
+                        class="w-full h-12">
+                        <h2 class="p-2 align-middle text-center font-bold text-xl text-lightest">
+                            {{block "heading" .}}{{end}}
+                        </h2>
+                    </div>
+                </div>
+            </div>
+            <div>
+                {{block "in-mail-main" .}}{{end}}
+            </div>
+            <footer class="w-full text-xs p-4 text-center max-sm:bg-white">
+                <span>
+                    ©2023 gear5th Advertising. All rights reserved.
+                </span>
+                <a href="http://localhost:5071/pages/terms-and-conditions.html" class=" underline">Terms and conditions
+                    of service</a>
+            </footer>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

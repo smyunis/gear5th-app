@@ -30,6 +30,13 @@ func init() {
 
 }
 
+var availablePaymentMethods = []string{
+	"Commercial Bank of Ethiopia",
+	"Bank of Abyssinia",
+	"Hibret Bank",
+	"telebirr",
+}
+
 type reqDisbursementPresenter struct {
 	AvailablePaymentMethods []string
 	PaymetMethod            string `form:"payment-method"`
@@ -69,12 +76,7 @@ func (c *DisbursementController) AddRoutes(router *fiber.Router) {
 
 func (c *DisbursementController) requestDisbursementOnGet(ctx *fiber.Ctx) error {
 	p := &reqDisbursementPresenter{
-		AvailablePaymentMethods: []string{
-			"Commercial Bank of Ethiopia",
-			"Bank of Abyssinia",
-			"Hibret Bank",
-			"telebirr",
-		},
+		AvailablePaymentMethods: availablePaymentMethods,
 	}
 	return controllers.Render(ctx, reqDisbursementTemplate, p)
 }
@@ -85,7 +87,9 @@ func (c *DisbursementController) requestDisbursementOnPost(ctx *fiber.Ctx) error
 		return ctx.Redirect("/pages/error.html")
 	}
 
-	p := &reqDisbursementPresenter{}
+	p := &reqDisbursementPresenter{
+		AvailablePaymentMethods: availablePaymentMethods,
+	}
 	err = ctx.BodyParser(p)
 	if err != nil {
 		p.ErrorMessage = "One or more invalid input. Check and try again."
@@ -108,6 +112,7 @@ func (c *DisbursementController) requestDisbursementOnPost(ctx *fiber.Ctx) error
 	err = c.disbursementInteractor.RequestDisbursement(publisherID, profile)
 	if err != nil {
 		p.ErrorMessage = "We're unable to request disbursements at the moment. Try again later."
+		c.logger.Error("disbursement/request", err)
 		return controllers.Render(ctx, reqDisbursementTemplate, p)
 	}
 

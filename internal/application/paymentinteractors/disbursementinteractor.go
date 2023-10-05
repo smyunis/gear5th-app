@@ -58,7 +58,7 @@ func (i *DisbursementInteractor) RequestDisbursement(publisherID shared.ID,
 		return err
 	}
 
-	if i.earningInteractor.CanRequestDisbursement(publisherID) {
+	if !i.earningInteractor.CanRequestDisbursement(publisherID) {
 		return application.ErrRequirementFailed
 	}
 
