@@ -82,6 +82,7 @@ func (s DisbursementEmailService) SendRequestDisbursementConfirmation(email user
 		From: "no-reply@localhost",
 		To:   email.String(),
 		Headers: map[string]string{
+			"From":         "gear5th Advertising <no-reply@gear5th.com>",
 			"To":           email.String(),
 			"Content-Type": "text/html",
 			"Subject":      "Confirm disbursement",

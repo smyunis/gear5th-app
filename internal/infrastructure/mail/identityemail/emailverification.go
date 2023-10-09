@@ -76,7 +76,7 @@ func (s VerificationEmailSender) SendMail(u user.User) error {
 		From: "no-reply@localhost",
 		To:   u.Email.String(),
 		Headers: map[string]string{
-			// "From":         "gear5th Advertising",
+			"From":         "gear5th Advertising <no-reply@gear5th.com>",
 			"To":           u.Email.String(),
 			"Content-Type": "text/html",
 			"Subject":      "Verify your email",
