@@ -20,6 +20,12 @@ type MongoDBUserRepository struct {
 }
 
 func NewMongoDBUserRepository(dbStore mongodbpersistence.MongoDBStore) MongoDBUserRepository {
+	
+	dbIndexes := dbStore.Database().Collection("users").Indexes()
+	dbIndexes.CreateOne(context.Background(), mongo.IndexModel{
+		Keys: bson.D{{"email", 1}},
+	})
+
 	return MongoDBUserRepository{
 		dbStore: dbStore,
 		db:      dbStore.Database(),

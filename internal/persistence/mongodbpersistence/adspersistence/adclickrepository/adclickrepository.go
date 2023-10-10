@@ -16,7 +16,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// TODO optimise this repo for write efficency
 type MongoDBAdClickRepository struct {
 	dbStore mongodbpersistence.MongoDBStore
 	db      *mongo.Database
@@ -25,6 +24,11 @@ type MongoDBAdClickRepository struct {
 
 func NewMongoDBAdClickRepository(dbStore mongodbpersistence.MongoDBStore,
 	logger application.Logger) MongoDBAdClickRepository {
+
+	// TODO optimise this repo for write efficency
+	dbIndexes := dbStore.Database().Collection("adClicks").Indexes()
+	dbIndexes.DropAll(context.Background())
+
 	return MongoDBAdClickRepository{
 		dbStore: dbStore,
 		db:      dbStore.Database(),

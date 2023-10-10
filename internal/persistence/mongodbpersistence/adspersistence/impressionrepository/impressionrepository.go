@@ -16,7 +16,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// TODO optimise this repo for write efficency
 type MongoDBImpressionRepository struct {
 	dbStore mongodbpersistence.MongoDBStore
 	db      *mongo.Database
@@ -25,6 +24,11 @@ type MongoDBImpressionRepository struct {
 
 func NewMongoDBImpressionRepository(dbStore mongodbpersistence.MongoDBStore,
 	logger application.Logger) MongoDBImpressionRepository {
+
+	// TODO optimise this repo for write efficency
+	dbIndexes := dbStore.Database().Collection("impressions").Indexes()
+	dbIndexes.DropAll(context.Background())
+
 	return MongoDBImpressionRepository{
 		dbStore: dbStore,
 		db:      dbStore.Database(),

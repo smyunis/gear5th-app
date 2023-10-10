@@ -111,7 +111,7 @@ func (i *AdsInteractor) ImpressionsCount(publisherID shared.ID, start time.Time,
 			return 0, err
 		}
 		ics = int64(c)
-		i.cacheStore.Save(impressionCountCacheKey, strconv.FormatInt(ics, 10), 48*time.Hour)
+		i.cacheStore.Save(impressionCountCacheKey, strconv.FormatInt(ics, 10), 168*time.Hour)
 	}
 	return ics, nil
 
@@ -129,7 +129,7 @@ func (i *AdsInteractor) AdClicksCount(publisherID shared.ID, start time.Time, en
 			return 0, err
 		}
 		ics = int64(c)
-		i.cacheStore.Save(adclickCountCacheKey, strconv.FormatInt(ics, 10), 48*time.Hour)
+		i.cacheStore.Save(adclickCountCacheKey, strconv.FormatInt(ics, 10), 168*time.Hour)
 	}
 	return ics, nil
 }
@@ -218,7 +218,7 @@ func (i *AdsInteractor) IncrementImpressionCount(e any) {
 	}
 	totalImpressions += 1
 	cs := strconv.Itoa(totalImpressions)
-	i.cacheStore.Save(DailyImpressionCountCacheKey(today), cs, 24*time.Hour)
+	i.cacheStore.Save(DailyImpressionCountCacheKey(today), cs, 168*time.Hour)
 }
 
 func (i *AdsInteractor) fetchTotalImpressionCount(day time.Time) (int, error) {
@@ -231,7 +231,7 @@ func (i *AdsInteractor) fetchTotalImpressionCount(day time.Time) (int, error) {
 }
 
 func DailyImpressionCountCacheKey(day time.Time) string {
-	return fmt.Sprintf("impressioncount:%s", day.Format("20060102"))
+	return fmt.Sprintf("impressionCount:%s", day.Format("20060102"))
 }
 
 func (i *AdsInteractor) canSiteMonetize(siteID shared.ID) bool {
